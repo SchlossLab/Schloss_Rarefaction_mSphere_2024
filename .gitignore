@@ -37,3 +37,14 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+
+# Snakemake
+.snakemake
+
+#project directories
+!README.md
+
+data/references/
+
+mothur*logfile
