@@ -42,6 +42,9 @@ vignettes/*.pdf
 # Snakemake
 .snakemake
 
+# Great Lakes
+.nfs*
+
 # slurm
 logs_slurm
 scripts_slurm
@@ -49,6 +52,7 @@ scripts_slurm
 #project directories
 !README.md
 
-data/references/
+data/
 
 mothur*logfile
+mothur/

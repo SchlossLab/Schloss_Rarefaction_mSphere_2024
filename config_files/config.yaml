@@ -1,12 +1,12 @@
 # cluster commands
-cluster: "sbatch --job-name={rule}_{wildcards} 
+cluster: "sbatch --job-name={wildcards.dataset}_{rule} 
           --account=pschloss1 
           --partition=standard 
           --nodes=1 
           --time={resources.time_min} 
-          --mem={resources.mem_mb} 
+          --mem={resources.mem_mb}
           -c {resources.cpus} 
-          -o logs_slurm/{rule}_%j.out" #%x.o%A_%a
+          -o logs_slurm/%x_%j.out"
 # snakemake args
 jobs: 9998
 use-conda: true

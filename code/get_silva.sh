@@ -5,8 +5,9 @@ NPROC=${1:?ERROR: Need to define NPROC.}
 wget -N -P data/references/silva/ https://mothur.s3.us-east-2.amazonaws.com/wiki/silva.seed_v132.tgz
 tar xvzf data/references/silva/silva.seed_v132.tgz -C data/references/silva
 
+#these coordinates remove the primers
 mothur "#get.lineage(fasta=data/references/silva/silva.seed_v132.align, taxonomy=data/references/silva/silva.seed_v132.tax, taxon=Bacteria);
-    pcr.seqs(start=13862, end=23445, keepdots=F, processors="${NPROC}");
+    pcr.seqs(start=13862, end=23444, keepdots=F, processors="${NPROC}");
     degap.seqs();
     unique.seqs()"
 
