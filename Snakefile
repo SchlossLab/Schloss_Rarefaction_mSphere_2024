@@ -12,7 +12,7 @@ rule silva:
         silva_align="data/references/silva.v4.align",
         silva_tax="data/references/silva.v4.tax",
     resources:  
-        ncores=4
+        ncores=8
     shell:
         "{input.script} {resources.ncores}"
 
@@ -24,4 +24,4 @@ rule rdp:
         rdp_tax="data/references/trainset18_062020.pds.tax"
     shell:
         "{input.script}"
-        
+

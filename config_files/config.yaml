@@ -1,0 +1,19 @@
+# cluster commands
+cluster: "sbatch --job-name={rule}_{wildcards} 
+          --account=pschloss1 
+          --partition=standard 
+          --nodes=1 
+          --time={resources.time_min} 
+          --mem={resources.mem_mb} 
+          -c {resources.cpus} 
+          -o logs_slurm/{rule}_%j.out" #%x.o%A_%a
+# snakemake args
+jobs: 9998
+use-conda: true
+touch: false
+keep-going: true
+latency-wait: 120
+conda-frontend: "mamba"
+default-resources: [cpus=1, 
+                    mem_mb=2000, 
+                    time_min=2880]
