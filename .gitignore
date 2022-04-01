@@ -48,6 +48,7 @@ vignettes/*.pdf
 # slurm
 logs_slurm
 scripts_slurm
+done
 
 #project directories
 !README.md
