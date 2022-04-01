@@ -42,6 +42,6 @@ mv $DATA/data.trim.contigs.unique.good.filter.unique.precluster.denovo.vsearch.p
 
 # Remove fastq files and all intermediate mothur files to keep things organized
 rm $DATA/*fastq*
-rm $DATA/*.contigs.*
+rm $DATA/*.contigs*
 rm $DATA/*.filter
 rm $DATA/*files
