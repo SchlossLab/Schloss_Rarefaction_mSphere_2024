@@ -8,10 +8,13 @@
 datasets = ["bioethanol", "human", "lake", "marine","mice", "peromyscus", "rainforest", "rice", "seagrass",
             "sediment", "soil", "stream"]
 
+seeds = list(range(1, 101))
+
 rule targets:
   input:
-    expand("data/{dataset}/data.otu.shared", dataset=datasets),
-    expand("data/{dataset}/data.group_count", dataset=datasets)
+    # expand("data/{dataset}/data.otu.shared", dataset=datasets),
+    # expand("data/{dataset}/data.group_count", dataset=datasets)
+    expand("data/{dataset}/data.otu.{seed}.rshared", dataset=datasets, seed=seeds)
 
 
 rule silva:
@@ -21,7 +24,8 @@ rule silva:
     "data/references/silva.v4.align",
     "data/references/silva.v4.tax"
   resources:  
-    ncores=8
+    job_name="silva",
+    ncores=8,
   shell:
     """
     {input.script} {resources.ncores}
@@ -33,6 +37,8 @@ rule rdp:
   output:
     "data/references/trainset18_062020.pds.fasta",
     "data/references/trainset18_062020.pds.tax"
+  resources:
+    job_name="rdp"
   shell:
     "{input.script}"
 
@@ -58,7 +64,8 @@ rule clean_seqs:
     "data/{dataset}/data.fasta",
     "data/{dataset}/data.count_table",
     "data/{dataset}/data.taxonomy"
-  resources:  
+  resources:
+    job_name="{dataset}_clean_seqs"  
     ncores=8,
     mem_mb=45000,
     time_min=3000
@@ -83,13 +90,13 @@ rule count_seqs:
 # assign sequences to OTUs and generate a shared file
 rule cluster_seqs:
   input:
-    script="code/datasets_process.sh",
+    script="code/datasets_cluster.sh",
     fasta="data/{dataset}/data.fasta",
     count_table="data/{dataset}/data.count_table",
     tax="data/{dataset}/data.taxonomy"
   output:
     "data/{dataset}/data.otu.shared",
-  resources:  
+  resources:
     ncores=8,
     mem_mb=45000,
     time_min=3000
@@ -97,3 +104,27 @@ rule cluster_seqs:
     """
     {input.script} data/{wildcards.dataset} {resources.ncores}
     """
+
+
+# generate null model shared files
+rule null_shared:
+  input:
+    script="code/get_null_shared.R",
+    shared="data/{dataset}/data.otu.shared"
+  output:
+    "data/{dataset}/data.otu.{seed}.rshared"
+  shell:
+    """
+    {input.script} {input.shared} {seed}
+    """
+
+# non-rarefied shannon, sobs, invsimpson
+# rarefy shannon, sobs, invsimpson
+# estimated sobs with chao1, breakaway
+
+# non-rarefied bray-curtis
+# rarefied bray-curtis
+# normalized bray-curtis
+# relative abundance bray-curtis
+# vst bray-curtis
+# metagenomeseq bray-curtis

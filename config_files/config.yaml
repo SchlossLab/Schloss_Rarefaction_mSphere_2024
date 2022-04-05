@@ -1,5 +1,5 @@
 # cluster commands
-cluster: "sbatch --job-name={wildcards.dataset}_{rule} 
+cluster: "sbatch --job-name={rule}_{wildcards.dataset}
           --account=pschloss1 
           --partition=standard 
           --nodes=1 
@@ -16,4 +16,5 @@ latency-wait: 120
 conda-frontend: "mamba"
 default-resources: [cpus=1, 
                     mem_mb=2000, 
-                    time_min=2880]
+                    time_min=2880,
+                    job_name="rare"]
