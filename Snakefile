@@ -3,10 +3,11 @@
 # Schloss Lab
 # University of Michigan
 
-# Purpose: Snakemake file for running data processing steps in rarefaction analysis study
+# Purpose:  Snakemake file for running data processing steps in rarefaction
+#           analysis study
 
-datasets = ["bioethanol", "human", "lake", "marine","mice", "peromyscus", "rainforest", "rice", "seagrass",
-            "sediment", "soil", "stream"]
+datasets = ["bioethanol", "human", "lake", "marine","mice", "peromyscus",
+            "rainforest", "rice", "seagrass", "sediment", "soil", "stream"]
 
 seeds = list(range(1, 101))
 
@@ -50,7 +51,8 @@ rule rdp:
 #
 ################################################################################
 
-# Run datasets { mice human soil marine etc. } through mothur pipeline through remove.lineage
+# Run datasets { mice human soil marine etc. } through mothur pipeline through
+# remove.lineage
 rule clean_seqs:
   input: 
     script="code/datasets_process.sh",
@@ -111,20 +113,25 @@ rule null_shared:
   input:
     script="code/get_null_shared.R",
     shared="data/{dataset}/data.otu.shared"
+    remove="data/{dataset}/data.remove_accnos"
   output:
     "data/{dataset}/data.otu.{seed}.rshared"
   shell:
     """
-    {input.script} {input.shared} {seed}
+    {input.script} {input.shared} {input.shared} {seed}
     """
 
-# non-rarefied shannon, sobs, invsimpson
-# rarefy shannon, sobs, invsimpson
-# estimated sobs with chao1, breakaway
+# non-rarefied shannon, sobs, invsimpson (remove small libraries)
+# rarefy shannon, sobs, invsimpson (remove small libraries)
 
-# non-rarefied bray-curtis
-# rarefied bray-curtis
-# normalized bray-curtis
-# relative abundance bray-curtis
-# vst bray-curtis
-# metagenomeseq bray-curtis
+
+# estimated sobs with chao1, breakaway (multi methods?) (remove small libraries)
+# calculate p-value based on size of sample (remove small libraries)
+
+# non-rarefied bray-curtis (remove small libraries)
+# rarefied bray-curtis (remove small libraries)
+# normalized bray-curtis (remove small libraries)
+# relative abundance bray-curtis (remove small libraries)
+# vst bray-curtis (remove small libraries)
+# metagenomeseq bray-curtis (remove small libraries)
+# calculate p-value based on size of sample (remove small libraries)

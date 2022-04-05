@@ -10,8 +10,9 @@ library(data.table)
 library(glue)
 
 input <- commandArgs(trailingOnly = TRUE)
-shared_file <- input[1] # e.g. shared_file <- "data/soil/data.otu.shared"
-seed <- as.numeric(input[2]) # e.g. seed <- 1
+shared_file <- input[1] # e.g. shared_file <- "data/mice/data.otu.shared"
+remove_file <- input[2] # e.g. remove_file <- "data/mice/data.remove_accnos"
+seed <- as.numeric(input[3]) # e.g. seed <- 1
 
 # e.g. r_shared_file <- "data/soil/data.otu.1.rshared"
 r_shared_file <- str_replace(shared_file,
@@ -23,11 +24,16 @@ r_shared_file <- str_replace(shared_file,
 #	randomization
 set.seed(seed)
 
+removal <- scan(remove_file, quiet = TRUE, what = character()) %>%
+  str_split(., "-") %>%
+  unlist()
+
 rand_shared <- fread(shared_file,
                      colClasses = c(Group = "character")) %>%
   pivot_longer(cols = -c(label, Group, numOtus),
                names_to = "otu",
                values_to = "n_seqs") %>%
+  filter(! Group %in% removal) %>%
   uncount(n_seqs) %>%
   mutate(otu = sample(otu)) %>%
   count(label, Group, numOtus, otu) %>%
