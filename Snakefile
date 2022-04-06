@@ -11,11 +11,14 @@ datasets = ["bioethanol", "human", "lake", "marine","mice", "peromyscus",
 
 seeds = list(range(1, 101))
 
+model = ["r"]
+
 rule targets:
   input:
-    # expand("data/{dataset}/data.otu.shared", dataset=datasets),
-    # expand("data/{dataset}/data.group_count", dataset=datasets)
-    expand("data/{dataset}/data.otu.{seed}.rshared", dataset=datasets, seed=seeds)
+    expand("data/{dataset}/data.otu.shared", dataset=datasets),
+    expand("data/{dataset}/data.group_count", dataset=datasets),
+    expand("data/{dataset}/data.remove_accnos", dataset=datasets)
+    #expand("data/{dataset}/data.otu.{seed}.rshared", dataset=datasets, seed=seeds)
 
 
 rule silva:
@@ -26,10 +29,10 @@ rule silva:
     "data/references/silva.v4.tax"
   resources:  
     job_name="silva",
-    ncores=8,
+    cpus=8,
   shell:
     """
-    {input.script} {resources.ncores}
+    {input.script} {resources.cpus}
     """
 
 rule rdp:
@@ -46,8 +49,7 @@ rule rdp:
 
 ################################################################################
 #
-# Generate pruned versions of datasets based on the original assignments of
-# sequences to each sample
+# Clean datasets and generate original shared file
 #
 ################################################################################
 
@@ -67,13 +69,13 @@ rule clean_seqs:
     "data/{dataset}/data.count_table",
     "data/{dataset}/data.taxonomy"
   resources:
-    job_name="{dataset}_clean_seqs"  
-    ncores=8,
+    job_name="{dataset}_clean_seqs",  
+    cpus=8,
     mem_mb=45000,
     time_min=3000
   shell:
     """
-    {input.script} data/{wildcards.dataset} {resources.ncores} \
+    {input.script} data/{wildcards.dataset} {resources.cpus} \
         {input.silva_align} {input.rdp_fasta} {input.rdp_tax}
     """
 
@@ -99,39 +101,105 @@ rule cluster_seqs:
   output:
     "data/{dataset}/data.otu.shared",
   resources:
-    ncores=8,
+    cpus=8,
     mem_mb=45000,
     time_min=3000
   shell:
     """
-    {input.script} data/{wildcards.dataset} {resources.ncores}
+    {input.script} data/{wildcards.dataset} {resources.cpus}
     """
+
+# identify those samples that need to be removed because there are too few
+# sequences
+rule list_rare_samples:
+  input:
+    script="code/screen_group_counts.R",
+    counts=expand("data/{dataset}/data.group_count", dataset=datasets)
+  output:
+    accnos=expand("data/{dataset}/data.remove_accnos", dataset=datasets)
+  shell:
+    """
+    {input.script}
+    """
+
+################################################################################
+#
+# Generate simulated community data based on observed shared data
+#
+################################################################################
 
 
 # generate null model shared files
-rule null_shared:
-  input:
-    script="code/get_null_shared.R",
-    shared="data/{dataset}/data.otu.shared"
-    remove="data/{dataset}/data.remove_accnos"
-  output:
-    "data/{dataset}/data.otu.{seed}.rshared"
-  shell:
-    """
-    {input.script} {input.shared} {input.shared} {seed}
-    """
-
-# non-rarefied shannon, sobs, invsimpson (remove small libraries)
-# rarefy shannon, sobs, invsimpson (remove small libraries)
+# rule null_shared:
+#   input:
+#     script="code/get_null_shared.R",
+#     shared="data/{dataset}/data.otu.shared",
+#     accnos="data/{dataset}/data.remove_accnos"
+#   output:
+#     "data/{dataset}/data.otu.{seed}.rshared"
+#   shell:
+#     """
+#     {input.script} {input.shared} {input.shared} {seed}
+#     """
 
 
-# estimated sobs with chao1, breakaway (multi methods?) (remove small libraries)
-# calculate p-value based on size of sample (remove small libraries)
+################################################################################
+#
+# Alpha diversity analysis
+#
+################################################################################
 
-# non-rarefied bray-curtis (remove small libraries)
-# rarefied bray-curtis (remove small libraries)
-# normalized bray-curtis (remove small libraries)
-# relative abundance bray-curtis (remove small libraries)
-# vst bray-curtis (remove small libraries)
-# metagenomeseq bray-curtis (remove small libraries)
-# calculate p-value based on size of sample (remove small libraries)
+# non-rarefied nseqs, shannon, sobs, invsimpson, chao, ace, npshannon, coverage
+# rule raw_alpha:
+#   input:
+#     script="code/get_raw_alpha.sh",
+#     shared="data/{dataset}/data.otu.{seed}.{model}shared"
+#   output:
+#     "data/{dataset}/data.otu.{seed}.{model}_raw_alpha"
+#   shell:
+#     """
+#     {input.script} {input.shared}
+#     """
+
+# rarefied nseqs, shannon, sobs, invsimpson, chao, ace, npshannon, coverage
+# rule rarefy_alpha:
+#   input:
+#     script="code/get_rarefy_alpha.sh",
+#     shared="data/{dataset}/data.otu.{seed}.{model}shared"
+#   output:
+#     "data/{dataset}/data.otu.{seed}.{model}_rarefy_alpha"
+#   shell:
+#     """
+#     {input.script} {input.shared}
+#     """
+
+# estimated sobs with breakaway (multi methods?)
+# rule breakaway_alpha:
+#   input:
+#     script="code/get_breakaway_alpha.R",
+#     shared="data/{dataset}/data.otu.{seed}.{model}shared"
+#   output:
+#     "data/{dataset}/data.otu.{seed}.{model}_breakaway_alpha"
+#   shell:
+#     """
+#     {input.script} {input.shared}
+#     """
+
+
+################################################################################
+#
+# Beta diversity analysis
+#
+################################################################################
+
+
+# non-rarefied bray-curtis / jclass / euclidean
+# rarefied bray-curtis / jclass / euclidean
+# normalized bray-curtis / jclass / euclidean
+# relative abundance bray-curtis / jclass / euclidean
+# vst-deseq2 bray-curtis / jclass / euclidean
+# vst-metagenomeseq bray-curtis / jclass / euclidean
+# aitchison euclidean
+
+# alpha: calculate p-value based on size of sample
+# beta: calculate p-value based on size of sample
