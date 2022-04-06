@@ -1,20 +1,25 @@
 # cluster commands
-cluster: "sbatch --job-name={rule}_{wildcards.dataset}
+cluster: 
+  mkdir -p logs/cluster_logs/`date +"%d-%m-%y"`/{rule} &&
+  sbatch --job-name={rule}_{wildcards}
+          --output=logs/cluster_logs/`date +"%d-%m-%y"`/{rule}/{rule}-{wildcards}_%j.out
           --account=pschloss1 
           --partition=standard 
           --nodes=1 
           --time={resources.time_min} 
           --mem={resources.mem_mb}
-          -c {resources.cpus} 
-          -o logs_slurm/%x_%j.out"
-# snakemake args
-jobs: 9998
-use-conda: true
-touch: false
-keep-going: true
-latency-wait: 120
-conda-frontend: "mamba"
+          --cpus={resources.cpus} 
+
 default-resources: [cpus=1, 
                     mem_mb=2000, 
                     time_min=2880,
                     job_name="rare"]
+
+
+# snakemake args
+jobs: 5000
+scheduler: "greedy"
+use-conda: true
+conda-frontend: "mamba"
+keep-going: true
+latency-wait: 120
