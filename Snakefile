@@ -11,14 +11,21 @@ datasets = ["bioethanol", "human", "lake", "marine","mice", "peromyscus",
 
 seeds = list(range(1, 101))
 
-model = ["r"]
+models = ["r"]
 
 rule targets:
   input:
     expand("data/{dataset}/data.otu.shared", dataset=datasets),
     expand("data/{dataset}/data.group_count", dataset=datasets),
-    expand("data/{dataset}/data.remove_accnos", dataset=datasets)
-    #expand("data/{dataset}/data.otu.{seed}.rshared", dataset=datasets, seed=seeds)
+    expand("data/{dataset}/data.remove_accnos", dataset=datasets),
+    expand("data/{dataset}/data.otu.{seed}.rshared",
+           dataset=datasets, seed=seeds),
+    expand("data/{dataset}/data.otu.{seed}.r_raw_alpha",
+           dataset=datasets, seed=seeds),
+    expand("data/{dataset}/data.otu.{seed}.r_rarefy_alpha",
+           dataset=datasets, seed=seeds),
+    expand("data/{dataset}/data.otu.{seed}.r_breakaway_alpha",
+           dataset=datasets, seed=seeds)
 
 
 rule silva:
@@ -28,8 +35,7 @@ rule silva:
     "data/references/silva.v4.align",
     "data/references/silva.v4.tax"
   resources:  
-    job_name="silva",
-    cpus=8,
+    cpus=8
   shell:
     """
     {input.script} {resources.cpus}
@@ -41,8 +47,6 @@ rule rdp:
   output:
     "data/references/trainset18_062020.pds.fasta",
     "data/references/trainset18_062020.pds.tax"
-  resources:
-    job_name="rdp"
   shell:
     "{input.script}"
 
@@ -69,7 +73,6 @@ rule clean_seqs:
     "data/{dataset}/data.count_table",
     "data/{dataset}/data.taxonomy"
   resources:
-    job_name="{dataset}_clean_seqs",  
     cpus=8,
     mem_mb=45000,
     time_min=3000
@@ -128,19 +131,20 @@ rule list_rare_samples:
 #
 ################################################################################
 
-
 # generate null model shared files
-# rule null_shared:
-#   input:
-#     script="code/get_null_shared.R",
-#     shared="data/{dataset}/data.otu.shared",
-#     accnos="data/{dataset}/data.remove_accnos"
-#   output:
-#     "data/{dataset}/data.otu.{seed}.rshared"
-#   shell:
-#     """
-#     {input.script} {input.shared} {input.shared} {seed}
-#     """
+rule null_shared:
+  input:
+    script="code/get_null_shared.R",
+    shared="data/{dataset}/data.otu.shared",
+    accnos="data/{dataset}/data.remove_accnos"
+  resources:
+    mem_mb=10000
+  output:
+    "data/{dataset}/data.otu.{seed}.rshared"
+  shell:
+    """
+    {input.script} {input.shared} {input.accnos} {wildcards.seed}
+    """
 
 
 ################################################################################
@@ -150,40 +154,40 @@ rule list_rare_samples:
 ################################################################################
 
 # non-rarefied nseqs, shannon, sobs, invsimpson, chao, ace, npshannon, coverage
-# rule raw_alpha:
-#   input:
-#     script="code/get_raw_alpha.sh",
-#     shared="data/{dataset}/data.otu.{seed}.{model}shared"
-#   output:
-#     "data/{dataset}/data.otu.{seed}.{model}_raw_alpha"
-#   shell:
-#     """
-#     {input.script} {input.shared}
-#     """
+rule raw_alpha:
+  input:
+    script="code/get_raw_alpha.sh",
+    shared="data/{dataset}/data.otu.{seed}.{model}shared"
+  output:
+    "data/{dataset}/data.otu.{seed}.{model}_raw_alpha"
+  shell:
+    """
+    {input.script} {input.shared}
+    """
 
 # rarefied nseqs, shannon, sobs, invsimpson, chao, ace, npshannon, coverage
-# rule rarefy_alpha:
-#   input:
-#     script="code/get_rarefy_alpha.sh",
-#     shared="data/{dataset}/data.otu.{seed}.{model}shared"
-#   output:
-#     "data/{dataset}/data.otu.{seed}.{model}_rarefy_alpha"
-#   shell:
-#     """
-#     {input.script} {input.shared}
-#     """
+rule rarefy_alpha:
+  input:
+    script="code/get_rarefy_alpha.sh",
+    shared="data/{dataset}/data.otu.{seed}.{model}shared"
+  output:
+    "data/{dataset}/data.otu.{seed}.{model}_rarefy_alpha"
+  shell:
+    """
+    {input.script} {input.shared}
+    """
 
-# estimated sobs with breakaway (multi methods?)
-# rule breakaway_alpha:
-#   input:
-#     script="code/get_breakaway_alpha.R",
-#     shared="data/{dataset}/data.otu.{seed}.{model}shared"
-#   output:
-#     "data/{dataset}/data.otu.{seed}.{model}_breakaway_alpha"
-#   shell:
-#     """
-#     {input.script} {input.shared}
-#     """
+# observed/estimated sobs with breakaway / poisson
+rule breakaway_alpha:
+  input:
+    script="code/get_breakaway_alpha.R",
+    shared="data/{dataset}/data.otu.{seed}.{model}shared"
+  output:
+    "data/{dataset}/data.otu.{seed}.{model}_breakaway_alpha"
+  shell:
+    """
+    {input.script} {input.shared}
+    """
 
 
 ################################################################################

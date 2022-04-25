@@ -46,6 +46,7 @@ vignettes/*.pdf
 .nfs*
 
 # slurm
+logs
 logs_slurm
 scripts_slurm
 done

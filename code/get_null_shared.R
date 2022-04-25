@@ -10,9 +10,9 @@ library(data.table)
 library(glue)
 
 input <- commandArgs(trailingOnly = TRUE)
-shared_file <- input[1] # e.g. shared_file <- "data/mice/data.otu.shared"
-remove_file <- input[2] # e.g. remove_file <- "data/mice/data.remove_accnos"
-seed <- as.numeric(input[3]) # e.g. seed <- 1
+shared_file <- input[1] # e.g. shared_file <- "data/sediment/data.otu.shared"
+remove_file <- input[2] # e.g. remove_file <- "data/sediment/data.remove_accnos"
+seed <- as.numeric(input[3]) # e.g. seed <- 87
 
 # e.g. r_shared_file <- "data/soil/data.otu.1.rshared"
 r_shared_file <- str_replace(shared_file,
@@ -35,10 +35,10 @@ rand_shared <- fread(shared_file,
                values_to = "n_seqs") %>%
   filter(! Group %in% removal) %>%
   uncount(n_seqs) %>%
-  mutate(otu = sample(otu)) %>%
+  mutate(otu = sample(otu), numOtus = n_distinct(otu)) %>%
   count(label, Group, numOtus, otu) %>%
   pivot_wider(names_from = otu, values_from = n, values_fill = 0)
 
 stopifnot(ncol(rand_shared) - 3 == unique(rand_shared$numOtus))
 
-write_tsv(rand_shared, file = r_shared_file)
+write_tsv(x=rand_shared, file = r_shared_file)

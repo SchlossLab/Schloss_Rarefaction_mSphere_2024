@@ -1,17 +1,17 @@
 # cluster commands
 cluster: 
-  mkdir -p logs/cluster_logs/`date +"%d-%m-%y"`/{rule} &&
+  mkdir -p logs/cluster_logs/`date +"%Y-%m-%d"`/{rule} &&
   sbatch --job-name={rule}_{wildcards}
-          --output=logs/cluster_logs/`date +"%d-%m-%y"`/{rule}/{rule}-{wildcards}_%j.out
+          --output=logs/cluster_logs/`date +"%Y-%m-%d"`/{rule}/{rule}-{wildcards}_%j.out
           --account=pschloss1 
           --partition=standard 
           --nodes=1 
           --time={resources.time_min} 
           --mem={resources.mem_mb}
-          --cpus={resources.cpus} 
+          --cpus-per-task={resources.cpus} 
 
 default-resources: [cpus=1, 
-                    mem_mb=2000, 
+                    mem_mb=8000, 
                     time_min=2880,
                     job_name="rare"]
 

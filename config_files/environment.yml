@@ -10,3 +10,5 @@ dependencies:
   - mothur=1.47.0
   - r-base=4.1.3
   - r-renv=0.15.4 # willl load all other R packages with renv
+  - cmake=3.14.0
+  - nlopt=2.7.1
