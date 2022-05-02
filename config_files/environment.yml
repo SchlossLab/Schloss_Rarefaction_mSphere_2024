@@ -9,6 +9,8 @@ dependencies:
   - sra-tools=2.11.0
   - mothur=1.47.0
   - r-base=4.1.3
-  - r-renv=0.15.4 # willl load all other R packages with renv
-  - cmake=3.14.0
-  - nlopt=2.7.1
+  - r-data.table=1.14.2
+  - r-tidyverse=1.3.1
+  - r-vegan=2.6-2
+  - r-SRS=0.2.3
+  - r-breakaway=4.7.9
