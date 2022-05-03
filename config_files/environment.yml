@@ -14,3 +14,6 @@ dependencies:
   - r-vegan=2.6-2
   - r-SRS=0.2.3
   - r-breakaway=4.7.9
+  - r-zcompositions=1.4.0
+  - bioconductor-deseq2=1.34.0
+  - bioconductor-metagenomeseq=1.36.0

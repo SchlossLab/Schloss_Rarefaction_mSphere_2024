@@ -17,7 +17,7 @@ default-resources: [cpus=1,
 
 
 # snakemake args
-jobs: 5000
+jobs: 4950
 scheduler: "greedy"
 use-conda: true
 conda-frontend: "mamba"

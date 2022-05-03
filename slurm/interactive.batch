@@ -1,3 +1,3 @@
 #!/bin/bash
 
-salloc --account=pschloss1 --partition=standard --time=05:00:00 --ntasks=1 --cpus-per-task=1 --nodes=1 --mem=1GB
+salloc --account=pschloss1 --partition=standard --time=100:00:00 --ntasks=1 --cpus-per-task=16 --nodes=1 --mem=40GB

@@ -13,6 +13,13 @@ seeds = list(range(1, 101))
 
 models = ["r"]
 
+alpha_process = ["raw", "rarefy", "breakaway" ]
+
+beta_process = ["raw", "rare", "relabund", "srs", "metagenomeseq", "rclr",
+                "zclr", "oclr", "nclr", "deseq2"]
+
+beta_calculator = ["bray", "jaccard", "euclidean"]
+
 rule targets:
   input:
     expand("data/{dataset}/data.otu.shared", dataset=datasets),
@@ -20,12 +27,11 @@ rule targets:
     expand("data/{dataset}/data.remove_accnos", dataset=datasets),
     expand("data/{dataset}/data.otu.{seed}.rshared",
            dataset=datasets, seed=seeds),
-    expand("data/{dataset}/data.otu.{seed}.r_raw_alpha",
-           dataset=datasets, seed=seeds),
-    expand("data/{dataset}/data.otu.{seed}.r_rarefy_alpha",
-           dataset=datasets, seed=seeds),
-    expand("data/{dataset}/data.otu.{seed}.r_breakaway_alpha",
-           dataset=datasets, seed=seeds)
+    expand("data/{dataset}/data.otu.{seed}.r_{process}_alpha",
+           dataset=datasets, seed=seeds, process=alpha_process),
+    expand("data/{dataset}/data.otu.{seed}.r_{process}_{calculator}.dist",
+           dataset=datasets, seed=seeds, process=beta_process,
+           calculator=beta_calculator)
 
 
 rule silva:
@@ -196,14 +202,27 @@ rule breakaway_alpha:
 #
 ################################################################################
 
-
 # non-rarefied bray-curtis / jclass / euclidean
-# rarefied bray-curtis / jclass / euclidean
-# normalized bray-curtis / jclass / euclidean
-# relative abundance bray-curtis / jclass / euclidean
-# vst-deseq2 bray-curtis / jclass / euclidean
-# vst-metagenomeseq bray-curtis / jclass / euclidean
-# aitchison euclidean
+rule process_beta:
+  input:
+    script="code/get_{beta_process}_beta.R",
+    shared="data/{dataset}/data.otu.{seed}.{model}shared"
+  output:
+    dist="data/{dataset}/data.otu.{seed}.{model}_{beta_process}_{beta_calculator}.dist"
+  resources:
+    mem_mb=16000
+  shell:
+    """
+    {input.script} {input.shared} {output.dist}
+    """
+
+################################################################################
+#
+#
+#
+################################################################################
+
+
 
 # alpha: calculate p-value based on size of sample
 # beta: calculate p-value based on size of sample
