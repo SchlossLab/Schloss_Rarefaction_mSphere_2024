@@ -13,7 +13,7 @@ seeds = list(range(1, 101))
 
 models = ["r"]
 
-alpha_process = ["raw", "rarefy", "breakaway" ]
+alpha_process = ["raw", "rarefy", "srs", "breakaway" ]
 
 beta_process = ["raw", "rare", "relabund", "srs", "metagenomeseq", "rclr",
                 "zclr", "oclr", "nclr", "deseq2"]
@@ -29,15 +29,15 @@ rule targets:
     # expand("data/{dataset}/data.remove_accnos", dataset=datasets),
     # expand("data/{dataset}/data.otu.{seed}.rshared",
     #        dataset=datasets, seed=seeds),
-    # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
-    #        dataset=datasets, seed=seeds, model=models, process=alpha_process),
+    expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
+           dataset=datasets, seed=seeds, model=models, process=alpha_process),
     # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
     #        dataset=datasets, seed=seeds, model=models, process=beta_process,
     #        calculator=beta_calculator),
     # expand("data/{dataset}/data.{seed}.{design}design",
     #        dataset=datasets, seed=seeds, design=designs),
-    expand("data/{dataset}/data.{model}_{design}amova",
-           dataset=datasets, model=models, design=designs)
+    # expand("data/{dataset}/data.{model}_{design}amova",
+    #        dataset=datasets, model=models, design=designs)
            
 
 
@@ -185,6 +185,20 @@ rule rarefy_alpha:
     shared="data/{dataset}/data.otu.{seed}.{model}shared"
   output:
     "data/{dataset}/data.otu.{seed}.{model}_rarefy_alpha"
+  shell:
+    """
+    {input.script} {input.shared}
+    """
+
+# srs normalized nseqs, shannon, sobs, invsimpson, chao, ace, npshannon, coverage
+rule srs_alpha:
+  input:
+    script="code/get_srs_alpha.R",
+    shared="data/{dataset}/data.otu.{seed}.{model}shared"
+  output:
+    "data/{dataset}/data.otu.{seed}.{model}_srs_alpha"
+  resources:
+    mem_mb=10000
   shell:
     """
     {input.script} {input.shared}
