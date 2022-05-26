@@ -9,7 +9,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=1g
+#SBATCH --mem=8g
 
 ### Set Up Environment
 ### Need to access the internet

@@ -20,18 +20,25 @@ beta_process = ["raw", "rare", "relabund", "srs", "metagenomeseq", "rclr",
 
 beta_calculator = ["bray", "jaccard", "euclidean"]
 
+designs = ["r", "s"]
+
 rule targets:
   input:
-    expand("data/{dataset}/data.otu.shared", dataset=datasets),
-    expand("data/{dataset}/data.group_count", dataset=datasets),
-    expand("data/{dataset}/data.remove_accnos", dataset=datasets),
-    expand("data/{dataset}/data.otu.{seed}.rshared",
-           dataset=datasets, seed=seeds),
-    expand("data/{dataset}/data.otu.{seed}.r_{process}_alpha",
-           dataset=datasets, seed=seeds, process=alpha_process),
-    expand("data/{dataset}/data.otu.{seed}.r_{process}_{calculator}.dist",
-           dataset=datasets, seed=seeds, process=beta_process,
-           calculator=beta_calculator)
+    # expand("data/{dataset}/data.otu.shared", dataset=datasets),
+    # expand("data/{dataset}/data.group_count", dataset=datasets),
+    # expand("data/{dataset}/data.remove_accnos", dataset=datasets),
+    # expand("data/{dataset}/data.otu.{seed}.rshared",
+    #        dataset=datasets, seed=seeds),
+    # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
+    #        dataset=datasets, seed=seeds, model=models, process=alpha_process),
+    # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
+    #        dataset=datasets, seed=seeds, model=models, process=beta_process,
+    #        calculator=beta_calculator),
+    # expand("data/{dataset}/data.{seed}.{design}design",
+    #        dataset=datasets, seed=seeds, design=designs),
+    expand("data/{dataset}/data.{model}_{design}amova",
+           dataset=datasets, model=models, design=designs)
+           
 
 
 rule silva:
@@ -218,11 +225,57 @@ rule process_beta:
 
 ################################################################################
 #
-#
+# Assign samples to treatment groups based on null model or by size
 #
 ################################################################################
+
+rule null_design:
+  input:
+    script="code/get_null_design.R",
+    group_count="data/{dataset}/data.group_count",
+    remove_accnos="data/{dataset}/data.remove_accnos"
+  output:
+    "data/{dataset}/data.{seed}.rdesign"
+  resources:
+    mem_mb=2000
+  shell:
+    """
+    {input.script} {input.group_count} {input.remove_accnos} {wildcards.seed}
+    """
+
+
+rule samplesize_design:
+  input:
+    script="code/get_samplesize_design.R",
+    group_count="data/{dataset}/data.group_count",
+    remove_accnos="data/{dataset}/data.remove_accnos"
+  output:
+    "data/{dataset}/data.{seed}.sdesign"
+  resources:
+    mem_mb=2000
+  shell:
+    """
+    {input.script} {input.group_count} {input.remove_accnos} {wildcards.seed}
+    """
 
 
 
 # alpha: calculate p-value based on size of sample
+
 # beta: calculate p-value based on size of sample
+rule run_beta:
+  input:
+    script="code/run_beta.R",
+    dist_files = expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
+                        dataset=datasets, seed=seeds, process=beta_process,
+                        calculator=beta_calculator, allow_missing=True),
+    design_files  = expand("data/{dataset}/data.{seed}.{design}design",
+                           dataset=datasets, seed=seeds, allow_missing=True)
+  output:
+    amova="data/{dataset}/data.{model}_{design}amova"
+  resources:
+    mem_mb=12000
+  shell:
+    """
+    {input.script} data/{wildcards.dataset} {output.amova}
+    """
