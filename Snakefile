@@ -13,7 +13,7 @@ seeds = list(range(1, 101))
 
 models = ["r"]
 
-alpha_process = ["raw", "rarefy", "srs", "breakaway" ]
+alpha_process = ["raw", "rarefy", "srs", "breakaway"]
 
 beta_process = ["raw", "rare", "relabund", "srs", "metagenomeseq", "rclr",
                 "zclr", "oclr", "nclr", "deseq2"]
@@ -29,8 +29,8 @@ rule targets:
     # expand("data/{dataset}/data.remove_accnos", dataset=datasets),
     # expand("data/{dataset}/data.otu.{seed}.rshared",
     #        dataset=datasets, seed=seeds),
-    expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
-           dataset=datasets, seed=seeds, model=models, process=alpha_process),
+    # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
+    #        dataset=datasets, seed=seeds, model=models, process=alpha_process),
     # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
     #        dataset=datasets, seed=seeds, model=models, process=beta_process,
     #        calculator=beta_calculator),
@@ -38,6 +38,8 @@ rule targets:
     #        dataset=datasets, seed=seeds, design=designs),
     # expand("data/{dataset}/data.{model}_{design}amova",
     #        dataset=datasets, model=models, design=designs)
+    expand("data/{dataset}/data.{model}_{design}alpha_kw",
+           dataset=datasets, model=models, design=designs)
            
 
 
@@ -273,18 +275,38 @@ rule samplesize_design:
     """
 
 
+################################################################################
+#
+# Test whether alpha and beta diversity data yield significant differences
+# for each model approach and for each type of effect size
+#
+################################################################################
 
 # alpha: calculate p-value based on size of sample
+rule run_alpha_kw:
+  input:
+    script = "code/run_alpha_kw.R",
+    alpha_files = expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
+                        seed=seeds, process=alpha_process,
+                        allow_missing=True),
+    design_files = expand("data/{dataset}/data.{seed}.{design}design",
+                           seed=seeds, allow_missing=True)
+  output:
+    alpha = "data/{dataset}/data.{model}_{design}alpha_kw"
+  shell:
+    """
+    {input.script} data/{wildcards.dataset} {output.alpha}
+    """
 
 # beta: calculate p-value based on size of sample
-rule run_beta:
+rule run_beta_amova:
   input:
-    script="code/run_beta.R",
+    script="code/run_beta_analysis.R",
     dist_files = expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
-                        dataset=datasets, seed=seeds, process=beta_process,
+                        seed=seeds, process=beta_process,
                         calculator=beta_calculator, allow_missing=True),
     design_files  = expand("data/{dataset}/data.{seed}.{design}design",
-                           dataset=datasets, seed=seeds, allow_missing=True)
+                           seed=seeds, allow_missing=True)
   output:
     amova="data/{dataset}/data.{model}_{design}amova"
   resources:
