@@ -29,17 +29,30 @@ rule targets:
     # expand("data/{dataset}/data.remove_accnos", dataset=datasets),
     # expand("data/{dataset}/data.otu.{seed}.rshared",
     #        dataset=datasets, seed=seeds),
-    # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
-    #        dataset=datasets, seed=seeds, model=models, process=alpha_process),
+    expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
+           dataset=datasets, seed=seeds, model=models, process=alpha_process),
     # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
     #        dataset=datasets, seed=seeds, model=models, process=beta_process,
     #        calculator=beta_calculator),
     # expand("data/{dataset}/data.{seed}.{design}design",
     #        dataset=datasets, seed=seeds, design=designs),
-    # expand("data/{dataset}/data.{model}_{design}amova",
-    #        dataset=datasets, model=models, design=designs)
+    expand("data/{dataset}/data.{model}_{design}amova",
+           dataset=datasets, model=models, design=designs),
     expand("data/{dataset}/data.{model}_{design}alpha_kw",
-           dataset=datasets, model=models, design=designs)
+           dataset=datasets, model=models, design=designs),
+    #
+    expand("data/{dataset}/data.otu.{seed}.{model}shared",
+           dataset=datasets, seed=seeds, model="e"),
+    expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
+           dataset=datasets, seed=seeds, model="e", process=alpha_process),
+    expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
+           dataset=datasets, seed=seeds, model="e", process=beta_process,
+           calculator=beta_calculator),
+    expand("data/{dataset}/data.{model}_{design}amova",
+           dataset=datasets, model="e", design="e"),
+    expand("data/{dataset}/data.{model}_{design}alpha_kw",
+           dataset=datasets, model="e", design="e")
+
            
 
 
@@ -161,6 +174,21 @@ rule null_shared:
     {input.script} {input.shared} {input.accnos} {wildcards.seed}
     """
 
+
+rule effect_shared_design:
+  input:
+    script="code/get_effect_shared_design.R",
+    shared="data/{dataset}/data.otu.shared",
+    accnos="data/{dataset}/data.remove_accnos"
+  resources:
+    mem_mb=10000
+  output:
+    "data/{dataset}/data.{seed}.edesign",
+    "data/{dataset}/data.otu.{seed}.eshared",
+  shell:
+    """
+    {input.script} {input.shared} {input.accnos} {wildcards.seed}
+    """
 
 ################################################################################
 #

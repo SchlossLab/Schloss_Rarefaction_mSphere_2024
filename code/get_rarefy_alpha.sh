@@ -2,13 +2,18 @@
 
 SHARED=$1
 #SHARED=data/soil/data.otu.1.rshared
-mothur "#summary.single(shared=$SHARED,
+
+TEMP_SHARED=`echo $SHARED | sed -E "s/(.)shared/\1rarefy.\1shared/"`
+
+cp $SHARED $TEMP_SHARED
+
+mothur "#summary.single(shared=$TEMP_SHARED,
                         calc=nseqs-sobs-shannon-simpson-chao-ace-npshannon-coverage,
                         subsample=T)"
 
-GROUPS_SUMMARY=`echo $SHARED | sed -E "s/.shared/groups.ave-std.summary/"`
+GROUPS_SUMMARY=`echo $TEMP_SHARED | sed -E "s/.shared/groups.ave-std.summary/"`
 ALPHA=`echo $SHARED | sed -E "s/shared/_rarefy_alpha/"`
-RABUND=`echo $SHARED | sed -E "s/.shared/*rabund/"`
+RABUND=`echo $TEMP_SHARED | sed -E "s/.shared/*rabund/"`
 
 mv $GROUPS_SUMMARY $ALPHA
-rm $RABUND
+rm $RABUND $TEMP_SHARED

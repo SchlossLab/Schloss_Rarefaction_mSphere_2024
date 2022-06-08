@@ -40,15 +40,15 @@ run_amova <- function(distance_file, design_file) {
 
 input <- commandArgs(trailingOnly = TRUE)
 
-dataset <- input[1] # dataset <- "data/mice"
-output_file <- input[2] # output_file <- "data/mice/data.r_ramova"
+dataset <- input[1] # dataset <- "data/human"
+output_file <- input[2] # output_file <- "data/human/data.e_eamova"
 
 model <- str_replace(output_file, ".*\\.(.)_.amova", "\\1")
 design <- str_replace(output_file, ".*\\.._(.)amova", "\\1")
 
 distance_files <- tibble(
     distance_file = list.files(path = dataset,
-                               pattern = glue(".*{model}_.*.dist"),
+                               pattern = glue(".*\\.{model}_.*.dist"),
                                full.names = TRUE)) %>%
   mutate(seed = str_replace(distance_file, ".*\\.(\\d+)\\..*", "\\1"))
 

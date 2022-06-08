@@ -55,6 +55,7 @@ done
 !README.md
 
 data/
+scratch/
 
 mothur*logfile
 mothur/
