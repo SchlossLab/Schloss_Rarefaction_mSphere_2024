@@ -57,18 +57,23 @@ rule targets:
     #        dataset=datasets, model="e", design="e")
     #
     ## richness depletion analysis
-    expand("data/{dataset}/data.otu.{seed}.{model}shared",
-           dataset=datasets, seed=seeds, model="c"),
-    expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
-           dataset=datasets, seed=seeds, model="c", process=alpha_process),
-    # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
-    #        dataset=datasets, seed=seeds, model="s", process=beta_process,
-    #        calculator=beta_calculator),
-    # expand("data/{dataset}/data.{model}_{design}amova",
-    #        dataset=datasets, model="s", design="s"),
-    expand("data/{dataset}/data.{model}_{design}alpha_kw",
-           dataset=datasets, model="c", design="c")
-
+    # expand("data/{dataset}/data.otu.{seed}.{model}shared",
+    #        dataset=datasets, seed=seeds, model="c"),
+    # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
+    #        dataset=datasets, seed=seeds, model="c", process=alpha_process),
+    ## expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
+    ##        dataset=datasets, seed=seeds, model="s", process=beta_process,
+    ##        calculator=beta_calculator),
+    ## expand("data/{dataset}/data.{model}_{design}amova",
+    ##        dataset=datasets, model="s", design="s"),
+    # expand("data/{dataset}/data.{model}_{design}alpha_kw",
+    #        dataset=datasets, model="c", design="c")
+    #
+    ## correlation between metric and sample size
+    # expand("data/{dataset}/random_alpha_correlation.tsv",
+    #        dataset = datasets)
+    expand("data/{dataset}/random_beta_correlation.tsv",
+           dataset = datasets)
            
 
 
@@ -343,7 +348,7 @@ rule samplesize_design:
 ################################################################################
 
 # alpha: calculate p-value based on size of sample
-rule run_alpha_kw:
+rule alpha_kw:
   input:
     script = "code/run_alpha_kw.R",
     alpha_files = expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
@@ -359,7 +364,7 @@ rule run_alpha_kw:
     """
 
 # beta: calculate p-value based on size of sample
-rule run_beta_amova:
+rule beta_amova:
   input:
     script="code/run_beta_analysis.R",
     dist_files = expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
@@ -374,4 +379,33 @@ rule run_beta_amova:
   shell:
     """
     {input.script} data/{wildcards.dataset} {output.amova}
+    """
+
+
+
+# alpha: calculate correlations with metric based on size of sample
+rule alpha_cor:
+  input:
+    script = "code/alpha_correlation.R",
+    alpha_files = expand("data/{dataset}/data.otu.{seed}.r_{process}_alpha",
+                         seed=seeds, process=alpha_process, allow_missing=True)
+  output:
+    output = "data/{dataset}/random_alpha_correlation.tsv"
+  shell:
+    """
+    {input.script} {wildcards.dataset}
+    """
+    
+# beta: calculate correlations with distance based on size of sample
+rule beta_cor:
+  input:
+    script = "code/beta_correlation.R",
+    dist_files = expand("data/{dataset}/data.otu.{seed}.r_{process}_{calculator}.dist",
+                        seed=seeds, process=beta_process,
+                        calculator=beta_calculator, allow_missing=True),
+  output:
+    output = "data/{dataset}/random_beta_correlation.tsv"
+  shell:
+    """
+    {input.script} {wildcards.dataset}
     """
