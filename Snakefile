@@ -24,34 +24,50 @@ designs = ["r", "s"]
 
 rule targets:
   input:
+    ## generate original data files
     # expand("data/{dataset}/data.otu.shared", dataset=datasets),
     # expand("data/{dataset}/data.group_count", dataset=datasets),
     # expand("data/{dataset}/data.remove_accnos", dataset=datasets),
+    ## generate null model data files and analyze
     # expand("data/{dataset}/data.otu.{seed}.rshared",
     #        dataset=datasets, seed=seeds),
-    expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
-           dataset=datasets, seed=seeds, model=models, process=alpha_process),
+    # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
+    #        dataset=datasets, seed=seeds, model=models, process=alpha_process),
     # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
     #        dataset=datasets, seed=seeds, model=models, process=beta_process,
     #        calculator=beta_calculator),
     # expand("data/{dataset}/data.{seed}.{design}design",
     #        dataset=datasets, seed=seeds, design=designs),
-    expand("data/{dataset}/data.{model}_{design}amova",
-           dataset=datasets, model=models, design=designs),
-    expand("data/{dataset}/data.{model}_{design}alpha_kw",
-           dataset=datasets, model=models, design=designs),
+    # expand("data/{dataset}/data.{model}_{design}amova",
+    #        dataset=datasets, model=models, design=designs),
+    # expand("data/{dataset}/data.{model}_{design}alpha_kw",
+    #        dataset=datasets, model=models, design=designs),
     #
+    ## effect size analysis
+    # expand("data/{dataset}/data.otu.{seed}.{model}shared",
+    #        dataset=datasets, seed=seeds, model="e"),
+    # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
+    #        dataset=datasets, seed=seeds, model="e", process=alpha_process),
+    # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
+    #        dataset=datasets, seed=seeds, model="e", process=beta_process,
+    #        calculator=beta_calculator),
+    # expand("data/{dataset}/data.{model}_{design}amova",
+    #        dataset=datasets, model="e", design="e"),
+    # expand("data/{dataset}/data.{model}_{design}alpha_kw",
+    #        dataset=datasets, model="e", design="e")
+    #
+    ## richness depletion analysis
     expand("data/{dataset}/data.otu.{seed}.{model}shared",
-           dataset=datasets, seed=seeds, model="e"),
+           dataset=datasets, seed=seeds, model="c"),
     expand("data/{dataset}/data.otu.{seed}.{model}_{process}_alpha",
-           dataset=datasets, seed=seeds, model="e", process=alpha_process),
-    expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
-           dataset=datasets, seed=seeds, model="e", process=beta_process,
-           calculator=beta_calculator),
-    expand("data/{dataset}/data.{model}_{design}amova",
-           dataset=datasets, model="e", design="e"),
+           dataset=datasets, seed=seeds, model="c", process=alpha_process),
+    # expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
+    #        dataset=datasets, seed=seeds, model="s", process=beta_process,
+    #        calculator=beta_calculator),
+    # expand("data/{dataset}/data.{model}_{design}amova",
+    #        dataset=datasets, model="s", design="s"),
     expand("data/{dataset}/data.{model}_{design}alpha_kw",
-           dataset=datasets, model="e", design="e")
+           dataset=datasets, model="c", design="c")
 
            
 
@@ -185,6 +201,22 @@ rule effect_shared_design:
   output:
     "data/{dataset}/data.{seed}.edesign",
     "data/{dataset}/data.otu.{seed}.eshared",
+  shell:
+    """
+    {input.script} {input.shared} {input.accnos} {wildcards.seed}
+    """
+
+
+rule richness_shared_design:
+  input:
+    script="code/get_richness_shared_design.R",
+    shared="data/{dataset}/data.otu.shared",
+    accnos="data/{dataset}/data.remove_accnos"
+  resources:
+    mem_mb=10000
+  output:
+    "data/{dataset}/data.{seed}.cdesign",
+    "data/{dataset}/data.otu.{seed}.cshared",
   shell:
     """
     {input.script} {input.shared} {input.accnos} {wildcards.seed}
