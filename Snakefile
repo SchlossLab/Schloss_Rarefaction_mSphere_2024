@@ -521,3 +521,21 @@ rule beta_cor:
     """
     {input.script} {wildcards.dataset}
     """
+
+
+
+
+rule write_paper:
+  input:
+    rmd_file = "submission/manuscript.Rmd",
+    refs_file = "submission/references.bib",
+    cls_file = "submission/asm.cls"
+  output:
+    "submission/manuscript.pdf",
+    "submission/manuscript.md",
+    "submission/manuscript.tex"
+  shell: 
+    """
+      R -e "library('rmarkdown'); render('submission/manuscript.Rmd', output_format = 'all', clean=FALSE)"
+      mv submission/manuscript.knit.md submission/manuscript.md
+    """

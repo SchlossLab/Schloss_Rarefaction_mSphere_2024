@@ -1,0 +1,374 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\usepackage{helvet}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage{setspace}
+\doublespacing
+\usepackage[left]{lineno}
+\linenumbers
+\raggedright
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+
+\hypertarget{rarefy-your-data}{%
+\section{Rarefy your data}\label{rarefy-your-data}}
+
+\vspace{20mm}
+
+\textbf{Running title:} Rarefy your data
+
+\vspace{20mm}
+
+Patrick D. Schloss\({^\dagger}\)
+
+\vspace{40mm}
+
+\({\dagger}\) To whom corresponsdence should be addressed:
+
+\href{mailto:pschloss@umich.edu}{pschloss@umich.edu}
+
+Department of Microbiology \& Immunology
+
+University of Michigan
+
+Ann Arbor, MI 48109
+
+\vspace{20mm}
+
+\textbf{Research article}
+
+\newpage
+
+\hypertarget{abstract}{%
+\subsection{Abstract}\label{abstract}}
+
+\hypertarget{importance}{%
+\subsection{Importance}\label{importance}}
+
+\newpage
+
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
+
+\begin{itemize}
+\tightlist
+\item
+  What is rarefaction? History, reason for rarefaction
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Repeated down sampling of datasets to a common number of
+    observations to calculate the average value to ascertain the
+    expected value of a metric for the metric under study; typically
+    richness
+  \item
+    Control for unneven sampling effort
+  \item
+    Methods vary in their sensitivity to uneven sampling
+  \end{itemize}
+\item
+  Reasons behind ``rarefaction is inadmissable''
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Weird simulation
+  \end{itemize}
+\item
+  Alternative approaches and claims
+
+  \begin{itemize}
+  \tightlist
+  \item
+    sampling invariance
+  \end{itemize}
+\item
+  Goal of this study
+\end{itemize}
+
+\hypertarget{results}{%
+\subsection{Results}\label{results}}
+
+\hypertarget{datasets}{%
+\subsubsection{Datasets}\label{datasets}}
+
+\begin{itemize}
+\tightlist
+\item
+  Represented diverse communities
+\item
+  High quality V4 sequence data that consisted of paired 250 nt reads
+\item
+  Wide distribution in the number of reads within each dataset (Figure
+  S1, Table 1)
+\end{itemize}
+
+\hypertarget{null-models}{%
+\subsubsection{Null models}\label{null-models}}
+
+\begin{itemize}
+\item
+  Null models were samplings, without replacement, of all samples from a
+  study that have been pooled together and sampled to the same depth of
+  sampling
+\item
+  Created 100 random sets of samples per dataset
+\item
+  Would expect a zero correlation between alpha diversity metric and
+  number of sequences in the community
+\item
+  Rarefaction was the only approach that resulted in a near-zero
+  correlation (Figure 1)
+\item
+  Would expect a zero correlation between beta diversity metrics and the
+  difference in the number of sequences in the samples going into the
+  distance calculation
+\item
+  Rarefaction was the only approach that resulted in a near-zero
+  correlation (Figure 2)
+\end{itemize}
+
+\hypertarget{result-when-sampling-effort-is-confounded-with-treatment-group}{%
+\subsubsection{Result when sampling effort is confounded with treatment
+group}\label{result-when-sampling-effort-is-confounded-with-treatment-group}}
+
+\begin{itemize}
+\item
+  Used Null model
+\item
+  Created two treatment groups for each study by dividing samples based
+  on whether they were above or below the median number of sequences per
+  sample
+\item
+  Used Wilcoxon test to detect differences between treatment groups for
+  alpha diversity, would expect \textasciitilde5\% of random sets to be
+  significant
+\item
+  Rarefaction the only approach that reliably resulted in the expected
+  Type I error rate
+\item
+  Used AMOVA test to detect differences between treatment groups for
+  beta diversity, would expect \textasciitilde5\% of random sets to be
+  significant
+\item
+  Rarefaction the only approach that reliably resulted in the expected
+  Type I error rate
+\end{itemize}
+
+\hypertarget{result-when-known-effect-size-imposed-between-two-groups-of-samples}{%
+\subsubsection{Result when known effect size imposed between two groups
+of
+samples}\label{result-when-known-effect-size-imposed-between-two-groups-of-samples}}
+
+\begin{itemize}
+\item
+  For each dataset I divided samples into two groups. The probability
+  distribution for the first group was determined by the null model and
+  the second was determined by xxxxxxxxxxx
+\item
+  These parameters were selected because they produced results were some
+  of the simulations for the rarefied data did not result in a
+  significant test
+\item
+  Fraction of tests that were significant would be a measure of
+  statistical power
+\item
+  Used Wilcoxon test to detect differences between treatment groups for
+  alpha diversity
+\item
+  All tests resulted in reduced power to detect differences relative to
+  the power of using rarefaction
+\item
+  Used AMOVA test to detect differences between treatment groups for
+  beta diversity
+\item
+  All tests resulted in reduced power to detect differences relative to
+  the power of using rarefaction
+\item
+  This simulation would work well for measures based on the structure of
+  the community, but lacked resolution for those based on the richness
+  or membership of commmunities. For an additional simulation, the first
+  treatment group followed a null distribution for the second, XX\% of
+  OTUs were removed from the distribution
+\item
+  Tests for richness and membership (i.e.~Jaccard) resutled in reduced
+  power relative to rarefaction
+\end{itemize}
+
+\hypertarget{effect-of-sampling-depth-on-metrics}{%
+\subsubsection{Effect of sampling depth on
+metrics}\label{effect-of-sampling-depth-on-metrics}}
+
+\begin{itemize}
+\tightlist
+\item
+  Simulated rarefying null model datasets to retain varying percentage
+  of samples
+\item
+  High sampling depth resulted in less variation between samples for
+  alpha and beta diversity
+\end{itemize}
+
+\hypertarget{re-analysis-of-previously-published-datasets}{%
+\subsubsection{Re-analysis of previously published
+datasets}\label{re-analysis-of-previously-published-datasets}}
+
+\begin{itemize}
+\tightlist
+\item
+  Human study: Did not alter effect size or significance of alpha or
+  beta diversity, but did result in reduced effect sizes for measures of
+  richness and non-parametric estimators of richness; breakaway detected
+  a difference
+\end{itemize}
+
+\hypertarget{discussion}{%
+\subsection{Discussion}\label{discussion}}
+
+\begin{itemize}
+\tightlist
+\item
+  Rarefy your data
+\item
+  Problems with recommended methods\ldots{}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Many recommended methods are borrowed from gene expression analysis
+  \item
+    Meaning of zeroes in data - structural vs.~below limit of detection
+  \end{itemize}
+\item
+  Factors that determine what number of sequences to rarefy to
+\item
+  Need better methods of pooling libraries that result in more even
+  distribution of sequences across samples
+\item
+  Rarefy your data
+\end{itemize}
+
+\hypertarget{materials-and-methods}{%
+\subsection{Materials and Methods}\label{materials-and-methods}}
+
+\textbf{Data availability.}
+
+\textbf{Reproducible data analysis.}
+
+\vspace{10mm}
+
+\textbf{Acknowledgements.}
+
+\newpage
+
+\hypertarget{references}{%
+\subsection{References}\label{references}}
+
+\setlength{\parindent}{-0.25in}
+\setlength{\leftskip}{0.25in}
+
+\noindent
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{0}{0}
+\end{CSLReferences}
+
+\setlength{\parindent}{0in}
+\setlength{\leftskip}{0in}
+
+\newpage
+
+\textbf{Figure 1.}
+
+\newpage
+
+\textbf{Figure S1.}
+
+\end{document}
