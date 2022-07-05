@@ -75,15 +75,27 @@ rule targets:
     # expand("data/{dataset}/random_beta_correlation.tsv",
     #        dataset = datasets)
     #
+    ## sensitivity between sampling effort and alpha and beta diversity metrics
+    expand("data/{dataset}/data.otu.{seed}.r_rare_alpha.summary",
+           dataset = datasets, seed = seeds),
+    # expand("data/{dataset}/data.otu.alpha_depth.summary",
+    #        dataset = datasets),  
+    expand("data/{dataset}/data.otu.{seed}.r_rare_{calculator}.summary",
+           dataset = datasets, seed = seeds, calculator = ["bray", "jaccard"]),
+    # expand("data/{dataset}/data.otu.beta_depth.summary",
+    #        dataset = datasets),
+    # expand("data/{dataset}/data.otu.obs_coverage",
+    #        dataset = datasets)
+    
     ## observed human dataset analysis
     # "data/human/data.otu.oshared",
     # "data/human/data.odesign",
-    expand("data/human/data.otu.o_{process}_alpha",
-           process = alpha_process),
-    expand("data/human/data.otu.o_{process}_{calculator}.dist",
-           process = beta_process, calculator= beta_calculator),
-    "data/human/data.o_oalpha_kw",
-    "data/human/data.o_oamova"
+    # expand("data/human/data.otu.o_{process}_alpha",
+    #        process = alpha_process),
+    # expand("data/human/data.otu.o_{process}_{calculator}.dist",
+    #        process = beta_process, calculator= beta_calculator),
+    # "data/human/data.o_oalpha_kw",
+    # "data/human/data.o_oamova"
     
 rule silva:
   input:
@@ -522,7 +534,81 @@ rule beta_cor:
     {input.script} {wildcards.dataset}
     """
 
+################################################################################
+#
+# Test sensitivity between sampling effort and rarefied alpha and beta diversity 
+# metrics
+#
+################################################################################
 
+rule rare_alpha_depth:
+  input:
+    script = "code/rarefy_alpha_analysis.R",
+    shared = "data/{dataset}/data.otu.{seed}.rshared"
+  output:
+    summary = "data/{dataset}/data.otu.{seed, \d+}.r_rare_alpha.summary"
+  resources:  
+    mem_mb=8000,
+    time_min=7200
+  shell:
+    """
+    {input.script} {input.shared} {output.summary}
+    """
+
+rule pool_alpha_depth:
+  input:
+    script = "code/pool_alpha_summary.R",
+    summaries = expand("data/{dataset}/data.otu.{seed}.r_rare_alpha.summary",
+                  seed=seeds, allow_missing=True),
+  output:
+    pool = "data/{dataset}/data.otu.alpha_depth.summary"
+  shell:
+    """
+    {input.script} {input.summaries}
+    """
+
+rule rare_beta_depth:
+  input:
+    script = "code/rarefy_beta_analysis.R",
+    shared = "data/{dataset}/data.otu.{seed}.rshared",
+    nseqs = "data/{dataset}/data.group_count"
+  output:
+    summary = "data/{dataset}/data.otu.{seed, \d+}.r_rare_{calculator}.summary"
+  wildcard_constraints:
+    calculator="jaccard|bray"
+  resources:  
+    mem_mb=16000,
+    time_min=7200,
+    cpus=8
+  shell:
+    """
+    {input.script} {input.shared} {input.nseqs} {output.summary}
+    """
+
+rule pool_beta_depth:
+  input:
+    script = "code/pool_beta_summary.R",
+    summaries = expand("data/{dataset}/data.otu.{seed}.r_rare_{calculator}.summary",
+                  seed=seeds, calculator=["bray","jaccard"], allow_missing=True),
+  output:
+    pool = "data/{dataset}/data.otu.beta_depth.summary"
+  shell:
+    """
+    {input.script} {input.summaries}
+    """
+
+
+
+rule observed_coverage:
+  input:
+    shared = "data/{dataset}/data.otu.shared",
+    script = "code/get_observed_coverage.R"
+  output:
+    summary = "data/{dataset}/data.otu.obs_coverage"
+  shell:
+    """
+    {input.script} {input.shared}
+    """
 
 
 rule write_paper:
