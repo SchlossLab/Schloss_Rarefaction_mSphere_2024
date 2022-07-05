@@ -24,7 +24,10 @@ run_amova <- function(distance_file, treatment) {
     nrow()
 
   result <- tibble(p.value = NA_real_,
-                   r_squared = NA_real_)
+                   r_squared = NA_real_,
+                   n_FALSE = NA_real_,
+                   n_TRUE = NA_real_
+                   )
 
   if (w_na == wo_na) {
     distance_matrix <- distance_design %>%
@@ -34,26 +37,28 @@ run_amova <- function(distance_file, treatment) {
 
     test <- vegan::adonis2(distance_matrix~distance_design$treatment)
 
+    tf_count <- distance_design %>% count(treatment) %>%
+      pivot_wider(names_from = treatment, values_from = "n")
+
     result <- tibble(p.value = test$`Pr(>F)`[1],
-                     r_squared = test$R2[1])
+                     r_squared = test$R2[1],
+                     n_FALSE = tf_count$`FALSE`,
+                     n_TRUE = tf_count$`TRUE`)
   }
 
   return(result)
 
 }
 
-dataset <- "data/human"
-output_file <- "data/human/data.o_oamova"
-
-model <- str_replace(output_file, ".*\\.(.)_.amova", "\\1")
-design <- str_replace(output_file, ".*\\.._(.)amova", "\\1")
 
 design_file <- read_tsv("data/human/data.odesign")
 treatments <- colnames(design_file)[-1]
 
+output_file <- "data/human/data.otu.obs_depth_beta_amova.summary"
+
 distance_design <- expand_grid(
-    distance_file = list.files(path = dataset,
-                               pattern = glue(".*\\.{model}_.*.dist"),
+    distance_file = list.files(path = "data/human",
+                               pattern = "data.otu.obs_\\d*_\\w*.dist",
                                full.names = TRUE),
     treatment = treatments
     )
@@ -65,8 +70,8 @@ distance_design %>%
   unnest(result) %>%
   ungroup() %>%
   separate(distance_file,
-           into = c("model", "beta_process", "beta_calculator"),
+           into = c("dummy", "nseqs", "beta_calculator"),
            sep = "_") %>%
   mutate(beta_calculator = str_replace(beta_calculator, ".dist", "")) %>%
-  select(-model) %>%
+  select(-dummy) %>%
   write_tsv(output_file)

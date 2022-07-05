@@ -11,6 +11,8 @@ datasets = ["bioethanol", "human", "lake", "marine","mice", "peromyscus",
 
 seeds = list(range(1, 101))
 
+indexes = list(range(1, 101))
+
 models = ["r"]
 
 alpha_process = ["raw", "rarefy", "srs", "breakaway"]
@@ -28,6 +30,8 @@ rule targets:
     # expand("data/{dataset}/data.otu.shared", dataset=datasets),
     # expand("data/{dataset}/data.group_count", dataset=datasets),
     # expand("data/{dataset}/data.remove_accnos", dataset=datasets),
+    #
+    #
     ## generate null model data files and analyze
     # expand("data/{dataset}/data.otu.{seed}.rshared",
     #        dataset=datasets, seed=seeds),
@@ -75,15 +79,38 @@ rule targets:
     # expand("data/{dataset}/random_beta_correlation.tsv",
     #        dataset = datasets)
     #
+    ## sensitivity between sampling effort and alpha and beta diversity metrics
+    # expand("data/{dataset}/data.otu.{seed}.r_rare_alpha.summary",
+    #        dataset = datasets, seed = seeds),
+    # expand("data/{dataset}/data.otu.alpha_depth.summary",
+    #        dataset = datasets),  
+    # expand("data/{dataset}/data.otu.{index}.{seed}.r_rare_{calculator}.summary",
+    #        dataset = datasets, index = indexes, seed = seeds, calculator = ["bray", "jaccard"]),
+    expand("data/{dataset}/data.otu.beta_depth.summary",
+           dataset = datasets),
+    # expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
+    # expand("data/{dataset}/data.otu.rarefy_coverage", dataset = datasets),
+    #
     ## observed human dataset analysis
     # "data/human/data.otu.oshared",
     # "data/human/data.odesign",
-    expand("data/human/data.otu.o_{process}_alpha",
-           process = alpha_process),
-    expand("data/human/data.otu.o_{process}_{calculator}.dist",
-           process = beta_process, calculator= beta_calculator),
-    "data/human/data.o_oalpha_kw",
-    "data/human/data.o_oamova"
+    # expand("data/human/data.otu.o_{process}_alpha",
+    #        process = alpha_process),
+    # expand("data/human/data.otu.o_{process}_{calculator}.dist",
+    #        process = beta_process, calculator= beta_calculator),
+    # "data/human/data.o_oalpha_kw",
+    # "data/human/data.o_oamova"
+    #
+    ## figures
+    # "figures/alpha_beta_depth_correlation.tiff",
+    # "figures/false_positive_null_model.tiff",
+    # "figures/false_positive_null_model_size.tiff",
+    # "figures/power_effect_model.tiff",
+    # "figures/power_cffect_model.tiff",
+    # "figures/intrasample_variation.tiff",
+    # "figures/coverage_plot.tiff",
+    # "figures/example_alpha_cor.tiff",
+   ### "figures/example_beta_cor.tiff"
     
 rule silva:
   input:
@@ -522,8 +549,241 @@ rule beta_cor:
     {input.script} {wildcards.dataset}
     """
 
+################################################################################
+#
+# Test sensitivity between sampling effort and rarefied alpha and beta diversity 
+# metrics
+#
+################################################################################
+
+rule rare_alpha_depth:
+  input:
+    script = "code/rarefy_alpha_analysis.R",
+    shared = "data/{dataset}/data.otu.{seed}.rshared"
+  output:
+    summary = "data/{dataset}/data.otu.{seed, \d+}.r_rare_alpha.summary"
+  resources:  
+    mem_mb=8000,
+    time_min=7200
+  shell:
+    """
+    {input.script} {input.shared} {output.summary}
+    """
+
+rule pool_alpha_depth:
+  input:
+    script = "code/pool_alpha_summary.R",
+    summaries = expand("data/{dataset}/data.otu.{seed}.r_rare_alpha.summary",
+                  seed=seeds, allow_missing=True),
+  output:
+    pool = "data/{dataset}/data.otu.alpha_depth.summary"
+  shell:
+    """
+    {input.script} {input.summaries}
+    """
+
+rule rare_beta_depth:
+  input:
+    script = "code/rarefy_beta_analysis.R",
+    shared = "data/{dataset}/data.otu.{seed}.rshared",
+    rm_file = "data/{dataset}/data.remove_accnos",
+    nseqs = "data/{dataset}/data.group_count"
+  output:
+    summary = "data/{dataset}/data.otu.{index, \d+}.{seed, \d+}.r_rare_{calculator}.summary"
+  wildcard_constraints:
+    calculator="jaccard|bray"
+  resources:  
+    mem_mb=8000,
+    time_min=6000,
+    cpus=1
+  shell:
+    """
+    {input.script} {input.shared} {input.nseqs} {input.rm_file} {output.summary}
+    """
+
+rule pool_beta_depth:
+  input:
+    script = "code/pool_beta_summary.R",
+    summaries = expand("data/{dataset}/data.otu.{index}.{seed}.r_rare_{calculator}.summary",
+                  index=indexes, seed=seeds, calculator=["bray","jaccard"], allow_missing=True),
+  output:
+    pool = "data/{dataset}/data.otu.beta_depth.summary"
+  shell:
+    """
+    {input.script} {input.summaries}
+    """
 
 
+
+rule observed_coverage:
+  input:
+    shared = "data/{dataset}/data.otu.shared",
+    removal = "data/{dataset}/data.remove_accnos",
+    script = "code/get_observed_coverage.R"
+  output:
+    summary = "data/{dataset}/data.otu.obs_coverage"
+  shell:
+    """
+    {input.script} {input.shared} {input.removal}
+    """
+
+rule rarefy_coverage:
+  input:
+    script = "code/rarefy_coverage.R",
+    shared = "data/{dataset}/data.otu.shared",
+    remove_file = "data/{dataset}/data.remove_accnos"
+  resources:  
+    mem_mb=16000
+  output:
+    "data/{dataset}/data.otu.rarefy_coverage"
+  shell:
+    """
+    {input.script} {input.shared} {input.remove_file}
+    """
+
+
+################################################################################
+#
+# Generate figures
+#
+################################################################################
+
+rule plot_alpha_beta_depth_correlation:
+  input:
+    summary = expand("data/{dataset}/random_{alpha_beta}_correlation.tsv",
+                     dataset = datasets, alpha_beta = ["alpha", "beta"]),
+    script = "code/plot_alpha_beta_depth_correlation.R"
+  output:
+    "figures/alpha_beta_depth_correlation.tiff"
+  shell:
+    """
+    {input.script}
+    """
+
+rule plot_false_positive_null_model:
+  input:
+    alpha = expand("data/{dataset}/data.r_ralpha_kw",
+                   dataset = datasets),
+    beta = expand("data/{dataset}/data.r_ramova",
+                  dataset = datasets),
+    script = "code/plot_false_positive_null_model.R"
+  output:
+    "figures/false_positive_null_model.tiff"
+  shell:
+    """
+    {input.script}
+    """
+
+rule plot_false_positive_null_model_size:
+  input:
+    alpha = expand("data/{dataset}/data.r_salpha_kw",
+                   dataset = datasets),
+    beta = expand("data/{dataset}/data.s_ramova",
+                  dataset = datasets),
+    script = "code/plot_false_positive_null_model_size.R"
+  output:
+    "figures/false_positive_null_model_size.tiff"
+  shell:
+    """
+    {input.script}
+    """
+
+rule plot_power_effect_model:
+  input:
+    alpha = expand("data/{dataset}/data.e_ealpha_kw",
+                   dataset = datasets),
+    beta = expand("data/{dataset}/data.e_eamova",
+                  dataset = datasets),
+    script = "code/plot_power_effect_model.R"
+  output:
+    "figures/power_effect_model.tiff"
+  shell:
+    """
+    {input.script}
+    """
+
+rule plot_power_cffect_model:
+  input:
+    alpha = expand("data/{dataset}/data.e_ealpha_kw",
+                   dataset = datasets),
+    script = "code/plot_power_cffect_model.R"
+  output:
+    "figures/power_cffect_model.tiff"
+  shell:
+    """
+    {input.script}
+    """
+
+rule plot_intrasample_variation:
+  input:
+    removal = expand("data/{dataset}/data.remove_accnos", dataset=datasets),
+    nseqs = expand("data/{dataset}/data.group_count", dataset=datasets),
+    alpha = expand("data/{dataset}/data.otu.alpha_depth.summary", dataset=datasets),
+    beta = expand("data/{dataset}/data.otu.beta_depth.summary", dataset=datasets),
+    script = "code/plot_intrasample_variation.R"
+  output:
+    "figures/intrasample_variation.tiff"
+  shell:
+    """
+    {input.script}
+    """
+
+rule plot_coverage:
+  input:
+    script = "code/plot_coverage.R",
+    obs_files = expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
+    rarefy_files = expand("data/{dataset}/data.otu.rarefy_coverage", dataset = datasets),
+  output:
+    "figures/coverage_plot.tiff"
+  shell:
+    """
+    {input.script}
+    """
+    
+rule plot_example_alpha_cor:
+  input:
+    script = "code/plot_example_alpha_cor.R",
+    raw = "data/human/data.otu.1.r_raw_alpha",
+    rare = "data/human/data.otu.1.r_rarefy_alpha",
+    srs = "data/human/data.otu.1.r_srs_alpha",
+    ba = "data/human/data.otu.1.r_breakaway_alpha"
+  output:
+    "figures/example_alpha_cor.tiff"
+  shell:
+    """
+    {input.script}
+    """
+
+# rule plot_example_beta_cor:
+#   input:
+#     script = "code/plot_example_beta_cor.R",
+#     dist_files = [ "data/human/data.otu.1.r_deseq2_euclidean.dist",
+#                   "data/human/data.otu.1.r_nclr_euclidean.dist",
+#                   "data/human/data.otu.1.r_oclr_euclidean.dist",
+#                   "data/human/data.otu.1.r_rclr_euclidean.dist",
+#                   "data/human/data.otu.1.r_zclr_euclidean.dist",
+#                   "data/human/data.otu.1.r_rare_bray.dist",
+#                   "data/human/data.otu.1.r_rare_jaccard.dist",
+#                   "data/human/data.otu.1.r_raw_bray.dist",
+#                   "data/human/data.otu.1.r_raw_jaccard.dist",
+#                   "data/human/data.otu.1.r_relabund_bray.dist",
+#                   "data/human/data.otu.1.r_relabund_jaccard.dist",
+#                   "data/human/data.otu.1.r_metagenomeseq_bray.dist",
+#                   "data/human/data.otu.1.r_metagenomeseq_jaccard.dist",
+#                   "data/human/data.otu.1.r_srs_bray.dist",
+#                   "data/human/data.otu.1.r_srs_jaccard.dist" ]
+#   output:
+#     "figures/example_beta_cor.tiff"
+#   shell:
+#     """
+#     {input.script}
+#     """
+
+################################################################################
+#
+# Submission related rules
+#
+################################################################################
 
 rule write_paper:
   input:
@@ -536,6 +796,7 @@ rule write_paper:
     "submission/manuscript.tex"
   shell: 
     """
-      R -e "library('rmarkdown'); render('submission/manuscript.Rmd', output_format = 'all', clean=FALSE)"
+      R -e "library('rmarkdown'); render('submission/manuscript.Rmd',
+                                         output_format = 'all', clean=FALSE)"
       mv submission/manuscript.knit.md submission/manuscript.md
     """

@@ -4,11 +4,15 @@ library(tidyverse)
 library(glue)
 library(broom)
 
-get_rarefy_results <- function(rfile, dfile) {
+get_rarefy_results <- function(rfile, design) {
 
-  inner_join(read_tsv(rfile, show_col_types = FALSE),
-             read_tsv(dfile, show_col_types = FALSE),
-             by = c("group" = "Group")) %>%
+  alpha_data <- read_tsv(rfile, col_types = cols(group = col_character(),
+                                                 method = col_character(),
+                                                 .default = col_double()))
+
+  inner_join(alpha_data,
+             design,
+             by = "group") %>%
     filter(method == "ave") %>%
     select(Group = group, treatment, nseqs, sobs, shannon,
           simpson, chao, ace, npshannon, coverage) %>%
@@ -27,11 +31,16 @@ get_rarefy_results <- function(rfile, dfile) {
 
 }
 
-get_breakaway_results <- function(bafile, dfile) {
+get_breakaway_results <- function(bafile, design) {
 
-  inner_join(read_tsv(bafile, show_col_types = FALSE),
-             read_tsv(dfile, show_col_types = FALSE),
-             by = c("Group" = "Group")) %>%
+  alpha_data <- read_tsv(bafile, col_types = cols(Group = col_character(),
+                                                 ba_model = col_character(),
+                                                 p_model = col_character(),
+                                                 .default = col_double()))
+
+  inner_join(alpha_data,
+             design,
+             by = c("Group" = "group")) %>%
     select(Group, treatment, ba_est, ba_model, p_est, p_model) %>%
     pivot_longer(cols = -c(Group, treatment), names_to = c("set", ".value"),
                  names_pattern = "(.*)_(.*)") %>%
@@ -50,14 +59,17 @@ get_breakaway_results <- function(bafile, dfile) {
 
 }
 
-get_raw_results <- function(rawfile, dfile) {
+get_raw_results <- function(rawfile, design) {
 
-  inner_join(read_tsv(rawfile, show_col_types = FALSE),
-             read_tsv(dfile, show_col_types = FALSE),
-             by = c("group" = "Group")) %>%
-    select(Group = group, treatment, nseqs, sobs, shannon,
+  alpha_data <- read_tsv(rawfile, col_types = cols(group = col_character(),
+                                                 .default = col_double()))
+
+  inner_join(alpha_data,
+             design,
+             by = "group") %>%
+    select(group, treatment, nseqs, sobs, shannon,
           simpson, chao, ace, npshannon, coverage) %>%
-    pivot_longer(cols = -c(Group, treatment), names_to = "metric") %>%
+    pivot_longer(cols = -c(group, treatment), names_to = "metric") %>%
     nest(data = -metric) %>%
     mutate(kw = map(data, ~tidy(kruskal.test(.x$value, g = .x$treatment)))) %>%
     unnest(kw) %>%
@@ -72,11 +84,14 @@ get_raw_results <- function(rawfile, dfile) {
 
 }
 
-get_srs_results <- function(srsfile, dfile) {
+get_srs_results <- function(srsfile, design) {
 
-  inner_join(read_tsv(srsfile, show_col_types = FALSE),
-             read_tsv(dfile, show_col_types = FALSE),
-             by = c("group" = "Group")) %>%
+  alpha_data <- read_tsv(srsfile, col_types = cols(group = col_character(),
+                                                 .default = col_double()))
+
+  inner_join(alpha_data,
+             design,
+             by = "group") %>%
     select(Group = group, treatment, nseqs, sobs, shannon,
           simpson, chao, ace, npshannon, coverage) %>%
     pivot_longer(cols = -c(Group, treatment), names_to = "metric") %>%
@@ -94,26 +109,36 @@ get_srs_results <- function(srsfile, dfile) {
 
 }
 
-run_kw_tests <- function(method) {
+run_kw_tests <- function(method, treatment) {
 
   f <- glue("get_{method}_results")
 
   alpha_file <- glue("data/human/data.otu.o_{method}_alpha")
   design_file <- "data/human/data.odesign"
 
-  do.call(f, list(alpha_file, design_file))
+  design <- read_tsv(design_file,
+                     col_types = cols(.default = col_character())) %>%
+    select(group = Group, treatment = treatment)
+
+  do.call(f, list(alpha_file, design)) %>%
+    mutate("treatment" = treatment)
 
 }
 
 #########
 
 design_file <- "data/human/data.odesign"
-
 output_file <- "data/human/data.o_oalpha_kw"
 
+
+metadata <- c("srn", "obese", "female", "smoker", "nsaid", "prev_crc",
+              "prev_polyps")
 methods <- c("rarefy", "breakaway", "raw", "srs")
 
-map_dfr(methods, ~run_kw_tests(.x)) %>%
+
+combinations <- expand_grid(metadata, methods)
+
+map2_dfr(combinations$methods, combinations$metadata, ~run_kw_tests(.x, .y)) %>%
   mutate(model = "observed") %>%
   write_tsv(output_file)
 
