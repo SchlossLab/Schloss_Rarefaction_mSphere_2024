@@ -98,6 +98,11 @@ rule targets:
     #        process = beta_process, calculator= beta_calculator),
     # "data/human/data.o_oalpha_kw",
     # "data/human/data.o_oamova"
+    #
+    ## figures
+    "figures/alpha_beta_depth_correlation.pdf",
+    "figures/alpha_beta_depth_correlation.pdf"
+    
     
 rule silva:
   input:
@@ -619,7 +624,7 @@ rule observed_coverage:
 #
 ################################################################################
 
-rule alpha_beta_depth_correlation:
+rule plot_alpha_beta_depth_correlation:
   input:
     summary = expand("data/{dataset}/random_{alpha_beta}_correlation.tsv",
                      dataset = datasets, alpha_beta = ["alpha", "beta"]),
@@ -631,6 +636,18 @@ rule alpha_beta_depth_correlation:
     {input.script}
     """
 
+rule plot_false_positive_null_model:
+    alpha = expand("data/{dataset}/data/{datasets}/data.r_ralpha_kw",
+                   dataset = datasets),
+    beta = expand("data/{datasets}/data.r_ramova",
+                  dataset = datasets),
+    script = "code/plot_false_positive_null_model.R"
+  output:
+    "figures/false_positive_null_model.pdf"
+  shell:
+    """
+    {input.script}
+    """
 
 ################################################################################
 #

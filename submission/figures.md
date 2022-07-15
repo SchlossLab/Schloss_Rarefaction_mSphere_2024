@@ -4,14 +4,11 @@ Figure S1, Table 1 - description of datasets ~ borrow from singletons paper
 Figure 1A: Correlation between richness, shannon, and inverse simpson and sampling depth by correction approach
 Figure 1B: Correlation between Bray-Curtis, Jaccard, and Euclidean distances and difference in sampling depth by correction approach
 
+#done - 
+Figure S2A: False positive rate for detecting differences in richness and diversity when samples randomized between treatment groups
+Figure S2B: False positive rate for detecting differences in Bray-Curtis, Jaccard, and Euclidean distances when samples randomized between treatment groups
 
-Figure 3A: False positive rate for detecting differences in richness when samples randomized between treatment groups
-Figure 3B: False positive rate for detecting differences in diversity when samples randomized between treatment groups
 
-Figure 4A: False positive rate for detecting differences in Jaccard when samples randomized between treatment groups
-Figure 4B: False positive rate for detecting differences in Bray-Curtis when samples randomized between treatment groups
-Figure 4C: False positive rate for detecting differences in Aitchison when samples randomized between treatment groups
-Figure 4D: False positive rate for detecting differences in Euclidean when samples randomized between treatment groups
 
 Figure 5A: False positive rate for detecting differences in richness when samples assigned to treatment groups based on size
 Figure 5B: False positive rate for detecting differences in diversity when samples assigned to treatment groups based on size
