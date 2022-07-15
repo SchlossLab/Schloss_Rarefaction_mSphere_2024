@@ -1,12 +1,9 @@
 Figure S1, Table 1 - description of datasets ~ borrow from singletons paper
 
-Figure 1A: Correlation between richness and sampling depth by correction approach
-Figure 1B: Correlation between shannon and sampling depth by correction approach 
+#done - figures/alpha_beta_depth_correlation.pdf
+Figure 1A: Correlation between richness, shannon, and inverse simpson and sampling depth by correction approach
+Figure 1B: Correlation between Bray-Curtis, Jaccard, and Euclidean distances and difference in sampling depth by correction approach
 
-Figure 2A: Correlation between Jaccard distances and difference in sampling depth by correction approach
-Figure 2B: Correlation between Bray-Curtis distances and difference in sampling depth by correction approach
-Figure 2C: Correlation between Aitchison distances and difference in sampling depth by correction approach
-Figure 2C: Correlation between Euclidean distances and difference in sampling depth by correction approach
 
 Figure 3A: False positive rate for detecting differences in richness when samples randomized between treatment groups
 Figure 3B: False positive rate for detecting differences in diversity when samples randomized between treatment groups

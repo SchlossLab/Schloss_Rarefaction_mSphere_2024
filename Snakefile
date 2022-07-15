@@ -28,6 +28,8 @@ rule targets:
     # expand("data/{dataset}/data.otu.shared", dataset=datasets),
     # expand("data/{dataset}/data.group_count", dataset=datasets),
     # expand("data/{dataset}/data.remove_accnos", dataset=datasets),
+    #
+    #
     ## generate null model data files and analyze
     # expand("data/{dataset}/data.otu.{seed}.rshared",
     #        dataset=datasets, seed=seeds),
@@ -610,6 +612,31 @@ rule observed_coverage:
     {input.script} {input.shared}
     """
 
+
+################################################################################
+#
+# Generate figures
+#
+################################################################################
+
+rule alpha_beta_depth_correlation:
+  input:
+    summary = expand("data/{dataset}/random_{alpha_beta}_correlation.tsv",
+                     dataset = datasets, alpha_beta = ["alpha", "beta"]),
+    script = "code/plot_alpha_beta_depth_correlation.R"
+  output:
+    "figures/alpha_beta_depth_correlation.pdf"
+  shell:
+    """
+    {input.script}
+    """
+
+
+################################################################################
+#
+# Submission related rules
+#
+################################################################################
 
 rule write_paper:
   input:
