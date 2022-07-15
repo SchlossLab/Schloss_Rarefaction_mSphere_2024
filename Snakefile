@@ -103,8 +103,8 @@ rule targets:
     "figures/alpha_beta_depth_correlation.pdf",
     "figures/false_positive_null_model.pdf",
     "figures/false_positive_null_model_size.pdf",
-    "figures/plot_power_effect_model.pdf"
-
+    "figures/plot_power_effect_model.pdf",
+    "figures/plot_power_cffect_model.pdf"
     
 rule silva:
   input:
@@ -677,6 +677,16 @@ rule plot_power_effect_model:
     {input.script}
     """
 
+rule plot_power_cffect_model:
+    alpha = expand("data/{dataset}/data/{datasets}/data.e_ealpha_kw",
+                   dataset = datasets),
+    script = "code/plot_power_cffect_model.R"
+  output:
+    "figures/plot_power_effect_model.pdf"
+  shell:
+    """
+    {input.script}
+    """
 
 
 ################################################################################
