@@ -12,15 +12,11 @@ Figure XB: False positive rate for detecting differences in Bray-Curtis, Jaccard
 Figure XA: False positive rate for detecting differences in richness and diversity when samples assigned to treatment groups based on size
 Figure XB: False positive rate for detecting differences in Bray-Curtis, Jaccard, and Euclidean distances  when samples assigned to treatment groups based on size
 
+#done - figures/power_effect_model.pdf
+Figure XA: Power to detect differences in richness and diversity under complex treatment effect model
+Figure XB: Figure 7A: Power to detect differences in Bray-Curtis, Jaccard, and Euclidean distances under complex treatment effect model
 
-Figure 7A: Power to detect differences in richness
-Figure 7B: Power to detect differences in diversity
-Figure 8A: Power to detect differences in Jaccard distances
-Figure 8B: Power to detect differences in Bray-Curtis distances
-Figure 8C: Power to detect differences in Aitchison distances
-Figure 8D: Power to detect differences in Euclidean distances
-
-Figure 9: Power to detect differences in richness with revised model
+Figure X: Power to detect differences in richness with cull model
 
 Figure 10A: Impact of rarefied sampling depth on intra-sample variation in richness - mean value and coefficient of varaiation
 Figure 10B: Impact of rarefied sampling depth on intra-sample variation in diversity
