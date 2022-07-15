@@ -101,8 +101,8 @@ rule targets:
     #
     ## figures
     "figures/alpha_beta_depth_correlation.pdf",
-    "figures/alpha_beta_depth_correlation.pdf"
-    
+    "figures/false_positive_null_model.pdf",
+    "figures/false_positive_null_model_size.pdf"
     
 rule silva:
   input:
@@ -648,6 +648,21 @@ rule plot_false_positive_null_model:
     """
     {input.script}
     """
+
+rule plot_false_positive_null_model_size:
+    alpha = expand("data/{dataset}/data/{datasets}/data.r_salpha_kw",
+                   dataset = datasets),
+    beta = expand("data/{datasets}/data.s_ramova",
+                  dataset = datasets),
+    script = "code/plot_false_positive_null_model_size.R"
+  output:
+    "figures/false_positive_null_model_size.pdf"
+  shell:
+    """
+    {input.script}
+    """
+
+
 
 ################################################################################
 #

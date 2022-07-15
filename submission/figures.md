@@ -1,26 +1,20 @@
 Figure S1, Table 1 - description of datasets ~ borrow from singletons paper
 
 #done - figures/alpha_beta_depth_correlation.pdf
-Figure 1A: Correlation between richness, shannon, and inverse simpson and sampling depth by correction approach
-Figure 1B: Correlation between Bray-Curtis, Jaccard, and Euclidean distances and difference in sampling depth by correction approach
+Figure XA: Correlation between richness, shannon, and inverse simpson and sampling depth by correction approach
+Figure XB: Correlation between Bray-Curtis, Jaccard, and Euclidean distances and difference in sampling depth by correction approach
 
-#done - 
-Figure S2A: False positive rate for detecting differences in richness and diversity when samples randomized between treatment groups
-Figure S2B: False positive rate for detecting differences in Bray-Curtis, Jaccard, and Euclidean distances when samples randomized between treatment groups
+#done - figures/false_positive_null_model.pdf
+Figure XA: False positive rate for detecting differences in richness and diversity when samples randomized between treatment groups
+Figure XB: False positive rate for detecting differences in Bray-Curtis, Jaccard, and Euclidean distances when samples randomized between treatment groups
 
+#done - figures/false_positive_null_model_size.pdf
+Figure XA: False positive rate for detecting differences in richness and diversity when samples assigned to treatment groups based on size
+Figure XB: False positive rate for detecting differences in Bray-Curtis, Jaccard, and Euclidean distances  when samples assigned to treatment groups based on size
 
-
-Figure 5A: False positive rate for detecting differences in richness when samples assigned to treatment groups based on size
-Figure 5B: False positive rate for detecting differences in diversity when samples assigned to treatment groups based on size
-
-Figure 6A: False positive rate for detecting differences in Jaccard when samples assigned to treatment groups based on size
-Figure 6B: False positive rate for detecting differences in Bray-Curtis when samples assigned to treatment groups based on size
-Figure 6C: False positive rate for detecting differences in Aitchison when samples assigned to treatment groups based on size
-Figure 6D: False positive rate for detecting differences in Euclidean when samples assigned to treatment groups based on size
 
 Figure 7A: Power to detect differences in richness
 Figure 7B: Power to detect differences in diversity
-
 Figure 8A: Power to detect differences in Jaccard distances
 Figure 8B: Power to detect differences in Bray-Curtis distances
 Figure 8C: Power to detect differences in Aitchison distances
