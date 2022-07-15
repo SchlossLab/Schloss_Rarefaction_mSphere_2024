@@ -130,7 +130,7 @@ alpha <- alpha_composite %>%
       axis.line.x = element_line()
     )
 
-ggsave("alpha_null_sig_size.pdf", alpha, width = 6, height = 3)
+# ggsave("alpha_null_sig_size.pdf", alpha, width = 6, height = 3)
 
 
 
@@ -155,9 +155,9 @@ beta_metrics <- c(
   "nclr_euclidean",
   "oclr_euclidean",
   "rclr_euclidean",
-  "zclr_euclidean"#,
+  "zclr_euclidean",
+  "deseq2_euclidean"
   # "srs_euclidean",
-  # "deseq2_euclidean",
   # "metagenomeseq_euclidean"
 )
 
@@ -184,7 +184,8 @@ beta_labels <- c(
   "NCLR",
   "OCLR",
   "RCLR",
-  "ZCLR"
+  "ZCLR",
+  "DeSeq2"
 )
 
 pretty_beta_calcs <- c(
@@ -237,7 +238,7 @@ beta <- beta_composite %>%
       axis.line.x = element_line()
       )
 
-ggsave("beta_null_sig_size.pdf", beta, width = 6, height = 3)
+# ggsave("beta_null_sig_size.pdf", beta, width = 6, height = 3)
 
 layout <- "
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB

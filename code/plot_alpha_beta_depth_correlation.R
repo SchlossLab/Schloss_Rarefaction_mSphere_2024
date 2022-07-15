@@ -153,9 +153,9 @@ beta_metrics <- c(
   "nclr_euclidean",
   "oclr_euclidean",
   "rclr_euclidean",
-  "zclr_euclidean"#,
+  "zclr_euclidean",
+  "deseq2_euclidean"
   # "srs_euclidean",
-  # "deseq2_euclidean",
   # "metagenomeseq_euclidean"
 )
 
@@ -182,7 +182,8 @@ beta_labels <- c(
   "NCLR",
   "OCLR",
   "RCLR",
-  "ZCLR"
+  "ZCLR",
+  "DeSeq2"
 )
 
 pretty_beta_calcs <- c(
