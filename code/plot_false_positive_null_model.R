@@ -101,7 +101,7 @@ alpha_composite <- map_dfr(alpha_summary_files, read_tsv, .id = "dataset") %>%
 alpha <- alpha_composite %>%
   ggplot(aes(x = metric_method, y = frac, color = dataset, shape = dataset)) +
     geom_hline(yintercept = 0.05, size = 0.25, color = "gray") +
-    geom_point(position = position_dodge(width = 0.3)) +
+    geom_point(position = position_dodge(width = 0.3), fill = "white") +
     facet_grid(. ~ class,
                scales = "free_x", space = "free_x",
                labeller = labeller(class = pretty_alpha_classes)

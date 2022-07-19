@@ -103,7 +103,7 @@ alpha <- alpha_composite %>%
     # geom_hline(yintercept = 0.05, size = 0.25, color = "gray") +
     geom_line(aes(group = dataset), position = position_dodge(width = 0.3),
               color = "gray", size = 0.1) +
-    geom_point(position = position_dodge(width = 0.3)) +
+    geom_point(position = position_dodge(width = 0.3), fill = "white") +
     facet_grid(. ~ class,
                scales = "free_x", space = "free_x",
                labeller = labeller(class = pretty_alpha_classes)
