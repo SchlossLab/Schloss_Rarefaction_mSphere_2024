@@ -639,6 +639,7 @@ rule plot_alpha_beta_depth_correlation:
     """
 
 rule plot_false_positive_null_model:
+  input:
     alpha = expand("data/{dataset}/data/{datasets}/data.r_ralpha_kw",
                    dataset = datasets),
     beta = expand("data/{datasets}/data.r_ramova",
@@ -652,6 +653,7 @@ rule plot_false_positive_null_model:
     """
 
 rule plot_false_positive_null_model_size:
+  input:
     alpha = expand("data/{dataset}/data/{datasets}/data.r_salpha_kw",
                    dataset = datasets),
     beta = expand("data/{datasets}/data.s_ramova",
@@ -665,6 +667,7 @@ rule plot_false_positive_null_model_size:
     """
 
 rule plot_power_effect_model:
+  input:
     alpha = expand("data/{dataset}/data/{datasets}/data.e_ealpha_kw",
                    dataset = datasets),
     beta = expand("data/{datasets}/data.e_eamova",
@@ -678,6 +681,7 @@ rule plot_power_effect_model:
     """
 
 rule plot_power_cffect_model:
+  input:
     alpha = expand("data/{dataset}/data/{datasets}/data.e_ealpha_kw",
                    dataset = datasets),
     script = "code/plot_power_cffect_model.R"
