@@ -104,7 +104,9 @@ rule targets:
     "figures/false_positive_null_model.pdf",
     "figures/false_positive_null_model_size.pdf",
     "figures/plot_power_effect_model.pdf",
-    "figures/plot_power_cffect_model.pdf"
+    "figures/plot_power_cffect_model.pdf",
+    "figures/intrasample_variation.pdf"
+
     
 rule silva:
   input:
@@ -692,6 +694,19 @@ rule plot_power_cffect_model:
     {input.script}
     """
 
+rule plot_intrasample_variation:
+  input:
+    remove = expand("data/{dataset}/data.remove_accnos", dataset=datasets),
+    count = expand("data/{dataset}/data.group_count", dataset=datasets),
+    alpha = expand("data/{dataset}/data.otu.alpha_depth.summary", dataset=datsets),
+    beta = expand("data/{dataset}/data.otu.beta_depth.summary", dataset=datasets),
+    script = "code/plot_intrasample_variation.R"
+  output:
+    "figures/intrasample_variation.pdf"
+  shell:
+    """
+    {input.script}
+    """
 
 ################################################################################
 #

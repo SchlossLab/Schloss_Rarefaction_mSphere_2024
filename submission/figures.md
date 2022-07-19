@@ -19,12 +19,14 @@ Figure XB: Figure 7A: Power to detect differences in Bray-Curtis, Jaccard, and E
 #done - figures/power_cffect_model.pdf
 Figure X: Power to detect differences in richness with cull model
 
+#done - figures/intrasample_variation.pdf
+Figure XA: Impact of rarefied sampling depth on intra-sample variation in richness and - mean value and coefficient of varaiation
+Figure XB: Impact of rarefied sampling depth on intra-sample variation in diversity
+Figure XC: Impact of rarefied sampling depth on intra-sample variation in Jaccard
+Figure XD: Impact of rarefied sampling depth on intra-sample variation in Bray-Curtis
 
-Figure 10A: Impact of rarefied sampling depth on intra-sample variation in richness - mean value and coefficient of varaiation
-Figure 10B: Impact of rarefied sampling depth on intra-sample variation in diversity
 
-Figure 11A: Impact of rarefied sampling depth on intra-sample variation in Jaccard
-Figure 11B: Impact of rarefied sampling depth on intra-sample variation in Bray-Curtis
+Figure XA: Observed Good's coverage when rarefied to the smallest sample size
+Figure XB: Number of sequences required to obtain a desired level of sequencing coverage
 
-Figure 12A: Observed Good's coverage when rarefied to the smallest sample size
-Figure 12B: Number of sequences required to obtain a desired level of sequencing coverage
+Figure SX: Example of correlation between richness or bray-curtis and sampling depth
