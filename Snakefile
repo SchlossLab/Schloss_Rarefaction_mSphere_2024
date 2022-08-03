@@ -87,7 +87,8 @@ rule targets:
     # expand("data/{dataset}/data.otu.beta_depth.summary",
     #        dataset = datasets),
     expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
-
+    expand("data/{dataset}/data.otu.rarefy_coverage", dataset = datasets),
+    #
     ## observed human dataset analysis
     # "data/human/data.otu.oshared",
     # "data/human/data.odesign",
@@ -589,7 +590,7 @@ rule rare_beta_depth:
     calculator="jaccard|bray"
   resources:  
     mem_mb=16000,
-    time_min=7200,
+    time_min=3000,
     cpus=8
   shell:
     """
@@ -620,6 +621,18 @@ rule observed_coverage:
   shell:
     """
     {input.script} {input.shared} {input.removal}
+    """
+
+rule rarefy_coverage:
+  input:
+    script = "code/rarefy_coverage.R",
+    shared = "data/{dataset}/data.otu.shared",
+    remove_file = "data/{dataset}/data.remove_accnos"
+  output:
+    "data/{dataset}/data.otu.rarefy_coverage"
+  shell:
+    """
+    {input.script} {input.shared} {input.remove_file}
     """
 
 
