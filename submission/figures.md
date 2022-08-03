@@ -25,8 +25,10 @@ Figure XB: Impact of rarefied sampling depth on intra-sample variation in divers
 Figure XC: Impact of rarefied sampling depth on intra-sample variation in Jaccard
 Figure XD: Impact of rarefied sampling depth on intra-sample variation in Bray-Curtis
 
+#done
+Figure SX: Observed Good's coverage when rarefied to the smallest sample size
 
-Figure XA: Observed Good's coverage when rarefied to the smallest sample size
+#working on...
 Figure XB: Number of sequences required to obtain a desired level of sequencing coverage
 
 Figure SX: Example of correlation between richness or bray-curtis and sampling depth

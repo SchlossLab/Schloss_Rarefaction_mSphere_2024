@@ -86,9 +86,8 @@ rule targets:
            dataset = datasets, seed = seeds, calculator = ["bray", "jaccard"]),
     # expand("data/{dataset}/data.otu.beta_depth.summary",
     #        dataset = datasets),
-    # expand("data/{dataset}/data.otu.obs_coverage",
-    #        dataset = datasets)
-    
+    expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
+
     ## observed human dataset analysis
     # "data/human/data.otu.oshared",
     # "data/human/data.odesign",
@@ -105,7 +104,8 @@ rule targets:
     "figures/false_positive_null_model_size.pdf",
     "figures/power_effect_model.pdf",
     "figures/power_cffect_model.pdf",
-    "figures/intrasample_variation.pdf"
+    "figures/intrasample_variation.pdf",
+    "figures/obs_coverage_plot.pdf"
 
     
 rule silva:
@@ -613,12 +613,13 @@ rule pool_beta_depth:
 rule observed_coverage:
   input:
     shared = "data/{dataset}/data.otu.shared",
+    removal = "data/{dataset}/data.remove_accnos",
     script = "code/get_observed_coverage.R"
   output:
     summary = "data/{dataset}/data.otu.obs_coverage"
   shell:
     """
-    {input.script} {input.shared}
+    {input.script} {input.shared} {input.removal}
     """
 
 
@@ -642,9 +643,9 @@ rule plot_alpha_beta_depth_correlation:
 
 rule plot_false_positive_null_model:
   input:
-    alpha = expand("data/{dataset}/data/{datasets}/data.r_ralpha_kw",
+    alpha = expand("data/{dataset}/data.r_ralpha_kw",
                    dataset = datasets),
-    beta = expand("data/{datasets}/data.r_ramova",
+    beta = expand("data/{dataset}/data.r_ramova",
                   dataset = datasets),
     script = "code/plot_false_positive_null_model.R"
   output:
@@ -656,9 +657,9 @@ rule plot_false_positive_null_model:
 
 rule plot_false_positive_null_model_size:
   input:
-    alpha = expand("data/{dataset}/data/{datasets}/data.r_salpha_kw",
+    alpha = expand("data/{dataset}/data.r_salpha_kw",
                    dataset = datasets),
-    beta = expand("data/{datasets}/data.s_ramova",
+    beta = expand("data/{dataset}/data.s_ramova",
                   dataset = datasets),
     script = "code/plot_false_positive_null_model_size.R"
   output:
@@ -670,9 +671,9 @@ rule plot_false_positive_null_model_size:
 
 rule plot_power_effect_model:
   input:
-    alpha = expand("data/{dataset}/data/{datasets}/data.e_ealpha_kw",
+    alpha = expand("data/{dataset}/data.e_ealpha_kw",
                    dataset = datasets),
-    beta = expand("data/{datasets}/data.e_eamova",
+    beta = expand("data/{dataset}/data.e_eamova",
                   dataset = datasets),
     script = "code/plot_power_effect_model.R"
   output:
@@ -684,7 +685,7 @@ rule plot_power_effect_model:
 
 rule plot_power_cffect_model:
   input:
-    alpha = expand("data/{dataset}/data/{datasets}/data.e_ealpha_kw",
+    alpha = expand("data/{dataset}/data.e_ealpha_kw",
                    dataset = datasets),
     script = "code/plot_power_cffect_model.R"
   output:
@@ -696,9 +697,9 @@ rule plot_power_cffect_model:
 
 rule plot_intrasample_variation:
   input:
-    remove = expand("data/{dataset}/data.remove_accnos", dataset=datasets),
-    count = expand("data/{dataset}/data.group_count", dataset=datasets),
-    alpha = expand("data/{dataset}/data.otu.alpha_depth.summary", dataset=datsets),
+    removal = expand("data/{dataset}/data.remove_accnos", dataset=datasets),
+    nseqs = expand("data/{dataset}/data.group_count", dataset=datasets),
+    alpha = expand("data/{dataset}/data.otu.alpha_depth.summary", dataset=datasets),
     beta = expand("data/{dataset}/data.otu.beta_depth.summary", dataset=datasets),
     script = "code/plot_intrasample_variation.R"
   output:
@@ -707,6 +708,19 @@ rule plot_intrasample_variation:
     """
     {input.script}
     """
+
+rule plot_observed_coverage:
+  input:
+    script = "code/plot_coverage.R",
+    coverage_files = expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets)
+  output:
+    "figures/obs_coverage_plot.pdf"
+  shell:
+    """
+    {input.script}
+    """
+  
+
 
 ################################################################################
 #
