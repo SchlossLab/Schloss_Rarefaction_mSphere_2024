@@ -106,7 +106,7 @@ rule targets:
     "figures/power_effect_model.pdf",
     "figures/power_cffect_model.pdf",
     "figures/intrasample_variation.pdf",
-    "figures/obs_coverage_plot.pdf",
+    "figures/coverage_plot.pdf",
     "figures/example_alpha_cor.tiff",
     "figures/example_beta_cor.tiff"
     
@@ -723,12 +723,13 @@ rule plot_intrasample_variation:
     {input.script}
     """
 
-rule plot_observed_coverage:
+rule plot_coverage:
   input:
     script = "code/plot_coverage.R",
-    coverage_files = expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets)
+    obs_files = expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
+    rarefy_files = expand("data/{dataset}/data.otu.rarefy_coverage", dataset = datasets),
   output:
-    "figures/obs_coverage_plot.pdf"
+    "figures/coverage_plot.pdf"
   shell:
     """
     {input.script}
