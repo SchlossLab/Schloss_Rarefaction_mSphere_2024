@@ -31,4 +31,5 @@ Figure SX: Observed Good's coverage when rarefied to the smallest sample size
 #working on...
 Figure XB: Number of sequences required to obtain a desired level of sequencing coverage
 
+#done
 Figure SX: Example of correlation between richness or bray-curtis and sampling depth

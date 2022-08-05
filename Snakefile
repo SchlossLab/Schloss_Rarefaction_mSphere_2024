@@ -78,15 +78,15 @@ rule targets:
     #        dataset = datasets)
     #
     ## sensitivity between sampling effort and alpha and beta diversity metrics
-    expand("data/{dataset}/data.otu.{seed}.r_rare_alpha.summary",
-           dataset = datasets, seed = seeds),
+    # expand("data/{dataset}/data.otu.{seed}.r_rare_alpha.summary",
+    #        dataset = datasets, seed = seeds),
     # expand("data/{dataset}/data.otu.alpha_depth.summary",
     #        dataset = datasets),  
     expand("data/{dataset}/data.otu.{seed}.r_rare_{calculator}.summary",
            dataset = datasets, seed = seeds, calculator = ["bray", "jaccard"]),
     # expand("data/{dataset}/data.otu.beta_depth.summary",
     #        dataset = datasets),
-    expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
+    # expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
     expand("data/{dataset}/data.otu.rarefy_coverage", dataset = datasets),
     #
     ## observed human dataset analysis
@@ -106,8 +106,9 @@ rule targets:
     "figures/power_effect_model.pdf",
     "figures/power_cffect_model.pdf",
     "figures/intrasample_variation.pdf",
-    "figures/obs_coverage_plot.pdf"
-
+    "figures/obs_coverage_plot.pdf",
+    "figures/example_alpha_cor.tiff",
+    "figures/example_beta_cor.tiff"
     
 rule silva:
   input:
@@ -732,8 +733,45 @@ rule plot_observed_coverage:
     """
     {input.script}
     """
-  
+    
+rule plot_example_alpha_cor:
+  input:
+    script = "code/plot_example_alpha_cor.R",
+    raw = "data/human/data.otu.1.r_raw_alpha",
+    rare = "data/human/data.otu.1.r_rarefy_alpha",
+    srs = "data/human/data.otu.1.r_srs_alpha",
+    ba = "data/human/data.otu.1.r_breakaway_alpha"
+  output:
+    "figures/example_alpha_cor.tiff"
+  shell:
+    """
+    {input.script}
+    """
 
+rule plot_example_beta_cor:
+  input:
+    script = "code/plot_example_beta_cor.R",
+    dist_files = [ "data/human/data.otu.1.r_deseq2_euclidean.dist",
+                  "data/human/data.otu.1.r_nclr_euclidean.dist",
+                  "data/human/data.otu.1.r_oclr_euclidean.dist",
+                  "data/human/data.otu.1.r_rclr_euclidean.dist",
+                  "data/human/data.otu.1.r_zclr_euclidean.dist",
+                  "data/human/data.otu.1.r_rare_bray.dist",
+                  "data/human/data.otu.1.r_rare_jaccard.dist",
+                  "data/human/data.otu.1.r_raw_bray.dist",
+                  "data/human/data.otu.1.r_raw_jaccard.dist",
+                  "data/human/data.otu.1.r_relabund_bray.dist",
+                  "data/human/data.otu.1.r_relabund_jaccard.dist",
+                  "data/human/data.otu.1.r_metagenomeseq_bray.dist",
+                  "data/human/data.otu.1.r_metagenomeseq_jaccard.dist",
+                  "data/human/data.otu.1.r_srs_bray.dist",
+                  "data/human/data.otu.1.r_srs_jaccard.dist" ]
+  output:
+    "figures/example_beta_cor.tiff"
+  shell:
+    """
+    {input.script}
+    """
 
 ################################################################################
 #
