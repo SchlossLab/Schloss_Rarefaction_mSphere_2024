@@ -130,8 +130,6 @@ alpha <- alpha_composite %>%
       axis.line.x = element_line()
     )
 
-# ggsave("alpha_null_sig_size.pdf", alpha, width = 6, height = 3)
-
 
 
 ## Beta diversity panel...
@@ -238,8 +236,6 @@ beta <- beta_composite %>%
       axis.line.x = element_line()
       )
 
-# ggsave("beta_null_sig_size.pdf", beta, width = 6, height = 3)
-
 layout <- "
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
@@ -254,6 +250,7 @@ combo <- alpha + guide_area() + beta +
                             )
     )
 
-ggsave("figures/false_positive_null_model_size.pdf",
+ggsave("figures/false_positive_null_model_size.tiff",
        combo,
-       width = 6, height = 7)
+       width = 6, height = 7,
+       compression = "lzw+p")

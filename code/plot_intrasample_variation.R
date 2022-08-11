@@ -175,8 +175,10 @@ patch <- sobs_mean + shannon_mean + bray_mean +
         plot_annotation(caption = "Number of sequences sampled",
                         theme = theme(plot.caption =
                                       element_text(size = 12, hjust = 0.45))) &
-  theme(plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
+  theme(plot.title = element_text(size = 10, hjust = 0.5),
         legend.key = element_blank())
 
 
-ggsave("figures/intrasample_variation.pdf", patch, width = 7, height = 4)
+ggsave("figures/intrasample_variation.tiff", patch,
+       width = 7, height = 4,
+       compression = "lzw+p")

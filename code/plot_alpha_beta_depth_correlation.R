@@ -128,9 +128,6 @@ alpha <- alpha_composite %>%
       axis.line.x  = element_line()
     )
 
-#ggsave("alpha_correlation.pdf", alpha, width = 6, height = 3)
-
-
 
 ## Beta diversity panel...
 
@@ -232,7 +229,6 @@ beta <- beta_composite %>%
       axis.line.x  = element_line()
       )
 
-#ggsave("beta_correlation.pdf", beta, width = 6, height = 3)
 
 layout <- "
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB
@@ -248,6 +244,7 @@ combo <- alpha + guide_area() + beta +
                             )
     )
 
-ggsave("figures/alpha_beta_depth_correlation.pdf",
+ggsave("figures/alpha_beta_depth_correlation.tiff",
        combo,
-       width = 6, height = 7)
+       width = 6, height = 7,
+       compression = "lzw+p")

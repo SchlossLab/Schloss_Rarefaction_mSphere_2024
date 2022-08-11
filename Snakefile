@@ -100,13 +100,13 @@ rule targets:
     # "data/human/data.o_oamova"
     #
     ## figures
-    "figures/alpha_beta_depth_correlation.pdf",
-    "figures/false_positive_null_model.pdf",
-    "figures/false_positive_null_model_size.pdf",
-    "figures/power_effect_model.pdf",
-    "figures/power_cffect_model.pdf",
-    "figures/intrasample_variation.pdf",
-    "figures/coverage_plot.pdf",
+    "figures/alpha_beta_depth_correlation.tiff",
+    "figures/false_positive_null_model.tiff",
+    "figures/false_positive_null_model_size.tiff",
+    "figures/power_effect_model.tiff",
+    "figures/power_cffect_model.tiff",
+    "figures/intrasample_variation.tiff",
+    "figures/coverage_plot.tiff",
     "figures/example_alpha_cor.tiff",
     "figures/example_beta_cor.tiff"
     
@@ -629,6 +629,8 @@ rule rarefy_coverage:
     script = "code/rarefy_coverage.R",
     shared = "data/{dataset}/data.otu.shared",
     remove_file = "data/{dataset}/data.remove_accnos"
+  resources:  
+    mem_mb=16000
   output:
     "data/{dataset}/data.otu.rarefy_coverage"
   shell:
@@ -649,7 +651,7 @@ rule plot_alpha_beta_depth_correlation:
                      dataset = datasets, alpha_beta = ["alpha", "beta"]),
     script = "code/plot_alpha_beta_depth_correlation.R"
   output:
-    "figures/alpha_beta_depth_correlation.pdf"
+    "figures/alpha_beta_depth_correlation.tiff"
   shell:
     """
     {input.script}
@@ -663,7 +665,7 @@ rule plot_false_positive_null_model:
                   dataset = datasets),
     script = "code/plot_false_positive_null_model.R"
   output:
-    "figures/false_positive_null_model.pdf"
+    "figures/false_positive_null_model.tiff"
   shell:
     """
     {input.script}
@@ -677,7 +679,7 @@ rule plot_false_positive_null_model_size:
                   dataset = datasets),
     script = "code/plot_false_positive_null_model_size.R"
   output:
-    "figures/false_positive_null_model_size.pdf"
+    "figures/false_positive_null_model_size.tiff"
   shell:
     """
     {input.script}
@@ -691,7 +693,7 @@ rule plot_power_effect_model:
                   dataset = datasets),
     script = "code/plot_power_effect_model.R"
   output:
-    "figures/power_effect_model.pdf"
+    "figures/power_effect_model.tiff"
   shell:
     """
     {input.script}
@@ -703,7 +705,7 @@ rule plot_power_cffect_model:
                    dataset = datasets),
     script = "code/plot_power_cffect_model.R"
   output:
-    "figures/power_cffect_model.pdf"
+    "figures/power_cffect_model.tiff"
   shell:
     """
     {input.script}
@@ -717,7 +719,7 @@ rule plot_intrasample_variation:
     beta = expand("data/{dataset}/data.otu.beta_depth.summary", dataset=datasets),
     script = "code/plot_intrasample_variation.R"
   output:
-    "figures/intrasample_variation.pdf"
+    "figures/intrasample_variation.tiff"
   shell:
     """
     {input.script}
@@ -729,7 +731,7 @@ rule plot_coverage:
     obs_files = expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
     rarefy_files = expand("data/{dataset}/data.otu.rarefy_coverage", dataset = datasets),
   output:
-    "figures/coverage_plot.pdf"
+    "figures/coverage_plot.tiff"
   shell:
     """
     {input.script}
@@ -791,6 +793,7 @@ rule write_paper:
     "submission/manuscript.tex"
   shell: 
     """
-      R -e "library('rmarkdown'); render('submission/manuscript.Rmd', output_format = 'all', clean=FALSE)"
+      R -e "library('rmarkdown'); render('submission/manuscript.Rmd',
+                                         output_format = 'all', clean=FALSE)"
       mv submission/manuscript.knit.md submission/manuscript.md
     """

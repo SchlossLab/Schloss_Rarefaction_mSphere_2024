@@ -66,4 +66,6 @@ cor_plot <- obs_cor %>%
     axis.line = element_line(),
   )
   
-ggsave("figures/coverage_plot.pdf", cor_plot, width = 7, height = 6)
+ggsave("figures/coverage_plot.tiff", cor_plot,
+       width = 7, height = 6,
+       compression = "lzw+p")

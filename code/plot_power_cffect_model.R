@@ -132,5 +132,6 @@ alpha <- alpha_composite %>%
       axis.line.x = element_line()
     )
 
-ggsave("figures/power_cffect_model.pdf", alpha, width = 6, height = 3)
+ggsave("figures/power_cffect_model.tiff", alpha, compression = "lzw+p",
+      width = 6, height = 3)
 

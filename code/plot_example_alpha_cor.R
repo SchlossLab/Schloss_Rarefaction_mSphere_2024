@@ -82,8 +82,9 @@ aplot <- tidy_composite %>%
   theme(panel.background = element_blank(),
         panel.grid = element_blank(),
         axis.line = element_line(),
-        strip.text = element_text(face = "bold", hjust = 0),
+        strip.text = element_text(hjust = 0),
         axis.text.x = element_markdown())
     
-#ggsave("figures/example_alpha_cor.pdf", aplot,  width = 6, height = 6, device = cairo_pdf)
-ggsave("figures/example_alpha_cor.tiff", aplot,  width = 6, height = 6, compression = "lzw+p")
+ggsave("figures/example_alpha_cor.tiff", aplot,
+       width = 6, height = 6,
+       compression = "lzw+p")

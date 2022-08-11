@@ -20,3 +20,5 @@ dependencies:
   - bioconductor-metagenomeseq=1.36.0
   - r-patchwork=1.1.1
   - r-ggtext=0.1.1
+  - r-jsonlite=1.8.0
+  

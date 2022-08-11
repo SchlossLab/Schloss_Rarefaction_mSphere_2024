@@ -168,8 +168,9 @@ beta_plot <- j_plot / b_plot / e_plot &
     panel.background = element_blank(),
     axis.title.x = element_markdown(),
     strip.text.y = element_blank(),
-    strip.text.x = element_text(face = "bold", hjust = 0, size = 8)
+    strip.text.x = element_text(hjust = 0, size = 8)
   )
   
-#ggsave("figures/example_beta_cor.pdf", beta_plot,  width = 7, height = 7, device = cairo_pdf)
-ggsave("figures/example_beta_cor.tiff", beta_plot,  width = 7, height = 7, compression = "lzw+p")
+ggsave("figures/example_beta_cor.tiff", beta_plot,
+      width = 7, height = 7,
+      compression = "lzw+p")
