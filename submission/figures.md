@@ -1,4 +1,7 @@
-Figure S1, Table 1 - description of datasets ~ borrow from singletons paper
+#done
+Figure S1
+
+Table 1 - description of datasets ~ borrow from singletons paper
 
 #done - figures/alpha_beta_depth_correlation.tiff
 Figure XA: Correlation between richness, shannon, and inverse simpson and sampling depth by correction approach

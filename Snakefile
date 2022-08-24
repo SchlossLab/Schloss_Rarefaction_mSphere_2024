@@ -779,6 +779,18 @@ rule plot_intrasample_variation:
     {input.script}
     """
 
+rule plot_seqs_per_sample:
+  input:
+    removal = expand("data/{dataset}/data.remove_accnos", dataset=datasets),
+    nseqs = expand("data/{dataset}/data.group_count", dataset=datasets),
+    script = "code/plot_seqs_per_sample.R"
+  output:
+    "figures/seqs_per_sample.tiff"
+  shell:
+    """
+    {input.script}
+    """
+    
 ################################################################################
 #
 # Submission related rules
