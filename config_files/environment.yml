@@ -19,3 +19,7 @@ dependencies:
   - r-zcompositions=1.4.0
   - bioconductor-deseq2=1.34.0
   - bioconductor-metagenomeseq=1.36.0
+  - r-patchwork=1.1.1
+  - r-ggtext=0.1.1
+  - r-jsonlite=1.8.0
+  

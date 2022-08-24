@@ -86,8 +86,8 @@ rule targets:
     #        dataset = datasets),  
     # expand("data/{dataset}/data.otu.{index}.{seed}.r_rare_{calculator}.summary",
     #        dataset = datasets, index = indexes, seed = seeds, calculator = ["bray", "jaccard"]),
-    expand("data/{dataset}/data.otu.beta_depth.summary",
-           dataset = datasets),
+    # expand("data/{dataset}/data.otu.beta_depth.summary",
+    #        dataset = datasets),
     # expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
     # expand("data/{dataset}/data.otu.rarefy_coverage", dataset = datasets),
     #
@@ -102,15 +102,15 @@ rule targets:
     # "data/human/data.o_oamova"
     #
     ## figures
-    # "figures/alpha_beta_depth_correlation.tiff",
-    # "figures/false_positive_null_model.tiff",
-    # "figures/false_positive_null_model_size.tiff",
-    # "figures/power_effect_model.tiff",
-    # "figures/power_cffect_model.tiff",
-    # "figures/intrasample_variation.tiff",
-    # "figures/coverage_plot.tiff",
-    # "figures/example_alpha_cor.tiff",
-   ### "figures/example_beta_cor.tiff"
+    "figures/alpha_beta_depth_correlation.tiff",
+    "figures/false_positive_null_model.tiff",
+    "figures/false_positive_null_model_size.tiff",
+    "figures/power_effect_model.tiff",
+    "figures/power_cffect_model.tiff",
+    "figures/intrasample_variation.tiff",
+    "figures/coverage_plot.tiff",
+    "figures/example_alpha_cor.tiff",
+    "figures/example_beta_cor.tiff"
     
 rule silva:
   input:
@@ -714,20 +714,6 @@ rule plot_power_cffect_model:
     {input.script}
     """
 
-rule plot_intrasample_variation:
-  input:
-    removal = expand("data/{dataset}/data.remove_accnos", dataset=datasets),
-    nseqs = expand("data/{dataset}/data.group_count", dataset=datasets),
-    alpha = expand("data/{dataset}/data.otu.alpha_depth.summary", dataset=datasets),
-    beta = expand("data/{dataset}/data.otu.beta_depth.summary", dataset=datasets),
-    script = "code/plot_intrasample_variation.R"
-  output:
-    "figures/intrasample_variation.tiff"
-  shell:
-    """
-    {input.script}
-    """
-
 rule plot_coverage:
   input:
     script = "code/plot_coverage.R",
@@ -754,30 +740,44 @@ rule plot_example_alpha_cor:
     {input.script}
     """
 
-# rule plot_example_beta_cor:
-#   input:
-#     script = "code/plot_example_beta_cor.R",
-#     dist_files = [ "data/human/data.otu.1.r_deseq2_euclidean.dist",
-#                   "data/human/data.otu.1.r_nclr_euclidean.dist",
-#                   "data/human/data.otu.1.r_oclr_euclidean.dist",
-#                   "data/human/data.otu.1.r_rclr_euclidean.dist",
-#                   "data/human/data.otu.1.r_zclr_euclidean.dist",
-#                   "data/human/data.otu.1.r_rare_bray.dist",
-#                   "data/human/data.otu.1.r_rare_jaccard.dist",
-#                   "data/human/data.otu.1.r_raw_bray.dist",
-#                   "data/human/data.otu.1.r_raw_jaccard.dist",
-#                   "data/human/data.otu.1.r_relabund_bray.dist",
-#                   "data/human/data.otu.1.r_relabund_jaccard.dist",
-#                   "data/human/data.otu.1.r_metagenomeseq_bray.dist",
-#                   "data/human/data.otu.1.r_metagenomeseq_jaccard.dist",
-#                   "data/human/data.otu.1.r_srs_bray.dist",
-#                   "data/human/data.otu.1.r_srs_jaccard.dist" ]
-#   output:
-#     "figures/example_beta_cor.tiff"
-#   shell:
-#     """
-#     {input.script}
-#     """
+rule plot_example_beta_cor:
+  input:
+    script = "code/plot_example_beta_cor.R",
+    dist_files = [ "data/human/data.otu.1.r_deseq2_euclidean.dist",
+                  "data/human/data.otu.1.r_nclr_euclidean.dist",
+                  "data/human/data.otu.1.r_oclr_euclidean.dist",
+                  "data/human/data.otu.1.r_rclr_euclidean.dist",
+                  "data/human/data.otu.1.r_zclr_euclidean.dist",
+                  "data/human/data.otu.1.r_rare_bray.dist",
+                  "data/human/data.otu.1.r_rare_jaccard.dist",
+                  "data/human/data.otu.1.r_raw_bray.dist",
+                  "data/human/data.otu.1.r_raw_jaccard.dist",
+                  "data/human/data.otu.1.r_relabund_bray.dist",
+                  "data/human/data.otu.1.r_relabund_jaccard.dist",
+                  "data/human/data.otu.1.r_metagenomeseq_bray.dist",
+                  "data/human/data.otu.1.r_metagenomeseq_jaccard.dist",
+                  "data/human/data.otu.1.r_srs_bray.dist",
+                  "data/human/data.otu.1.r_srs_jaccard.dist" ]
+  output:
+    "figures/example_beta_cor.tiff"
+  shell:
+    """
+    {input.script}
+    """
+
+rule plot_intrasample_variation:
+  input:
+    removal = expand("data/{dataset}/data.remove_accnos", dataset=datasets),
+    nseqs = expand("data/{dataset}/data.group_count", dataset=datasets),
+    alpha = expand("data/{dataset}/data.otu.alpha_depth.summary", dataset=datasets),
+    beta = expand("data/{dataset}/data.otu.beta_depth.summary", dataset=datasets),
+    script = "code/plot_intrasample_variation.R"
+  output:
+    "figures/intrasample_variation.tiff"
+  shell:
+    """
+    {input.script}
+    """
 
 ################################################################################
 #

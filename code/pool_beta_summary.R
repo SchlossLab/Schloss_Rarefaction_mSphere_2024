@@ -21,11 +21,18 @@ reader <- function(x) {
 
   read_tsv(x,
            col_types = cols(.default = col_double())) %>%
+<<<<<<< HEAD
     mutate(seed = as.numeric(seed), dataset = dataset, method = dmethod,
            .before = n_seqs)
+=======
+  mutate(seed = seed, dataset = dataset, method = dmethod, .before = n_seqs)
+>>>>>>> paper
 
 }
 
 map_dfr(summary_files, reader) %>%
+<<<<<<< HEAD
   arrange(seed, method, n_seqs) %>%
+=======
+>>>>>>> paper
   write_tsv(output_file)
