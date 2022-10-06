@@ -22,4 +22,7 @@ dependencies:
   - r-patchwork=1.1.1
   - r-ggtext=0.1.1
   - r-jsonlite=1.8.0
-  
+  - r-kableExtra=1.3.4
+  - r-rmarkdown=2.16
+  - r-knitr=1.40
+  - r-glue=1.6.2

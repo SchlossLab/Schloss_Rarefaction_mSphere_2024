@@ -32,7 +32,7 @@ vignettes/*.pdf
 /cache/
 
 # Temporary files created by R markdown
-*.utf8.md
+*.utf8.
 *.knit.md
 
 # R Environment Variables

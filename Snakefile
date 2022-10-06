@@ -101,6 +101,9 @@ rule targets:
     # "data/human/data.o_oalpha_kw",
     # "data/human/data.o_oamova"
     #
+    ## summary data files
+    "data/process/study_summary_statistics.tsv",
+    #  
     ## figures
     "figures/alpha_beta_depth_correlation.tiff",
     "figures/false_positive_null_model.tiff",
@@ -110,7 +113,8 @@ rule targets:
     "figures/intrasample_variation.tiff",
     "figures/coverage_plot.tiff",
     "figures/example_alpha_cor.tiff",
-    "figures/example_beta_cor.tiff"
+    "figures/example_beta_cor.tiff",
+    "figures/seqs_per_sample.tiff"
     
 rule silva:
   input:
@@ -790,7 +794,20 @@ rule plot_seqs_per_sample:
     """
     {input.script}
     """
-    
+
+rule pool_study_summary_statistics:
+  input:
+    script = "code/get_sample_summary_statistics.R",
+    removal = expand("data/{dataset}/data.remove_accnos", dataset=datasets),
+    nseqs = expand("data/{dataset}/data.group_count", dataset=datasets),
+    sra = expand("data/{dataset}/sra_info.tsv", dataset=datasets)
+  output:
+    "data/process/study_summary_statistics.tsv"
+  shell:
+    """
+    {input.script}
+    """
+
 ################################################################################
 #
 # Submission related rules
@@ -801,14 +818,16 @@ rule write_paper:
   input:
     rmd_file = "submission/manuscript.Rmd",
     refs_file = "submission/references.bib",
-    cls_file = "submission/asm.cls"
+    cls_file = "submission/asm.cls",
+    summary_stats = "data/process/study_summary_statistics.tsv"
   output:
     "submission/manuscript.pdf",
     "submission/manuscript.md",
     "submission/manuscript.tex"
   shell: 
     """
-      R -e "library('rmarkdown'); render('submission/manuscript.Rmd',
-                                         output_format = 'all', clean=FALSE)"
+      R -e "library('rmarkdown'); render('submission/manuscript.Rmd', clean=FALSE)"
       mv submission/manuscript.knit.md submission/manuscript.md
+      rm -f submission/manuscript.log
     """
+    

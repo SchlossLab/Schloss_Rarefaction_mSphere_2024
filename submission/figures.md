@@ -1,6 +1,7 @@
 #done
 Figure S1
 
+#done
 Table 1 - description of datasets ~ borrow from singletons paper
 
 #done - figures/alpha_beta_depth_correlation.tiff
