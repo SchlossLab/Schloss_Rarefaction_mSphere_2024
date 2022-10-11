@@ -26,7 +26,7 @@ obs_cor <- map_dfr(obs_coverage_files, read_tsv, .id = "dataset",
                          .default = col_double()))
 
 
-datasets <- datasets[datasets != "rice" ]
+# datasets <- datasets[datasets != "rice" ]
 rare_coverage_files <- glue("data/{datasets}/data.otu.rarefy_coverage")
 names(rare_coverage_files) <- datasets
 
@@ -39,10 +39,14 @@ cor_plot <- obs_cor %>%
   ggplot(aes(x = norare_nseqs, y = norare_coverage,
              color = dataset, shape = dataset)) +
   geom_point(fill = "white") +
+  geom_boxplot(aes(x=325, y=rare_coverage),
+               outlier.shape = NULL, outlier.size = 0.75,
+               width = 0.2) +
   geom_line(data = cor_line, aes(x = nseqs, y = mean), color = "black") +
-  scale_x_log10(breaks = c(1e3, 1e4, 1e5, 1e6),
-                labels = c("10^3", "10^4", "10^5", "10^6"),
-                limits = c(1e3, 1e6)) +
+  geom_vline(xintercept = 800, color = "darkgray") +
+  scale_x_log10(breaks = c(325, 1e3, 1e4, 1e5, 1e6),
+                labels = c("R", "10^3", "10^4", "10^5", "10^6"),
+                limits = c(2e2, 1e6)) +
   scale_color_manual(name = NULL,
                     values = rep(c('#1b9e77','#d95f02','#7570b3'), 4),
                     breaks = pretty_datasets$plain,
