@@ -21,26 +21,23 @@ pretty_datasets <- tibble(
 ## Alpha diversity panel...
 
 alpha_metrics <- c(
-  "sobs_raw",
   "sobs_rarefy",
+  "sobs_raw",
   "sobs_srs",
   "ace_raw",
   "chao_raw",
   "default_breakaway",
   "poisson_breakaway",
 
-  "shannon_raw",
   "shannon_rarefy",
+  "shannon_raw",
   "shannon_srs",
   "npshannon_raw",
 
-  "simpson_raw",
   "simpson_rarefy",
+  "simpson_raw",
   "simpson_srs"
 
-#"ace_rarefy", "chao_rarefy", "coverage_rarefy", "npshannon_rarefy",
-#"nseqs_rarefy", "npshannon_srs", "coverage_raw", "coverage_srs", "nseqs_srs",
-#"nseqs_raw", "ace_srs", "chao_srs",
 )
 
 alpha_classes <- c(
@@ -63,21 +60,21 @@ alpha_classes <- c(
 )
 
 alpha_labels <- c(
-  "Raw",
   "Rarefied",
+  "Raw",
   "SRS Normalized",
   "ACE Estimate",
   "Chao1 Estimate",
   "BA Default",
   "BA Poisson",
 
-  "Raw",
   "Rarefied",
+  "Raw",
   "SRS Normalized",
   "Estimate",
 
-  "Raw",
   "Rarefied",
+  "Raw",
   "SRS Normalized"
 )
 
@@ -134,24 +131,24 @@ alpha <- alpha_composite %>%
 ## Beta diversity panel...
 
 beta_metrics <- c(
-  "raw_bray",
-  "rare_bray",
-  "relabund_bray",
-  "srs_bray",
-  "metagenomeseq_bray",
-
-  "raw_jaccard",
   "rare_jaccard",
+  "raw_jaccard",
   "relabund_jaccard",
   "srs_jaccard",
   "metagenomeseq_jaccard",
 
-  "raw_euclidean",
+  "rare_bray",
+  "raw_bray",
+  "relabund_bray",
+  "srs_bray",
+  "metagenomeseq_bray",
+
   "rare_euclidean",
+  "raw_euclidean",
   "relabund_euclidean",
-  "nclr_euclidean",
-  "oclr_euclidean",
   "rclr_euclidean",
+  "oclr_euclidean",
+  "nclr_euclidean",
   "zclr_euclidean",
   "deseq2_euclidean"
   # "srs_euclidean",
@@ -163,31 +160,31 @@ beta_metrics <- c(
 # )
 
 beta_labels <- c(
-  "Raw",
   "Rarefied",
+  "Raw",
   "Rel. abundance",
   "SRS Normalized",
   "CSS Normalized",
 
-  "Raw",
   "Rarefied",
+  "Raw",
   "Rel. abundance",
   "SRS Normalized",
   "CSS Normalized",
 
-  "Raw",
   "Rarefied",
+  "Raw",
   "Rel. abundance",
-  "NCLR",
-  "OCLR",
-  "RCLR",
-  "ZCLR",
+  "Robust CLR",
+  "One CLR",
+  "Nudge CLR",
+  "Zero CLR",
   "DeSeq2"
 )
 
 pretty_beta_calcs <- c(
-  bray = "Bray-Curtis",
   jaccard = "Jaccard",
+  bray = "Bray-Curtis",
   euclidean = "Euclidean"
 )
 

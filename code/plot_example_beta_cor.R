@@ -8,9 +8,9 @@ library(patchwork)
 
 dist_files <- c(
     "data/human/data.otu.1.r_deseq2_euclidean.dist",
-    "data/human/data.otu.1.r_nclr_euclidean.dist",
-    "data/human/data.otu.1.r_oclr_euclidean.dist",
     "data/human/data.otu.1.r_rclr_euclidean.dist",
+    "data/human/data.otu.1.r_oclr_euclidean.dist",
+    "data/human/data.otu.1.r_nclr_euclidean.dist",
     "data/human/data.otu.1.r_zclr_euclidean.dist",
 
     "data/human/data.otu.1.r_rare_bray.dist",
@@ -57,8 +57,8 @@ get_dists <- function(x) {
 
 distances <- map_dfr(dist_files, get_dists) %>%
   mutate(process = factor(process,
-                          levels = c("raw", "rare", "relabund", "srs",
-                                     "metagenomeseq", "nclr", "oclr", "rclr",
+                          levels = c("rare", "raw", "relabund", "srs",
+                                     "metagenomeseq", "rclr", "oclr", "nclr",
                                      "zclr", "deseq2")))
 
 correlations <- distances %>%
@@ -92,26 +92,26 @@ get_rho <- function(p, m, df = correlations) {
 
 
 j_beta_labels <- c(
-  raw = glue("Raw\n(\u03C1 = {get_rho('raw', 'jaccard')})"),
   rare = glue("Rarefied\n(\u03C1 = {get_rho('rare', 'jaccard')})"),
+  raw = glue("Raw\n(\u03C1 = {get_rho('raw', 'jaccard')})"),
   relabund = glue("Rel. abundance\n(\u03C1 = {get_rho('relabund', 'jaccard')})"),
   srs = glue("SRS Normalized\n(\u03C1 = {get_rho('srs', 'jaccard')})"),
   metagenomeseq = glue("CSS Normalized\n(\u03C1 = {get_rho('metagenomeseq', 'jaccard')})")
 )
 
 b_beta_labels <- c(
-  raw = glue("Raw\n(\u03C1 = {get_rho('raw', 'bray')})"),
   rare = glue("Rarefied\n(\u03C1 = {get_rho('rare', 'bray')})"),
+  raw = glue("Raw\n(\u03C1 = {get_rho('raw', 'bray')})"),
   relabund = glue("Rel. abundance\n(\u03C1 = {get_rho('relabund', 'bray')})"),
   srs = glue("SRS Normalized\n(\u03C1 = {get_rho('srs', 'bray')})"),
   metagenomeseq = glue("CSS Normalized\n(\u03C1 = {get_rho('metagenomeseq', 'bray')})")
 )
 
 e_beta_labels <- c(
-  nclr = glue("NCLR\n(\u03C1 = {get_rho('nclr', 'euclidean')})"),
-  oclr = glue("OCLR\n(\u03C1 = {get_rho('oclr', 'euclidean')})"),
-  rclr = glue("RCLR\n(\u03C1 = {get_rho('rclr', 'euclidean')})"),
-  zclr = glue("ZCLR\n(\u03C1 = {get_rho('zclr', 'euclidean')})"),
+  rclr = glue("Robust CLR\n(\u03C1 = {get_rho('rclr', 'euclidean')})"),
+  oclr = glue("One CLR\n(\u03C1 = {get_rho('oclr', 'euclidean')})"),
+  nclr = glue("Nudge CLR\n(\u03C1 = {get_rho('nclr', 'euclidean')})"),
+  zclr = glue("Zero CLR\n(\u03C1 = {get_rho('zclr', 'euclidean')})"),
   deseq2 = glue("DeSeq2\n(\u03C1 = {get_rho('deseq2', 'euclidean')})")
 )
 

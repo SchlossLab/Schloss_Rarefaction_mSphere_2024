@@ -70,16 +70,16 @@ alpha_composite <- map_dfr(alpha_summary_files, read_tsv, .id = "dataset") %>%
 
 
 datasets <- c("bioethanol", "human", "lake", "marine", "mice", "peromyscus",
-              "rainforest", #"rice",
-              "seagrass", "sediment", "soil"#,
-              #"stream"
+              "rainforest", "rice",
+              "seagrass", "sediment", "soil",
+              "stream"
               )
 
 beta_summary_files <- glue("data/{datasets}/data.otu.beta_depth.summary")
 names(beta_summary_files) <- datasets
 
 beta_composite <- map_dfr(beta_summary_files, read_tsv, .id = "dataset") %>%
-  filter(method == "bray" | method == "jaccard") %>%
+  filter(method == "bray") %>%
   group_by(dataset, method, n_seqs) %>%
   summarize(mean = mean(mean),
             cov = 100 * mean(sd / mean),
@@ -91,7 +91,6 @@ beta_composite <- map_dfr(beta_summary_files, read_tsv, .id = "dataset") %>%
                names_to = "statistic",
                values_to = "value") %>%
   mutate(dataset = factor(dataset, level = datasets),
-         method = factor(method, levels = c("bray", "jaccard")),
          statistic = factor(statistic, levels = c("mean", "cov"))
          )
 
@@ -103,7 +102,13 @@ plot_method_statistic <- function(m, s, data = composite,
     filter(method == m & statistic == s)
 
   filtered_point <- filtered_line %>%
-    inner_join(., smallest, by = c("dataset", "n_seqs"))
+    inner_join(., smallest, by = c("dataset")) %>%
+    mutate(diff = abs(n_seqs.x - n_seqs.y)) %>%
+    group_by(dataset) %>%
+    slice_min(diff) %>%
+    select(dataset, n_seqs = n_seqs.y, value) %>%
+    ungroup()
+    
 
   filtered_line %>%
     ggplot(aes(x = n_seqs, y = value,
@@ -134,15 +139,7 @@ plot_method_statistic <- function(m, s, data = composite,
     )
 }
 
-composite <- bind_rows(alpha_composite, beta_composite) %>%
-  bind_rows(tibble(dataset = c(rep("rice", 8), rep("stream", 8)),
-                   method = rep(rep(c("bray", "jaccard"), each = 4), 2),
-                   n_seqs = 1000,
-                   sd = 0,
-                   n_samples = 100,
-                   statistic = rep(c("mean", "cov"), 8),
-                   value = 0)
-  )
+composite <- bind_rows(alpha_composite, beta_composite) 
 
 sobs_mean <- plot_method_statistic("sobs", "mean") +
   labs(y = "Mean value\nacross samples",
@@ -163,11 +160,6 @@ bray_mean <- plot_method_statistic("bray", "mean") +
   labs(title = "Bray-Curtis")
   
 bray_cov <- plot_method_statistic("bray", "cov")
-
-# jaccard_mean <- plot_method_statistic("jaccard", "mean") +
-#   labs(title = "Jaccard")
-
-# jaccard_cov <- plot_method_statistic("jaccard", "cov")
 
 patch <- sobs_mean + shannon_mean + bray_mean +
          sobs_cov + shannon_cov + bray_cov +

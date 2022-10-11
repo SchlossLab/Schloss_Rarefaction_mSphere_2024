@@ -21,21 +21,21 @@ pretty_datasets <- tibble(
 ## Alpha diversity panel...
 
 alpha_metrics <- c(
-  "raw_sobs",
   "rare_sobs",
+  "raw_sobs",
   "srs_sobs",
   "raw_ace",
   "raw_chao",
   "ba_default",
   "ba_poisson",
   
-  "raw_shannon",
   "rare_shannon",
+  "raw_shannon",
   "srs_shannon",
   "raw_npshannon",
   
-  "raw_simpson",
   "rare_simpson",
+  "raw_simpson",
   "srs_simpson"
   
   # "ba_sobs", "rare_ace", "rare_chao", "rare_coverage", "rare_npshannon",
@@ -64,21 +64,21 @@ alpha_classes <- c(
 )
 
 alpha_labels <- c(
-  "Raw",
   "Rarefied",
+  "Raw",
   "SRS Normalized",
   "ACE Estimate",
   "Chao1 Estimate",
   "BA Default",
   "BA Poisson",
   
-  "Raw",
   "Rarefied",
+  "Raw",
   "SRS Normalized",
   "Estimate",
   
-  "Raw",
   "Rarefied",
+  "Raw",
   "SRS Normalized"
 )
 
@@ -132,28 +132,26 @@ alpha <- alpha_composite %>%
 ## Beta diversity panel...
 
 beta_metrics <- c(
-  "raw_bray",
-  "rare_bray",
-  "relabund_bray",
-  "srs_bray",
-  "metagenomeseq_bray",
-
-  "raw_jaccard",
   "rare_jaccard",
+  "raw_jaccard",
   "relabund_jaccard",
   "srs_jaccard",
   "metagenomeseq_jaccard",
 
-  "raw_euclidean",
+  "rare_bray",
+  "raw_bray",
+  "relabund_bray",
+  "srs_bray",
+  "metagenomeseq_bray",
+
   "rare_euclidean",
+  "raw_euclidean",
   "relabund_euclidean",
-  "nclr_euclidean",
-  "oclr_euclidean",
   "rclr_euclidean",
+  "oclr_euclidean",
+  "nclr_euclidean",
   "zclr_euclidean",
   "deseq2_euclidean"
-  # "srs_euclidean",
-  # "metagenomeseq_euclidean"
 )
 
 # beta_classes <- c(
@@ -161,31 +159,31 @@ beta_metrics <- c(
 # )
 
 beta_labels <- c(
-  "Raw",
   "Rarefied",
+  "Raw",
   "Rel. abundance",
   "SRS Normalized",
   "CSS Normalized",
 
-  "Raw",
   "Rarefied",
+  "Raw",
   "Rel. abundance",
   "SRS Normalized",
   "CSS Normalized",
 
-  "Raw",
   "Rarefied",
+  "Raw",
   "Rel. abundance",
-  "NCLR",
-  "OCLR",
-  "RCLR",
-  "ZCLR",
+  "Robust CLR",
+  "One CLR",
+  "Nudge CLR",
+  "Zero CLR",
   "DeSeq2"
 )
 
 pretty_beta_calcs <- c(
-  bray = "Bray-Curtis",
   jaccard = "Jaccard",
+  bray = "Bray-Curtis",
   euclidean = "Euclidean"
 )
 

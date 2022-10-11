@@ -100,21 +100,26 @@ rule targets:
     #        process = beta_process, calculator= beta_calculator),
     # "data/human/data.o_oalpha_kw",
     # "data/human/data.o_oamova"
+    expand("data/mice/data.otu.o_{process}_alpha",
+           process = alpha_process),
+    expand("data/mice/data.otu.o_{process}_{calculator}.dist",
+           process = beta_process, calculator= beta_calculator),
+
     #
     ## summary data files
-    "data/process/study_summary_statistics.tsv",
+    # "data/process/study_summary_statistics.tsv",
     #  
     ## figures
-    "figures/alpha_beta_depth_correlation.tiff",
-    "figures/false_positive_null_model.tiff",
-    "figures/false_positive_null_model_size.tiff",
-    "figures/power_effect_model.tiff",
-    "figures/power_cffect_model.tiff",
-    "figures/intrasample_variation.tiff",
-    "figures/coverage_plot.tiff",
-    "figures/example_alpha_cor.tiff",
-    "figures/example_beta_cor.tiff",
-    "figures/seqs_per_sample.tiff"
+    # "figures/alpha_beta_depth_correlation.tiff",
+    # "figures/false_positive_null_model.tiff",
+    # "figures/false_positive_null_model_size.tiff",
+    # "figures/power_effect_model.tiff",
+    # "figures/power_cffect_model.tiff",
+    # "figures/intrasample_variation.tiff",
+    # "figures/coverage_plot.tiff",
+    # "figures/example_alpha_cor.tiff",
+    # "figures/example_beta_cor.tiff",
+    # "figures/seqs_per_sample.tiff"
     
 rule silva:
   input:
@@ -267,20 +272,20 @@ rule richness_shared_design:
     """
 
 
-rule observed_shared_design:
-  input:
-    script="code/get_observed_shared_design.R",
-    shared="data/human/data.otu.shared",
-    accnos="data/human/data.remove_accnos",
-    sra="data/human/sra_info.tsv"
-  resources:
-  output:
-    "data/human/data.otu.oshared",
-    "data/human/data.odesign"
-  shell:
-    """
-    {input.script}
-    """
+# rule observed_shared_design:
+#   input:
+#     script="code/get_observed_shared_design.R",
+#     shared="data/human/data.otu.shared",
+#     accnos="data/human/data.remove_accnos",
+#     sra="data/human/sra_info.tsv"
+#   resources:
+#   output:
+#     "data/human/data.otu.oshared",
+#     "data/human/data.odesign"
+#   shell:
+#     """
+#     {input.script}
+#     """
 
 
 ################################################################################
@@ -301,16 +306,16 @@ rule raw_alpha:
     {input.script} {input.shared}
     """
 
-rule raw_oalpha:
-  input:
-    script="code/get_raw_alpha.sh",
-    shared="data/human/data.otu.oshared"
-  output:
-    "data/human/data.otu.o_raw_alpha"
-  shell:
-    """
-    {input.script} {input.shared}
-    """
+# rule raw_oalpha:
+#   input:
+#     script="code/get_raw_alpha.sh",
+#     shared="data/{dataset}/data.otu.oshared"
+#   output:
+#     "data/{dataset}/data.otu.o_raw_alpha"
+#   shell:
+#     """
+#     {input.script} {input.shared}
+#     """
 
 # rarefied nseqs, shannon, sobs, invsimpson, chao, ace, npshannon, coverage
 rule rarefy_alpha:
@@ -324,16 +329,16 @@ rule rarefy_alpha:
     {input.script} {input.shared}
     """
 
-rule rarefy_oalpha:
-  input:
-    script="code/get_rarefy_alpha.sh",
-    shared="data/human/data.otu.oshared"
-  output:
-    "data/human/data.otu.o_rarefy_alpha"
-  shell:
-    """
-    {input.script} {input.shared}
-    """
+# rule rarefy_oalpha:
+#   input:
+#     script="code/get_rarefy_alpha.sh",
+#     shared="data/{dataset}/data.otu.oshared"
+#   output:
+#     "data/{dataset}/data.otu.o_rarefy_alpha"
+#   shell:
+#     """
+#     {input.script} {input.shared}
+#     """
 
 # srs normalized nseqs, shannon, sobs, invsimpson, chao, ace, npshannon, coverage
 rule srs_alpha:
@@ -349,18 +354,18 @@ rule srs_alpha:
     {input.script} {input.shared}
     """
 
-rule srs_oalpha:
-  input:
-    script="code/get_srs_alpha.R",
-    shared="data/human/data.otu.oshared"
-  output:
-    "data/human/data.otu.o_srs_alpha"
-  resources:
-    mem_mb=10000
-  shell:
-    """
-    {input.script} {input.shared}
-    """
+# rule srs_oalpha:
+#   input:
+#     script="code/get_srs_alpha.R",
+#     shared="data/{dataset}/data.otu.oshared"
+#   output:
+#     "data/{dataset}/data.otu.o_srs_alpha"
+#   resources:
+#     mem_mb=10000
+#   shell:
+#     """
+#     {input.script} {input.shared}
+#     """
 
 # observed/estimated sobs with breakaway / poisson
 rule breakaway_alpha:
@@ -374,16 +379,16 @@ rule breakaway_alpha:
     {input.script} {input.shared}
     """
 
-rule breakaway_oalpha:
-  input:
-    script="code/get_breakaway_alpha.R",
-    shared="data/human/data.otu.oshared"
-  output:
-    "data/human/data.otu.o_breakaway_alpha"
-  shell:
-    """
-    {input.script} {input.shared}
-    """
+# rule breakaway_oalpha:
+#   input:
+#     script="code/get_breakaway_alpha.R",
+#     shared="data/{dataset}/data.otu.oshared"
+#   output:
+#     "data/{dataset}/data.otu.o_breakaway_alpha"
+#   shell:
+#     """
+#     {input.script} {input.shared}
+#     """
 
 
 ################################################################################
@@ -405,18 +410,18 @@ rule process_beta:
     {input.script} {input.shared} {output.dist}
     """
 
-rule process_obeta:
-  input:
-    script="code/get_{beta_process}_beta.R",
-    shared="data/human/data.otu.oshared"
-  output:
-    dist="data/human/data.otu.o_{beta_process}_{beta_calculator}.dist"
-  resources:
-    mem_mb=16000
-  shell:
-    """
-    {input.script} {input.shared} {output.dist}
-    """
+# rule process_obeta:
+#   input:
+#     script="code/get_{beta_process}_beta.R",
+#     shared="data/{dataset}/data.otu.oshared"
+#   output:
+#     dist="data/{dataset}/data.otu.o_{beta_process}_{beta_calculator}.dist"
+#   resources:
+#     mem_mb=16000
+#   shell:
+#     """
+#     {input.script} {input.shared} {output.dist}
+#     """
 
 ################################################################################
 #
@@ -477,18 +482,18 @@ rule alpha_kw:
     {input.script} data/{wildcards.dataset} {output.alpha}
     """
 
-rule oalpha_kw:
-  input:
-    script = "code/run_oalpha_kw.R",
-    alpha_files = expand("data/human/data.otu.o_{process}_alpha",
-                        process=alpha_process),
-    design_file = expand("data/human/data.odesign")
-  output:
-    alpha = "data/human/data.o_oalpha_kw"
-  shell:
-    """
-    {input.script}
-    """
+# rule oalpha_kw:
+#   input:
+#     script = "code/run_oalpha_kw.R",
+#     alpha_files = expand("data/{dataset}/data.otu.o_{process}_alpha",
+#                         process=alpha_process, allow_missing=True),
+#     design_file = "data/{dataset}/data.odesign"
+#   output:
+#     alpha = "data/{dataset}/data.o_oalpha_kw"
+#   shell:
+#     """
+#     {input.script}
+#     """
 
 
 # beta: calculate p-value based on size of sample
@@ -509,20 +514,21 @@ rule beta_amova:
     {input.script} data/{wildcards.dataset} {output.amova}
     """
 
-rule obeta_amova:
-  input:
-    script="code/run_obeta_analysis.R",
-    dist_files = expand("data/human/data.otu.o_{process}_{calculator}.dist",
-                        process=beta_process, calculator=beta_calculator),
-    design_file  = "data/human/data.odesign"
-  output:
-    amova="data/human/data.o_oamova"
-  resources:
-    mem_mb=12000
-  shell:
-    """
-    {input.script}
-    """
+# rule obeta_amova:
+#   input:
+#     script="code/run_obeta_analysis.R",
+#     dist_files = expand("data/{dataset}/data.otu.o_{process}_{calculator}.dist",
+#                         process=beta_process, calculator=beta_calculator,
+#                         allow_missing=True),
+#     design_file  = "data/{dataset}/data.odesign"
+#   output:
+#     amova="data/{dataset}/data.o_oamova"
+#   resources:
+#     mem_mb=12000
+#   shell:
+#     """
+#     {input.script}
+#     """
 
 
 
@@ -616,8 +622,6 @@ rule pool_beta_depth:
     """
     {input.script} {input.summaries}
     """
-
-
 
 rule observed_coverage:
   input:
@@ -816,18 +820,29 @@ rule pool_study_summary_statistics:
 
 rule write_paper:
   input:
-    rmd_file = "submission/manuscript.Rmd",
-    refs_file = "submission/references.bib",
-    cls_file = "submission/asm.cls",
-    summary_stats = "data/process/study_summary_statistics.tsv"
+    "submission/manuscript.Rmd",
+    "submission/references.bib",
+    "submission/asm.csl",
+    #
+    "data/process/study_summary_statistics.tsv",
+    "figures/alpha_beta_depth_correlation.tiff",
+    "figures/false_positive_null_model.tiff",
+    "figures/false_positive_null_model_size.tiff",
+    "figures/power_effect_model.tiff",
+    "figures/power_cffect_model.tiff",
+    "figures/intrasample_variation.tiff",
+    "figures/coverage_plot.tiff",
+    "figures/example_alpha_cor.tiff",
+    "figures/example_beta_cor.tiff",
+    "figures/seqs_per_sample.tiff"
   output:
     "submission/manuscript.pdf",
     "submission/manuscript.md",
     "submission/manuscript.tex"
   shell: 
     """
-      R -e "library('rmarkdown'); render('submission/manuscript.Rmd', clean=FALSE)"
-      mv submission/manuscript.knit.md submission/manuscript.md
-      rm -f submission/manuscript.log
+    R -e "library('rmarkdown'); render('submission/manuscript.Rmd', clean=FALSE)"
+    mv submission/manuscript.knit.md submission/manuscript.md
+    rm -f submission/manuscript.log
     """
     

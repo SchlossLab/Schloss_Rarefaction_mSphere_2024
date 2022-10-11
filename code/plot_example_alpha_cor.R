@@ -67,7 +67,7 @@ pretty_labels <- c(
 
 aplot <- tidy_composite %>%
   mutate(metric = factor(metric,
-                         levels = c("raw", "rare", "srs", "ba_default"))) %>%
+                         levels = c("rare", "raw", "srs", "ba_default"))) %>%
   filter(!(metric == "ba_default" & value > 4000)) %>%
   ggplot(aes(x = nseqs, y = value)) +
   geom_point() +
