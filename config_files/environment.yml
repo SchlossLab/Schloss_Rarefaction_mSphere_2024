@@ -26,3 +26,4 @@ dependencies:
   - r-rmarkdown=2.16
   - r-knitr=1.40
   - r-glue=1.6.2
+  - imagemagick

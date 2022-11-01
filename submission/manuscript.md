@@ -6,8 +6,10 @@ output:
 csl: asm.csl
 geometry: margin=1.0in
 header-includes:
+ - \usepackage{upgreek}
  - \usepackage{booktabs}
  - \usepackage{longtable}
+ - \usepackage{graphicx}
  - \usepackage{array}
  - \usepackage{multirow}
  - \usepackage{wrapfig}
@@ -205,9 +207,67 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6755255/
 
 \newpage
 
-
-**Figure 1.**
+## Figures
 
 \newpage
 
-**Figure S1.**
+\includegraphics[height=17cm]{figure_1.png}
+
+**Figure 1. Rarefaction eliminates the correlation between sequencing depth and alpha diversity (A) and between differences in sampling depth and beta (B) diversity metrics when using null community models.** Examples of the relationship between different metrics and methods for controlling for uneven sequencing effort are provided in Figures S2 and S3 for alpha and beta diversity metrics, respectively. Each point represents the mean of 100 random null community models; the standard deviation was smaller than the size of the plotting symbol.
+
+\newpage
+
+\includegraphics[height=17cm]{figure_2.png}
+
+**Figure 2. The risk of falsely detecting a difference between treatment groups drawn from a null model does not meaningfully vary from 5%, regardless of approach for controlling for uneven sequencing depth**. Samples were randomly assigned to different treatment groups. To calculate the false detection rate, datasets were regenerated 100 times and differences in alpha diversity were tested using a Wilcoxon test (A) and differences in beta diversity were tested using PERMANOVA (B) at a 5% threshold. The false positive rate was the number of times a dataset yeilded a significant result.
+
+\newpage
+
+\includegraphics[height=17cm]{figure_3.png}
+
+**Figure 3.The risk of falsely detecting a difference between treatment groups drawn from a null model does not meaningfully vary from 5% when data are rarefied when sequencing depth is confounded with treatement group**. Samples were assigned to different treatment groups based on whether they were above the median number of sequences for each dataset. To calculate the false detection rate, datasets were regenerated 100 times and differences in alpha diversity were tested using a Wilcoxon test (A) and differences in beta diversity were tested using PERMANOVA (B) at a 5% threshold. The false positive rate was the number of times a dataset yeilded a significant result.
+
+
+\newpage
+
+\includegraphics[height=17cm]{figure_4.png}
+
+**Figure 4. The ability to detect true differences in treatment groups for alpha (A) and beta (B) diversity metrics is greatest when communities differing in the relative abundance of their OTUs are rarefied.** For each dataset samples were randomly assigned to one of two community distributions where the abundance of OTUs differed. To calculate the power for each study, datasets were regenerated 100 times and differences in alpha diversity were tested using a Wilcoxon test (A) and differences in beta diversity were tested using PERMANOVA (B) at a 5% threshold. The power was the number of times a dataset yielded a significant result.
+
+
+\newpage
+
+\includegraphics{figure_5.png}
+
+**Figure 5. The ability to detect true differences in treatment groups for alpha diversity metrics is greatest when communities differing in richness are rarefied.** For each dataset samples were randomly assigned to one of two community distributions where one distribution contained a subset of OTUs found in the other. To calculate the power for each study, datasets were regenerated 100 times and differences in alpha diversity were tested using a Wilcoxon test (A) and differences in beta diversity were tested using PERMANOVA (B) at a 5% threshold. The power was the number of times a dataset yielded a significant result. 
+
+
+\newpage
+
+\includegraphics{figure_6.png}
+
+**Figure 6. The mean and coefficient of variation for rarefied richness, shannon diversity, and Bray-Curtis dissimilarity vary with sequencing depth.** For each dataset, a null community distribution was created and samples were created to have the same sequencing depth as they did originally. The placement of the plotting symbol indicates the size of the smallest sample. Results are only shown for sequencing depths where a dataset had 5 or more samples.
+
+\newpage
+
+\includegraphics{figure_7.png}
+
+**Figure 7. Most datasets are sequenced to a level that provides a high level of coverage.** Each plotting symbol represents the observed Good's coverage for a different sample in each dataset. The smoothed line indicates the simulated coverage for varying levels of sampling effort when a null community is generated from the observed data. The box and whisker plot indicates the range of coverage values when the observed commmunity data were rarefied to the size of the least sequenced sample.
+
+\newpage
+
+\includegraphics{figure_s1.png}
+
+**Figure S1. The number of sequences observed in each sample for each dataset included in this analysis generally varied by 10 to 100-fold.** The threshold for specifying the number of sequences per sample varied by dataset and was determined based on identifying natural breaks in the data.
+
+\newpage
+
+\includegraphics{figure_s2.png}
+
+**Figure S2. Examples of the richness in each of the 490 samples that were generated for one randomization of the null model using the human dataset.** The x-axis indicates the number of sequences in each of the samples prior to each method's appraoch of controlling for uneven sampling effort. The Spearman correlation coefficient ($\uprho$) and test of whether the coefficient was significantly different from zero are indicated for each panel.
+
+\newpage
+
+\includegraphics{figure_s3.png}
+
+**Figure S3. Examples of differences in beta diversity in each of the 490 samples that were generated for one randomization of the null model using the human dataset.** The x-axis indicates the difference in the number of sequences in each of the samples that went into calcualting the pairwise distance prior to each method's appraoch of controlling for uneven sampling effort. The Spearman correlation coefficient ($\uprho$) and test of whether the coefficient was significantly different from zero are indicated for each panel.

@@ -92,18 +92,18 @@ rule targets:
     # expand("data/{dataset}/data.otu.rarefy_coverage", dataset = datasets),
     #
     ## observed human dataset analysis
-    # "data/human/data.otu.oshared",
-    # "data/human/data.odesign",
-    # expand("data/human/data.otu.o_{process}_alpha",
-    #        process = alpha_process),
-    # expand("data/human/data.otu.o_{process}_{calculator}.dist",
-    #        process = beta_process, calculator= beta_calculator),
-    # "data/human/data.o_oalpha_kw",
-    # "data/human/data.o_oamova"
-    expand("data/mice/data.otu.o_{process}_alpha",
-           process = alpha_process),
-    expand("data/mice/data.otu.o_{process}_{calculator}.dist",
-           process = beta_process, calculator= beta_calculator),
+        # "data/human/data.otu.oshared",
+        # "data/human/data.odesign",
+        # expand("data/human/data.otu.o_{process}_alpha",
+        #        process = alpha_process),
+        # expand("data/human/data.otu.o_{process}_{calculator}.dist",
+        #        process = beta_process, calculator= beta_calculator),
+        # "data/human/data.o_oalpha_kw",
+        # "data/human/data.o_oamova"
+        # expand("data/mice/data.otu.o_{process}_alpha",
+        #        process = alpha_process),
+        # expand("data/mice/data.otu.o_{process}_{calculator}.dist",
+        #        process = beta_process, calculator= beta_calculator),
 
     #
     ## summary data files
@@ -818,31 +818,131 @@ rule pool_study_summary_statistics:
 #
 ################################################################################
 
+rule fig_1:
+  input:
+    "figures/alpha_beta_depth_correlation.tiff",
+  output:
+    "submission/figure_1.png",
+  shell:
+    """
+    convert figures/alpha_beta_depth_correlation.tiff submission/figure_1.png
+    """
+
+rule fig_2:
+  input:
+    "figures/false_positive_null_model.tiff",
+  output:
+    "submission/figure_2.png",
+  shell:
+    """
+    convert figures/false_positive_null_model.tiff submission/figure_2.png
+    """
+
+rule fig_3:
+  input:
+    "figures/false_positive_null_model_size.tiff",
+  output:
+    "submission/figure_3.png",
+  shell:
+    """
+    convert figures/false_positive_null_model_size.tiff submission/figure_3.png
+    """
+
+rule fig_4:
+  input:
+    "figures/power_effect_model.tiff",
+  output:
+    "submission/figure_4.png",
+  shell:
+    """
+    convert figures/power_effect_model.tiff submission/figure_4.png
+    """
+
+rule fig_5:
+  input:
+    "figures/power_cffect_model.tiff",
+  output:
+    "submission/figure_5.png",
+  shell:
+    """
+    convert figures/power_cffect_model.tiff submission/figure_5.png
+    """
+
+rule fig_6:
+  input:
+    "figures/intrasample_variation.tiff",
+  output:
+    "submission/figure_6.png",
+  shell:
+    """
+    convert figures/intrasample_variation.tiff submission/figure_6.png
+    """
+
+rule fig_7:
+  input:
+    "figures/coverage_plot.tiff",
+  output:
+    "submission/figure_7.png",
+  shell:
+    """
+    convert figures/coverage_plot.tiff submission/figure_7.png
+    """
+
+rule fig_s1:
+  input:
+    "figures/seqs_per_sample.tiff",
+  output:
+    "submission/figure_s1.png",
+  shell:
+    """
+    convert figures/seqs_per_sample.tiff submission/figure_s1.png
+    """
+
+rule fig_s2:
+  input:
+    "figures/example_alpha_cor.tiff",
+  output:
+    "submission/figure_s2.png",
+  shell:
+    """
+    convert figures/example_alpha_cor.tiff submission/figure_s2.png
+    """
+
+rule fig_s3:
+  input:
+    "figures/example_beta_cor.tiff",
+  output:
+    "submission/figure_s3.png",
+  shell:
+    """
+    convert figures/example_beta_cor.tiff submission/figure_s3.png
+    """
+
+
 rule write_paper:
   input:
+    "code/render_manuscript.R",
     "submission/manuscript.Rmd",
     "submission/references.bib",
     "submission/asm.csl",
     #
     "data/process/study_summary_statistics.tsv",
-    "figures/alpha_beta_depth_correlation.tiff",
-    "figures/false_positive_null_model.tiff",
-    "figures/false_positive_null_model_size.tiff",
-    "figures/power_effect_model.tiff",
-    "figures/power_cffect_model.tiff",
-    "figures/intrasample_variation.tiff",
-    "figures/coverage_plot.tiff",
-    "figures/example_alpha_cor.tiff",
-    "figures/example_beta_cor.tiff",
-    "figures/seqs_per_sample.tiff"
+    "submission/figure_1.png",
+    "submission/figure_2.png",
+    "submission/figure_3.png",
+    "submission/figure_4.png",
+    "submission/figure_5.png",
+    "submission/figure_6.png",
+    "submission/figure_7.png",
+    "submission/figure_s1.png",
+    "submission/figure_s2.png",
+    "submission/figure_s3.png"
   output:
     "submission/manuscript.pdf",
     "submission/manuscript.md",
     "submission/manuscript.tex"
   shell: 
     """
-    R -e "library('rmarkdown'); render('submission/manuscript.Rmd', clean=FALSE)"
-    mv submission/manuscript.knit.md submission/manuscript.md
-    rm -f submission/manuscript.log
+    code/render_manuscript.R
     """
     
