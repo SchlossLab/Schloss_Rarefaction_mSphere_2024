@@ -239,24 +239,25 @@ sequences in each sample (Table 1 and Figure S1).
 \textbf{\emph{Without rarefaction, metrics of alpha diversity are
 sensitive to sampling effort.}} To test the sesitivity of various
 approaches of measuring alpha diversity to sampling effort, I generated
-null models for each study. Under a null model, each community from the
-same study would be expected to have the same alpha diversity regardless
-of the sampling effort. I measured the richness of the communities in
-each study without any correction, using scaled ranked subsampling (SRS)
-normalized OTU counts, with estimates based on non-parametric and
-parametric approaches, and using rarefaction (e.g.~Figure S2). For each
-study, all of the approaches, except for rarefaction, showed a strong
-correlation between richness and the number of sequences in the sample
-(Figure 1A). Next, I assessed diversity using the Shannon diversity
-index and the inverse Simpson diversity index without any correction,
-using normalized OTU counts, and rarefaction; I also used a
-non-parametric estimator of Shannon diversity. The correlation between
-sampling depth and the diversity metric was not as strong as it was for
-richness and the inverse Simpson diversity values were less sensitive
-than the Shannon diversity values; however, the correlation to the
-rarefied diversity metrics were the lowest for all of the metrics and
-studies (Figure 1A). The rarefied alpha-diversity metrics consistently
-demonstrated a lack of sensitivity to sampling depth.
+null models for each dataset. Under a null model, each community from
+the same dataset would be expected to have the same alpha diversity
+regardless of the sampling effort. I measured the richness of the
+communities in each dataset without any correction, using scaled ranked
+subsampling (SRS) normalized OTU counts, with estimates based on
+non-parametric and parametric approaches, and using rarefaction
+(e.g.~Figure S2). For each dataset, all of the approaches, except for
+rarefaction, showed a strong correlation between richness and the number
+of sequences in the sample (Figure 1A). Next, I assessed diversity using
+the Shannon diversity index and the inverse Simpson diversity index
+without any correction, using normalized OTU counts, and rarefaction; I
+also used a non-parametric estimator of Shannon diversity. The
+correlation between sampling depth and the diversity metric was not as
+strong as it was for richness and the inverse Simpson diversity values
+were less sensitive than the Shannon diversity values; however, the
+correlation to the rarefied diversity metrics were the lowest for all of
+the metrics and studies (Figure 1A). The rarefied alpha-diversity
+metrics consistently demonstrated a lack of sensitivity to sampling
+depth.
 
 \textbf{\emph{Without rarefaction, metrics of beta diversity are
 sensitive to sampling effort.}} To test the sesitivity of various
@@ -266,7 +267,7 @@ Under a null model, the ecological distance between any pair of samples
 would be the same regardless of the difference in the number of
 sequences observed in each sample (e.g., Figure S3). First, I calculated
 the Jaccard distance coefficient between all pairs of communities within
-a study. The Jaccard distance coefficient is the fraction of OTUs that
+a dataset. The Jaccard distance coefficient is the fraction of OTUs that
 are unique to either community and does not account for the abundance of
 the OTUs. Jaccard distances were calcualted using the uncorrected OTU
 counts, with rarefaction, relative abundances, and following
@@ -301,45 +302,38 @@ generated from the null model in the analysis of alpha and beta
 diversity metrics. To test for differences in alpha and beta diversity I
 used the non-parametric Wilcoxon test and non-parametric
 permutation-based multivariate analysis of variance (PERMANOVA). First,
-within each study, I randomly assigned each sample to one of two
-treatment groups. My expectation was that approximately 5 of the 100
-(5\%) random tests for each comparison would yield a significant test
-result. Indeed, for each study and alpha and beta diversity metric and
+I employed an unbiased null treatment model to measure the false
+detection rate, which should not have meaningfully differed from 5\%.
+Indeed, for each dataset and alpha and beta diversity metric and
 strategy for accounting for uneven sampling, approximately 5\% of the
-tests yielded a significant result (Figure 2). Second, within each
-study, I assigned samples with more than the median number of sequences
-per sample to one treatment group and the rest to another treatment
-group. If there was no sensitivity to sampling effort, I would have
-expected that 5\% of the tests would yield a significant result. In
-fact, only the rarefied data consistently resulted in a 5\% false
+tests yielded a significant result (Figure 2). Second, I employed a
+biased null treatment model where the treatment group was completely
+confounded with the number of sequences in each sample. Under this
+model, only the rarefied data consistently resulted in a 5\% false
 positive rate for alpha and beta diversity metrics (Figure 2). These
-results align with the observed sensitivity of alpha and beta diversity
-metrics to sampling effort and underscore the value of rarefaction.
+results aligned with the observed sensitivity of alpha and beta
+diversity metrics to sampling effort and underscore the value of
+rarefaction.
 
 \textbf{\emph{Rarefaction preserves the statistical power to detect
 differences between treatment groups.}} To assess the impact of
 different approaches to control for uneven sampling effort I performed
-two additional simulations. In the first simulation, for each study
-communities were randomly assigned to one of two treatment groups.
-Communities in the first treatment group were generated by sampling from
-the null distribution. Samples in the second treatment group were
-generated by perturbing the null distribution by increasing the relative
-abundance of 10\% of the OTUs by 5\%. These values were determined after
-empirically searching for conditions that resulted in a large fraction
-of the randomizations yieleding a significant result across most of the
-studies. The fraction of tests that yielded a significant test was a
-measure of the statistical power for the test. The power to detect
-differences in richness by all approaches was low (Figure 4A). This was
-likely because the approach for generating the perturbed community did
-not necessarily change the number of OTUs in each treatment group.
+two additional simulations. In the first simulation, I implemented a
+skewed abundance distribution model to create two treatment groups for
+each datasets that were each populated with half of the samples each
+with the same number of sequences as the samples had in the observed
+data. The power to detect differences in richness between the two
+simulated treatment groups by all approaches was low (Figure 4A). This
+was likely because the approach for generating the perturbed community
+did not necessarily change the number of OTUs in each treatment group.
 Regardless, the simulations testing differencse in richness using the
 Rice and Stream datasets had the greatest power when the richness data
-were rarefied. To explore this further, in a second simulation the
-second treatment group was perturbed by removing 3\% of the OTUs from
-the model. As suggested by the first simulation, the rarefied richness
-data had a higher statistical power than the other approaches when
-measuring richness (Figure 5). The simulations testing the power to
-detect differences in Shannon diversity also showed that rarefied data
+were rarefied. To explore this further, a richness-adjusted community
+model was created by removing 3\% of the OTUs from a null model model.
+As suggested by the first simulation, the rarefied richness data had a
+higher statistical power than the other approaches when measuring
+richness (Figure 5). The simulations testing the power to detect
+differences in Shannon diversity also showed that rarefied data
 performed other methods (Figure 4A). When testing for differences in the
 Inverse Simpson diversity index the the difference between rarefaction
 and the other methods was negligible (Figure 4A). For tests of beta
@@ -405,7 +399,7 @@ sequencing effort required to acheive higher sequencing depth would
 likely limit the number of samples that could be sequenced when
 controlling for costs. Although it may be disconcerting to rarefy to a
 sequencing depth that is considerably lower than that obtained for the
-best sequenced community in a study, sequencing coverage for many
+best sequenced community in a dataset, sequencing coverage for many
 environments is probably adequate even at the lower sequencing depth. Of
 course, the results above have demonstrated that rarefaction is
 necessary to avoid problems with making inferences.
@@ -439,33 +433,158 @@ necessary to avoid problems with making inferences.
 \hypertarget{materials-and-methods}{%
 \subsection{Materials and Methods}\label{materials-and-methods}}
 
-\textbf{Choice of datasets.} The specific studies were selected because
-their data was publicly accessible through the Sequence Read Archive,
-the original investigators sequenced the V4 region of the 16S rRNA gene
-using paired 250 nt reads, and my previous familiarity with the data.
-The use of paired 250 nt reads to sequence the V4 region resulted in a
-near complete two-fold overap of the V4 region resulting in high quality
-contigs with a low sequencing error rate (1). These data were processed
-through the standard sequence curation pipeline to generate operational
-taxonomic units (OTUs) using the mothur software package (1, 2).
+\textbf{Choice of datasets.} The specific studies used in this study
+were selected because their data was publicly accessible through the
+Sequence Read Archive, the original investigators sequenced the V4
+region of the 16S rRNA gene using paired 250 nt reads, and my previous
+familiarity with the data. The use of paired 250 nt reads to sequence
+the V4 region resulted in a near complete two-fold overap of the V4
+region resulting in high quality contigs with a low sequencing error
+rate (1). These data were processed through a standardized sequence
+curation pipeline to generate operational taxonomic units (OTUs) using
+the mothur software package (1, 2). OTUs were identified using the
+OptiClust algorithm to cluster sequences together that were not more
+than 3\% different from each other (3).
 
-\textbf{Null community model.} Null models were generated by randomly
-assigning each sequence in the study to an OTU and sample while keeping
-constant the number of sequences per sample and the total number of
-sequences in each OTU. Because the construction of the null models was a
-stochastic process, 100 replicates were geneated for each study.
+\textbf{Null community model.} Null community models were generated such
+that within a dataset the number of sequences per sample and the number
+of sequences per OTU across all samples within the dataset were the same
+as was observed in original. This model effectively generated
+statistical samples of a single community so that there should not have
+been a statistical difference between the samples. This model
+implemented by randomly assigning each sequence in the dataset to an OTU
+and sample while keeping constant the number of sequences per sample and
+the total number of sequences in each OTU. This is a similar approach to
+that of the IS algorithm described by Ulrich and Gotelli (4). Because
+the construction of the null models was a stochastic process, 100
+replicates were geneated for each dataset.
 
-\textbf{10\%/5\% model}
+\textbf{Null treatment model.} I created an unbiased and biased
+treatment model. In the unbiased model, samples were randomly assigned
+to one of two treatment groups. In the biased treatment model, samples
+that had more than the median number of seqeunces for a dataset were
+assigned to one treatment group and the rest were assigned to a second
+treatment group. Comparison of any diversity metric across the two
+treatment groups should have only yielded a significant result in 5\% of
+the simulations when testing under a Type I error (i.e., \(\upalpha\))
+of 0.05.
 
-\textbf{Remove model}
+\textbf{Skewed abundance community model.} In the skewed abundance
+community model, communities were randomly assigned to one of two
+simulated treatment groups. Communities in the first treatment group
+were generated by calculating the relative abundance of each OTU across
+all samples and using those values as the probability of sampling each
+OTU. This probability distribution was sampled until each sample had the
+same number of sequences that it did in the observed data. Samples in
+the second treatment group were generated by adjusting the relative
+abundances of the OTUs in the firs treatment group by increasing the
+relative abundance of 10\% of the OTUs by 5\%. These values were
+determined after empirically searching for conditions that resulted in a
+large fraction of the randomizations yieleding a significant result
+across most of the studies. Sequences were sampled from the skewed
+community community until each sample had the same number of sequences
+that it did in the observed data. Under the skewed abundance community
+model each sample represented a statistical sampling of two communities
+such that there should not have been a statistically significant
+difference within a treatment group, but there was between the treatment
+groups. Because the construction of the skewed abundance community model
+was a stochastic process, 100 replicates were geneated for each dataset.
 
-\textbf{Null treatment model}
+\textbf{Richness-adjusted community model.} In the richness-adjusted
+community model, communities were randomly assigned to one of two
+simulated treatment groups. Communities in the first treatment group
+were generated by calculating the relative abundance of each OTU across
+all samples and using those values as the probability of sampling each
+OTU. This probability distribution was sampled until each sample had the
+same number of sequences that it did in the observed data. Samples in
+the second treatment group were generated by removing 3\% of the OTUs
+from the dataset and recalculating the relative abundance of the
+remaining OTUs. This percentage was determined after empirically
+searching for a value that resulted in a large fraction of the
+randomizations yieleding a significant result across most of the
+studies. Sequences were sampled from the richness-adjusted community
+distrubtion until each sample had the same number of sequences that it
+did in the observed data. Under the richness-adjusted community model
+each sample represented a statistical sampling of two communities such
+that there should not have been a statistically significant difference
+within a treatment group, but there was between the treatment groups.
+Because the construction of the richness-adjusted community model was a
+stochastic process, 100 replicates were geneated for each dataset.
 
-\textbf{Size-based treatment model}
+\textbf{Alpha diversity calculations.} Various strategies for handling
+uneven sampling effort were evaluated to identify the best approach for
+calculating community richness and Shannon and inverse Simpson diversity
+indeices. Raw OTU counts were used as input to calculate sample richness
+and Shannon and inverse Simpson diversity using mothur (2, 5). Shannon
+diversity was calculated as
 
-\textbf{Data availability.}
+\[H_{shannon} = - \sum_{i=1}^{S_{obs}} \frac{n_i}{N} ln \frac{n_i}{N}\]
 
-\textbf{Reproducible data analysis.}
+The Simpson diversity was calculated as
+
+\[D_{simpson} = \frac {\sum_{i=1}^{S_{obs}} {n_i \left ( n_i - 1 \right )}}{N \left( N-1 \right )}\]
+
+The inverse Simpson diversity was calculated as \(1/D_{simpson}\). In
+both formulae, \(n_i\) is the number of sequences in OTU \(i\) and \(N\)
+is the number of sequences in the sample. Rarefaction of richness,
+Shannon diversity and Inverse Simpson diversity values were carried out
+in mothur. Briefly, mothur calculates each value on a random draw of the
+same number of sequences from each sample and obtains a mean value based
+on 1,000 random draws. Scaled ranked subsampling (SRS) was used to
+normalize OTU counts to the size of the smallest sample in each dataset
+using the SRS R package (v.0.2.3)(6). Normalized OTU counts were used to
+calculate sample richness and Shannon and inverse Simpson diversity
+values using mothur. The non-parametric bias-corrected Chao1 and ACE
+richness estimators (7) and a non-parametric estimator of the Shannon
+diversity (8) were calculated using raw OTU counts with mothur.
+Parametric estimates of sample richness were calculated using the
+breakaway (BA) R package (v.4.7.9)(9). The current analysis reports both
+the results from running default model selection procedure and the
+Poisson model. The default model selection returned either the Kemp,
+Negative Binomial, or Poisson models.
+
+\textbf{Beta diversity calculations.} Similar to the alpha diversity
+calculations, multiple approaches were used to control for uneven
+sampling effort and calculate beta diversity. Raw and OTU counts were
+used for input to calculate the Jaccard, Bray-Curtis, and Euclidean
+dissimilarity indices using the vegdist function from the vegan R
+package (v.2.6.2)(10). The Jaccard index was calculated as
+
+\[D_{Jaccard}=1-\frac{S_{AB}}{S_A+S_B-S_{AB}}\]
+
+where \(S_A\) and \(S_B\) were the number of OTUs in samples \(A\) and
+\(B\) and \(S_{AB}\) was the number of OTUs shared between the two
+samples. The Bray-Curtis index was calculated as
+
+\[D_{Bray-Curtis}=1-\frac{\sum_{i=1}^{S_T} \left| n_{A,i} - n_{B,i}\right| }{ N_A + N_B}\]
+
+where \(n_{A,i}\) and \(n_{B,i}\) are the number of sequences observed
+in OTU \(i\) from samples \(A\) and \(B\), respectively. \(N_A\) and
+\(N_B\) are the total number of sequences in samples \(A\) and \(B\),
+respectively. \(S_T\) is the total number of OTUs observed between the
+two samples. The Euclidean distance was calculated as
+
+\[D_{Euclidean}=1-\sqrt{\sum_{i=1}^{S_T}\left(n_{A,i} - n_{B,i}\right)^2}\]
+
+These metrics were calculated using the relative abundance of each OTU
+using the vegdist function from vegan. The relative abundance was
+calculated as the number of sequences in the OTU (e.g., \(n_{A,i}\))
+divided by the total number of sequences in the sample (e.g., \(N_A\)).
+Rarefied beta-diversity values were calculated using the avgdist
+function in vegan. Briefly, vegan's avgdist function calculates each
+pairwise dissimilarity index after obtaining a random draw of the same
+number of sequences from each sample. After obtaining 100 random draws
+it returns the mean value.
+
+SRS normalized - Jaccard/BC CSS normalized - Jaccard/BC DeSeq2
+Center-log ratio
+
+\textbf{Power analysis.} The fraction of tests that yielded a
+significant test was a measure of the statistical power for the test.
+
+\textbf{Test of statistical significance.} Wilcox, PERMANOVA
+
+\textbf{Reproducible data analysis.} mothur - 1.47.0
 
 \textbf{\emph{doi: 10.1038/nmeth.2658.}} Should CSS be used in alpha
 diversity analysis? No.~The richness and shannon diversity values were
@@ -553,15 +672,76 @@ communities. Applied and Environmental Microbiology
 \textbf{75}:7537--7541.
 doi:\href{https://doi.org/10.1128/aem.01541-09}{10.1128/aem.01541-09}.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Li2015}{}}%
+\leavevmode\vadjust pre{\hypertarget{ref-Westcott2017}{}}%
 \CSLLeftMargin{3. }%
+\CSLRightInline{\textbf{Westcott SL}, \textbf{Schloss PD}. 2017.
+{OptiClust}, an improved method for assigning amplicon-based sequence
+data to operational taxonomic units. {mSphere} \textbf{2}.
+doi:\href{https://doi.org/10.1128/mspheredirect.00073-17}{10.1128/mspheredirect.00073-17}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Ulrich2010}{}}%
+\CSLLeftMargin{4. }%
+\CSLRightInline{\textbf{Ulrich W}, \textbf{Gotelli NJ}. 2010. Null model
+analysis of species associations using abundance data. Ecology
+\textbf{91}:3384--3397.
+doi:\href{https://doi.org/10.1890/09-2157.1}{10.1890/09-2157.1}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Magurran2004}{}}%
+\CSLLeftMargin{5. }%
+\CSLRightInline{\textbf{Magurran AE}. 2004.
+\href{https://books.google.com/books?id=tUqzLSUzXxcC}{Measuring
+biological diversity}. Wiley.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Beule2020}{}}%
+\CSLLeftMargin{6. }%
+\CSLRightInline{\textbf{Beule L}, \textbf{Karlovsky P}. 2020.
+\href{https://doi.org/10.7717/peerj.9593}{Improved normalization of
+species count data in ecology by scaling with ranked subsampling (SRS):
+Application to microbial communities}. PeerJ \textbf{8}:e9593.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Chao2016}{}}%
+\CSLLeftMargin{7. }%
+\CSLRightInline{\textbf{Chao A}, \textbf{Chiu C-H}. 2016. Species
+richness: Estimation and comparison. Wiley StatsRef: statistics
+reference online \textbf{1}:26.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Chao2003}{}}%
+\CSLLeftMargin{8. }%
+\CSLRightInline{\textbf{Chao A}, \textbf{Shen T-J}. 2003. Nonparametric
+estimation of shannon's index of diversity when there are unseen species
+in sample. Environmental and ecological statistics
+\textbf{10}:429--443.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Willis2015}{}}%
+\CSLLeftMargin{9. }%
+\CSLRightInline{\textbf{Willis A}, \textbf{Bunge J}. 2015. Estimating
+diversity via frequency ratios. Biometrics \textbf{71}:1042--1049.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Oksanen2022}{}}%
+\CSLLeftMargin{10. }%
+\CSLRightInline{\textbf{Oksanen J}, \textbf{Simpson GL},
+\textbf{Blanchet FG}, \textbf{Kindt R}, \textbf{Legendre P},
+\textbf{Minchin PR}, \textbf{O'Hara RB}, \textbf{Solymos P},
+\textbf{Stevens MHH}, \textbf{Szoecs E}, \textbf{Wagner H},
+\textbf{Barbour M}, \textbf{Bedward M}, \textbf{Bolker B},
+\textbf{Borcard D}, \textbf{Carvalho G}, \textbf{Chirico M}, \textbf{De
+Caceres M}, \textbf{Durand S}, \textbf{Evangelista HBA},
+\textbf{FitzJohn R}, \textbf{Friendly M}, \textbf{Furneaux B},
+\textbf{Hannigan G}, \textbf{Hill MO}, \textbf{Lahti L}, \textbf{McGlinn
+D}, \textbf{Ouellette M-H}, \textbf{Ribeiro Cunha E}, \textbf{Smith T},
+\textbf{Stier A}, \textbf{Ter Braak CJF}, \textbf{Weedon J}. 2022.
+\href{https://CRAN.R-project.org/package=vegan}{Vegan: Community ecology
+package}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Li2015}{}}%
+\CSLLeftMargin{11. }%
 \CSLRightInline{\textbf{Li Q}, \textbf{Heist EP}, \textbf{Moe LA}. 2015.
 Bacterial community structure and dynamics during corn-based bioethanol
 fermentation. Microbial Ecology \textbf{71}:409--421.
 doi:\href{https://doi.org/10.1007/s00248-015-0673-9}{10.1007/s00248-015-0673-9}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Baxter2016}{}}%
-\CSLLeftMargin{4. }%
+\CSLLeftMargin{12. }%
 \CSLRightInline{\textbf{Baxter NT}, \textbf{Ruffin MT}, \textbf{Rogers
 MAM}, \textbf{Schloss PD}. 2016. Microbiota-based model improves the
 sensitivity of fecal immunochemical test for detecting colonic lesions.
@@ -569,7 +749,7 @@ Genome Medicine \textbf{8}.
 doi:\href{https://doi.org/10.1186/s13073-016-0290-3}{10.1186/s13073-016-0290-3}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Beall2015}{}}%
-\CSLLeftMargin{5. }%
+\CSLLeftMargin{13. }%
 \CSLRightInline{\textbf{Beall BFN}, \textbf{Twiss MR}, \textbf{Smith
 DE}, \textbf{Oyserman BO}, \textbf{Rozmarynowycz MJ}, \textbf{Binding
 CE}, \textbf{Bourbonniere RA}, \textbf{Bullerjahn GS}, \textbf{Palmer
@@ -581,7 +761,7 @@ Implications for a warming climate. Environmental Microbiology
 doi:\href{https://doi.org/10.1111/1462-2920.12819}{10.1111/1462-2920.12819}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Henson2016}{}}%
-\CSLLeftMargin{6. }%
+\CSLLeftMargin{14. }%
 \CSLRightInline{\textbf{Henson MW}, \textbf{Pitre DM}, \textbf{Weckhorst
 JL}, \textbf{Lanclos VC}, \textbf{Webber AT}, \textbf{Thrash JC}. 2016.
 Artificial seawater media facilitate cultivating members of the
@@ -589,7 +769,7 @@ microbial majority from the gulf of mexico. {mSphere} \textbf{1}.
 doi:\href{https://doi.org/10.1128/msphere.00028-16}{10.1128/msphere.00028-16}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Baxter2014}{}}%
-\CSLLeftMargin{7. }%
+\CSLLeftMargin{15. }%
 \CSLRightInline{\textbf{Baxter NT}, \textbf{Wan JJ}, \textbf{Schubert
 AM}, \textbf{Jenior ML}, \textbf{Myers P}, \textbf{Schloss PD}. 2014.
 Intra- and interindividual variations mask interspecies variation in the
@@ -598,7 +778,7 @@ Environmental Microbiology \textbf{81}:396--404.
 doi:\href{https://doi.org/10.1128/aem.02303-14}{10.1128/aem.02303-14}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-LevyBooth2018}{}}%
-\CSLLeftMargin{8. }%
+\CSLLeftMargin{16. }%
 \CSLRightInline{\textbf{Levy-Booth DJ}, \textbf{Giesbrecht IJW},
 \textbf{Kellogg CTE}, \textbf{Heger TJ}, \textbf{D'Amore DV},
 \textbf{Keeling PJ}, \textbf{Hallam SJ}, \textbf{Mohn WW}. 2018.
@@ -608,7 +788,7 @@ The {ISME} Journal \textbf{13}:950--963.
 doi:\href{https://doi.org/10.1038/s41396-018-0334-3}{10.1038/s41396-018-0334-3}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Edwards2015}{}}%
-\CSLLeftMargin{9. }%
+\CSLLeftMargin{17. }%
 \CSLRightInline{\textbf{Edwards J}, \textbf{Johnson C},
 \textbf{Santos-Medellín C}, \textbf{Lurie E}, \textbf{Podishetty NK},
 \textbf{Bhatnagar S}, \textbf{Eisen JA}, \textbf{Sundaresan V}. 2015.
@@ -618,7 +798,7 @@ rice. Proceedings of the National Academy of Sciences
 doi:\href{https://doi.org/10.1073/pnas.1414592112}{10.1073/pnas.1414592112}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Ettinger2017}{}}%
-\CSLLeftMargin{10. }%
+\CSLLeftMargin{18. }%
 \CSLRightInline{\textbf{Ettinger CL}, \textbf{Williams SL},
 \textbf{Abbott JM}, \textbf{Stachowicz JJ}, \textbf{Eisen JA}. 2017.
 Microbiome succession during ammonification in eelgrass bed sediments.
@@ -626,7 +806,7 @@ Microbiome succession during ammonification in eelgrass bed sediments.
 doi:\href{https://doi.org/10.7717/peerj.3674}{10.7717/peerj.3674}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Graw2018}{}}%
-\CSLLeftMargin{11. }%
+\CSLLeftMargin{19. }%
 \CSLRightInline{\textbf{Graw MF}, \textbf{DAngelo G}, \textbf{Borchers
 M}, \textbf{Thurber AR}, \textbf{Johnson JE}, \textbf{Zhang C},
 \textbf{Liu H}, \textbf{Colwell FS}. 2018. Energy gradients structure
@@ -635,7 +815,7 @@ of the south china sea. Frontiers in Microbiology \textbf{9}.
 doi:\href{https://doi.org/10.3389/fmicb.2018.00729}{10.3389/fmicb.2018.00729}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Johnston2016}{}}%
-\CSLLeftMargin{12. }%
+\CSLLeftMargin{20. }%
 \CSLRightInline{\textbf{Johnston ER}, \textbf{Rodriguez-R LM},
 \textbf{Luo C}, \textbf{Yuan MM}, \textbf{Wu L}, \textbf{He Z},
 \textbf{Schuur EAG}, \textbf{Luo Y}, \textbf{Tiedje JM}, \textbf{Zhou
@@ -645,7 +825,7 @@ tundra ecosystem. Frontiers in Microbiology \textbf{7}.
 doi:\href{https://doi.org/10.3389/fmicb.2016.00579}{10.3389/fmicb.2016.00579}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Hassell2018}{}}%
-\CSLLeftMargin{13. }%
+\CSLLeftMargin{21. }%
 \CSLRightInline{\textbf{Hassell N}, \textbf{Tinker KA}, \textbf{Moore
 T}, \textbf{Ottesen EA}. 2018. Temporal and spatial dynamics in
 microbial community composition within a temperate stream network.
@@ -661,23 +841,23 @@ doi:\href{https://doi.org/10.1111/1462-2920.14311}{10.1111/1462-2920.14311}.}
 \newpage
 
 \textbf{Table 1. Summary of studies used in the analysis.} For all
-studies, the number of sequences used from each study was rarefied to
+studies, the number of sequences used from each dataset was rarefied to
 the smallest sample size. A graphical represenation of the distribution
-of sample sizes for each study and the samples that were removed from
-each study are provided in Figure S1.
+of sample sizes for each dataset and the samples that were removed from
+each dataset are provided in Figure S1.
 
 \small
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1367}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0664}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1914}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1953}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2031}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2070}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1434}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0659}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1899}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1938}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2016}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2054}}@{}}
 \toprule()
 \begin{minipage}[b]{\linewidth}\raggedright
-\textbf{Study\nobreakspace{}(Ref)}
+\textbf{Dataset\nobreakspace{}(Ref)}
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 \textbf{Samples}
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
@@ -691,29 +871,29 @@ each study are provided in Figure S1.
 \end{minipage} \\
 \midrule()
 \endhead
-Bioethanol~(3) & 95 & 3,970,972 & 16,014 & 3,690\Hyphdash*356,027 &
+Bioethanol~(11) & 95 & 3,970,972 & 16,014 & 3,690\Hyphdash*356,027 &
 SRP055545 \\
-Human~(4) & 490 & 20,828,275 & 32,452 & 10,439\Hyphdash*422,904 &
+Human~(12) & 490 & 20,828,275 & 32,452 & 10,439\Hyphdash*422,904 &
 SRP062005 \\
-Lake~(5) & 52 & 3,145,486 & 69,205 & 15,135\Hyphdash*110,993 &
+Lake~(13) & 52 & 3,145,486 & 69,205 & 15,135\Hyphdash*110,993 &
 SRP050963 \\
-Marine~(6) & 7 & 1,484,068 & 213,091 & 132,895\Hyphdash*256,758 &
+Marine~(14) & 7 & 1,484,068 & 213,091 & 132,895\Hyphdash*256,758 &
 SRP068101 \\
 Mice~(1) & 348 & 2,785,641 & 6,426 & 1,804\Hyphdash*30,311 &
 SRP192323 \\
-Peromyscus~(7) & 111 & 1,545,288 & 12,393 & 4,454\Hyphdash*33,502 &
+Peromyscus~(15) & 111 & 1,545,288 & 12,393 & 4,454\Hyphdash*33,502 &
 SRP044050 \\
-Rainforest~(8) & 69 & 936,666 & 11,464 & 4,880\Hyphdash*37,403 &
+Rainforest~(16) & 69 & 936,666 & 11,464 & 4,880\Hyphdash*37,403 &
 ERP023747 \\
-Rice~(9) & 490 & 22,623,937 & 43,399 & 2,777\Hyphdash*192,200 &
+Rice~(17) & 490 & 22,623,937 & 43,399 & 2,777\Hyphdash*192,200 &
 SRP044745 \\
-Seagrass~(10) & 286 & 4,135,440 & 13,538 & 1,830\Hyphdash*45,076 &
+Seagrass~(18) & 286 & 4,135,440 & 13,538 & 1,830\Hyphdash*45,076 &
 SRP092441 \\
-Sediment~(11) & 58 & 1,151,389 & 17,606 & 7,686\Hyphdash*67,763 &
+Sediment~(19) & 58 & 1,151,389 & 17,606 & 7,686\Hyphdash*67,763 &
 SRP097192 \\
-Soil~(12) & 18 & 932,563 & 50,487 & 46,622\Hyphdash*58,935 &
+Soil~(20) & 18 & 932,563 & 50,487 & 46,622\Hyphdash*58,935 &
 ERP012016 \\
-Stream~(13) & 201 & 21,017,610 & 90,621 & 8,931\Hyphdash*394,419 &
+Stream~(21) & 201 & 21,017,610 & 90,621 & 8,931\Hyphdash*394,419 &
 SRP075852 \\
 \bottomrule()
 \end{longtable}
@@ -776,11 +956,11 @@ groups for alpha (A) and beta (B) diversity metrics is greatest when
 communities differing in the relative abundance of their OTUs are
 rarefied.} For each dataset samples were randomly assigned to one of two
 community distributions where the abundance of OTUs differed. To
-calculate the power for each study, datasets were regenerated 100 times
-and differences in alpha diversity were tested using a Wilcoxon test (A)
-and differences in beta diversity were tested using PERMANOVA (B) at a
-5\% threshold. The power was the number of times a dataset yielded a
-significant result.
+calculate the power for each datasets, datasets were regenerated 100
+times and differences in alpha diversity were tested using a Wilcoxon
+test (A) and differences in beta diversity were tested using PERMANOVA
+(B) at a 5\% threshold. The power was the number of times a dataset
+yielded a significant result.
 
 \newpage
 
@@ -791,7 +971,7 @@ groups for alpha diversity metrics is greatest when communities
 differing in richness are rarefied.} For each dataset samples were
 randomly assigned to one of two community distributions where one
 distribution contained a subset of OTUs found in the other. To calculate
-the power for each study, datasets were regenerated 100 times and
+the power for each dataset, datasets were regenerated 100 times and
 differences in alpha diversity were tested using a Wilcoxon test (A) and
 differences in beta diversity were tested using PERMANOVA (B) at a 5\%
 threshold. The power was the number of times a dataset yielded a
