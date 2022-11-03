@@ -5,7 +5,7 @@ channels:
   - defaults
   - r
 dependencies:
-  - snakemake=7.3.8
+  - snakemake=7.15.2
   - sra-tools=2.11.0
   - mothur=1.47.0
   - r-base=4.1.3

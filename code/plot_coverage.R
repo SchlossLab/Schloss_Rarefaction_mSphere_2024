@@ -45,7 +45,7 @@ cor_plot <- obs_cor %>%
   geom_line(data = cor_line, aes(x = nseqs, y = mean), color = "black") +
   geom_vline(xintercept = 800, color = "darkgray") +
   scale_x_log10(breaks = c(325, 1e3, 1e4, 1e5, 1e6),
-                labels = c("R", "10^3", "10^4", "10^5", "10^6"),
+                labels = c("R", "10^3^", "10^4^", "10^5^", "10^6^"),
                 limits = c(2e2, 1e6)) +
   scale_color_manual(name = NULL,
                     values = rep(c('#1b9e77','#d95f02','#7570b3'), 4),

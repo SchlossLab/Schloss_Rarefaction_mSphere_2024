@@ -26,6 +26,7 @@ designs = ["r", "s"]
 
 rule targets:
   input:
+    "submission/manuscript.pdf"
     ## generate original data files
     # expand("data/{dataset}/data.otu.shared", dataset=datasets),
     # expand("data/{dataset}/data.group_count", dataset=datasets),
