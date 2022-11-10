@@ -47,6 +47,7 @@ cor_plot <- obs_cor %>%
   scale_x_log10(breaks = c(325, 1e3, 1e4, 1e5, 1e6),
                 labels = c("R", "10^3^", "10^4^", "10^5^", "10^6^"),
                 limits = c(2e2, 1e6)) +
+  scale_y_continuous(breaks = seq(0, 1, 0.2), labels = seq(0, 100, 20)) +
   scale_color_manual(name = NULL,
                     values = rep(c('#1b9e77','#d95f02','#7570b3'), 4),
                     breaks = pretty_datasets$plain,
@@ -61,7 +62,7 @@ cor_plot <- obs_cor %>%
                   ) +
 
   facet_wrap(~dataset, labeller = labeller(.default = capitalize)) +
-  labs(y = "Good's coverage",
+  labs(y = "Good's coverage (%)",
        x = "Number of sequences per sample") +
   theme(
     axis.text.x = element_markdown(),
