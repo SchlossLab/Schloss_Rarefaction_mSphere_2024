@@ -95,11 +95,9 @@ pretty_datasets <- tibble(
   pretty = capitalize(plain)
 )
 
-
 ```
 
-# Rarefy your data
-
+# Rarefaction is currently the best approach to control for uneven sampling effort in amplicon sequencing analyses
 
 \vspace{20mm}
 
@@ -150,14 +148,13 @@ high_fold_range <- table_1 %>%
   round(digits=1)
 ```
 
-
 ## Abstract
 
-
+How to control for uneven sampling effort in amplicon sequencing analyses has become a contentious question in the microbial ecology field since it is common to find as much as 100-fold variation in the number of 16S rRNA gene sequences found across samples in a study. Some have argued that rarefaction is inadmissible because it omits valid data and reduces the statistical power to detect differences between treatment groups. A number of alternative approaches have been developed to normalize and rescale the data that purport to be invariant to the number of observations. I generated community distributions based on 12 published datasets where I was able to assess the sensitivity of different methods to uneven sampling effort. Rarefaction was the only method that could control for variation in uneven sampling effort when measuring commonly used alpha and beta diversity metrics. Next, I compared the false detection rate and power to detect true differences between simulated communities with a known effect size using various alpha and beta diversity metrics. Although all methods of controlling for uneven sampling effort had an acceptable false detection rate when samples were randomly assigned to two treatment groups, rarefaction was consistantly able to contorol for differences in sampling effort when sequencing depth was confounded with treatment group. Finally, the statistical power to detect differences in alpha and beta diversity metrics was consistently the highest when the data were rarefied. These simulations underscore the importance of rarefying the number of sequences across samples in amplicon sequencing analyses.
 
 ## Importance
 
-
+Sequencing of 16S rRNA gene sequences has become a fundamental tool for understanding the diversity of microbial communities and the factors that affect that diversity. Because of technical challenges, it is common to observe wide variation in the number of sequences that are collected from different samples. Because most of the diversity metrics used by microbial ecologists are affected by sampling effort, tools are needed to control for the uneven levels of sampling. This simulation-based analysis shows that despite ongoing controversy, rarefaction is the most robust approach to controlling for uneven sampling effort. I contend that the controversy was started because of confusion over how rarefaction is performed and because methods have been borrowed from other fields that make important assumptions that are not correct with microbial community data.
 
 \newpage
 
