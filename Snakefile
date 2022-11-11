@@ -26,7 +26,6 @@ designs = ["r", "s"]
 
 rule targets:
   input:
-    "submission/manuscript.pdf"
     ## generate original data files
     # expand("data/{dataset}/data.otu.shared", dataset=datasets),
     # expand("data/{dataset}/data.group_count", dataset=datasets),
@@ -91,6 +90,8 @@ rule targets:
     #        dataset = datasets),
     # expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
     # expand("data/{dataset}/data.otu.rarefy_coverage", dataset = datasets),
+    # expand("data/{dataset}/cluster_analysis.tsv", dataset = datasets)
+#
     #
     ## observed human dataset analysis
         # "data/human/data.otu.oshared",
@@ -105,7 +106,7 @@ rule targets:
         #        process = alpha_process),
         # expand("data/mice/data.otu.o_{process}_{calculator}.dist",
         #        process = beta_process, calculator= beta_calculator),
-
+#
     #
     ## summary data files
     # "data/process/study_summary_statistics.tsv",
@@ -120,8 +121,10 @@ rule targets:
     # "figures/coverage_plot.tiff",
     # "figures/example_alpha_cor.tiff",
     # "figures/example_beta_cor.tiff",
-    # "figures/seqs_per_sample.tiff"
-    
+    # "figures/seqs_per_sample.tiff",
+    "figures/cluster_analysis.tiff",
+    #"submission/manuscript.pdf",
+
 rule silva:
   input:
     script="code/get_silva.sh"
@@ -497,7 +500,7 @@ rule alpha_kw:
 #     """
 
 
-# beta: calculate p-value based on size of sample
+# beta: calculate p-value
 rule beta_amova:
   input:
     script="code/run_beta_analysis.R",
@@ -531,6 +534,23 @@ rule beta_amova:
 #     {input.script}
 #     """
 
+#cluster analysis - cluster samples via pam and see how well they reflect design
+#                   files cluster assignment
+rule cluster_analysis:
+  input:
+    script = "code/run_cluster_analysis.R",
+    dist_files = expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
+                        seed=seeds, model=["r", "e"], process=beta_process,
+                        calculator=beta_calculator, allow_missing=True),
+    design_files  = expand("data/{dataset}/data.{seed}.{design}design",
+                           seed=seeds, design=["r", "s", "e"],
+                           allow_missing=True)
+  output:
+    output = "data/{dataset}/cluster_analysis.tsv"
+  shell:
+    """
+    {input.script} {wildcards.dataset}
+    """
 
 
 # alpha: calculate correlations with metric based on size of sample
@@ -795,6 +815,17 @@ rule plot_seqs_per_sample:
     script = "code/plot_seqs_per_sample.R"
   output:
     "figures/seqs_per_sample.tiff"
+  shell:
+    """
+    {input.script}
+    """
+
+rule plot_cluster_analysis:
+  input:
+    script = "code/plot_cluster_analysis.R",
+    data = expand("data/{dataset}/cluster_analysis.tsv", dataset = datasets),
+  output:
+    "figures/cluster_analysis.tiff"
   shell:
     """
     {input.script}
