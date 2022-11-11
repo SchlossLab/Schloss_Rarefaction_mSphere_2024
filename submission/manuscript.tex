@@ -177,99 +177,104 @@ Ann Arbor, MI 48109
 \hypertarget{introduction}{%
 \subsection{Introduction}\label{introduction}}
 
-\textbf{\emph{\url{https://edepot.wur.nl/547087}.}} ``Log- ratio PCA is
-designed to give results that are library size- independent. However, as
-we demonstrated mathematically and with examples based on simulated and
-real data, log- ratio PCA becomes library size- dependent, if there are
-many infrequent taxa (many zeroes) and library sizes differ largely. In
-this situation, the row centring used in log- ratio PCA brings an effect
-of r (the row mean of the log- transformed counts) in the clr-
-transformed matrix. Note that this effect is irrespective of whether or
-not these infrequent taxa are genuine or due to sequencing noise or
-allocation error. This library size dependence is unexpected in the
-sense that, after applying the clr, the transformed matrix is free of
-the effect of the row totals for strictly positive data
-(yij\textgreater0 for all i and j). We additionally demonstrate that
-library size variability causes a loss in power in dextecting an effect
-of x with log- ratio RDA. If there is additionally a correlation between
-treatment and the library size, the type 1 error for detecting the
-effect of x can be seriously inflated.''
+The ability to generate millions sequence reads from 16S rRNA gene
+amplicons and metagenomic datasets has allowed researchers to multiplex
+multiple samples on the same sequencing run by pooling separate PCRs
+that can be deconvoluted later based on index (aka barcode) sequences
+that embeded into the primer sequence (1, 2). Unfortunately, it is
+common to observe variation in the number of sequence reads from each
+sample vary by as much as 100-fold (e.g, see Figure S1). This occurs
+because pooling of DNA from multiple PCRs is frought with numerous
+opportunities for technichal errors to compound leading to a skewed
+distribution. Aside from developing better methods of pooling DNA, the
+question of how to control for uneven sampling effort in microbial
+ecology studies has become controversial.
 
-\textbf{\emph{\url{https://www.nature.com/articles/s41522-020-00160-w}.}}
-``An important characteristic of a feature table is that it is typically
-sparse, sometimes as many as \textasciitilde90\% are zero entries21,
-which creates a challenge for analyzing rare taxa. A quick and simple
-strategy to deal with excess zeros is to add a small positive constant
-(e.g.~1) called pseudo-count14,22 to each cell of the feature table. The
-addition of a pseudo-count becomes necessary when using methods of
-analysis that require log transformation of the observed counts. Even
-though adding a pseudo-count is simple and widely used, the choice of
-the pseudo-count is ad hoc. Studies have shown that differential
-abundance or clustering results could be sensitive to the choice of
-pseudo count23,24. Although different values of pseudo counts have been
-discussed in the literature23,24,25,26, to the best of our knowledge,
-there is no consensus on how to choose the optimal value. Other
-strategies involve modeling zero counts by some probability
-models21,27.''
+The practice of rarefaction has been commonly used in ecology for more
+than 50 years as a tool to control for uneven sampling effort across
+experimental replicates (3, 4). Microbial ecologists have used it to
+compare 16S rRNA gene sequence data for the past 25 years (5--7). When
+data are rarefied, the investigator selects a desired threshold of
+sampling effort and removes any samples below that threshold. They then
+randomly select that many sequences, with replacement from each sample.
+Based on the obseved sequence counts, the researcher can then calcuate
+alpha diversity metrics including richness and diversity indices or beta
+divesity metrics such as a Jaccard or Bray-Curtis dissimilarity index. I
+refer to this single sampling as a subsample; this method is implemented
+as the sub.sample function in mothur (8) and the rrarefy function in the
+vegan R package (9). Rarefaction repeats the subsampling a large number
+of times (e.g., 100 or 1,000) and calculates the mean of the alpha or
+beta diersity metric over those subsamplings; rarefaction is implemented
+in mothur using the summary.single and dist.shared functions (8) and
+with the vegan R package using the rarefy or avgdist fuctions (9).
+Rarefaction effectively tells a researcher what an alpha or beta
+diversity metric would have been for a collection of samples if they
+were all evenly sampled. Although a closed form equation exists to
+calcualte the expected richness (4), it is computationally easier to
+empirically calculate rarefied richness and other alpha and beta
+diversity metrics.
 
-\url{https://academic.oup.com/bioinformatics/article/34/16/2870/4956011}
-\url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6755255/}
+In 2014, McMurdie and Holmes (10) announced that rarefaction of
+microbial community data is ``statistically inadmissible'' because it
+omits valid data. In their simulations, they observed that the use of
+rarefaction reduced the statistical power to compare communities based
+on beta diversity metrics. The communities used in this study were
+simulated by mixing operational taxonomic unit (OTU) frequencies from
+marine and human fecal communities, which were then sampled to generate
+40 replicate communities each sampled to different depths. The
+simulation with the greatest depth of coverage obtained an average of
+10,000 sequences per sample. Analysis of the R code that they used
+indicates that the simulations were actually only based on a single
+subsample and not truly rarefied data. Furthermore, the authors removed
+any OTU from the simulated communities that was not observed in three or
+more samples. This is a frequently used approach for analyzing
+microbiome data (11). Unfortunately, it removes valid data, skews the
+distribution of the community, and removes true patchiness from the
+representation of the communities (12). Finally, the analysis did not
+include analysis of alpha diersity metrics and chose to assess beta
+diversity metrics based on clustering quality of samples rather than
+using the more frequently used approach of employing non-parametric
+multivariate analysis of variance (13). Regardless of these caveats,
+McMurdie and Holmes recommended the use of variance stabilizing
+transformations such as those applied for gene expression analysis such
+as that found in the DeSeq R package.
 
-\begin{itemize}
-\tightlist
-\item
-  Motivation
+Beyond the critiques from McMurdie and Holmes others have developed
+alternative approaches to controlling for uneven sampling effort in
+amplicon sequencing studies. For alpha diversity metrics, Willis used
+toy datasets to demonstrate that one could estimate the richness for
+each sample in a dataset and use those values for statistical
+comparisons (14). Non-parametric estimators of richness and diversity
+(15, 16) and parametric estimators of richness {[}Willis2015{]} that
+have been used in microbial ecology studies. For beta diversity metrics
+at least four approaches have been pursued. First, one could use
+relative abundance values where the observed number of sequences in an
+OTU is divided by the total number of sequences in the sample (17).
+Second, normalization strategies have been developed where the relative
+abundance is mutiplied by the size of the minimum desired sampling
+effort and fractional values are reapportioned to the OTUs to obtain
+integer values (18, 19). Third, a variety of center log-ratio methods
+have been developed where the compositional nature of the OTU counts is
+removed and used to calculated Euclidean distances (aka Aitchison
+distances) {[}(20); (19); (17); (21); (22). This strategy is purported
+to control for uneven sampling effort (21, 23); however, some have
+noticed that this feature breaks down under certain conditions (24).
+Finally, as mentioned above, variance stabilization transformations have
+been recommended to generate values that can be used to calcualte
+Euclidean distances (10).
 
-  \begin{itemize}
-  \tightlist
-  \item
-    Problem of uneven sampling effort
-  \end{itemize}
-\item
-  What is rarefaction? History, reason for rarefaction
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Repeated down sampling of datasets to a common number of
-    observations to calculate the average value to ascertain the
-    expected value of a metric for the metric under study; typically
-    richness
-  \item
-    Control for unneven sampling effort
-  \item
-    Methods vary in their sensitivity to uneven sampling
-  \item
-    Compositional data analysis
-  \end{itemize}
-\item
-  Reasons behind ``rarefaction is inadmissable''
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Weird simulation
-  \end{itemize}
-\item
-  Alternative approaches and claims
-
-  \begin{itemize}
-  \tightlist
-  \item
-    sampling invariance
-  \end{itemize}
-\item
-  Goal of this study
-\end{itemize}
-
-This analysis included 16S rRNA gene sequence data from from 12 studies
-that characterized the variation in bacterial communities from diverse
-environments (Table 1). The original studies generated the sequence data
-by pooling separate PCR products that were generated by amplifying the
-V4 region of the 16S rRNA gene from the bacterial DNA in multiple
-samples. Because pooling equimolar quantities of DNA is frought with
-difficulties, it was common to observe wide variation in the number of
-sequences in each sample (Table 1 and Figure S1).
+The ongoing controversy over the use of rarefaction and the development
+of numerous strategies to control for uneven sampling effort caused me
+to question how these methods compared to each other. My analysis
+included 16S rRNA gene sequence data from from 12 studies that
+characterized the variation in bacterial communities from diverse
+environments (Table 1 and Figure S1). The sequences were assigned to
+OTUs using a standard pipeline and their frequencies and the number of
+sequences found in each sample were used to generate simulated
+communities and treatment effects. For each dataset and simulation, 100
+replicate datasets were generated and used as input to each of the
+strategies for controlling for uneven sampling effort. My overall
+conclusion was that rarefaction outperformed the alternative strategies.
 
 \hypertarget{results}{%
 \subsection{Results}\label{results}}
@@ -454,7 +459,7 @@ rarefaction removed the correlation between sequencing depth and alpha
 or beta diversity metrics when the sequencing depth varied by as much as
 97-fold across samples. I showed that this correlation could lead
 falsely detecting differences between treatment groups if sampling depth
-and sequencing effort are confounded (e.g., 1). The correlation with
+and sequencing effort are confounded (e.g., 25). The correlation with
 sampling effort leads to an artificial increase in the variation between
 samples and a reduced power to detect true differences in alpha and beta
 diversity. For these reasons, rarefaction is a valuable tool to control
@@ -464,7 +469,7 @@ effort across samples.
 
 The primary alternative to rarefaction that many advise is to estimate
 alpha diversity has been to use non-parametric or parametric methods
-using raw data and to then compare the estimates (2). My data
+using raw data and to then compare the estimates (14). My data
 demonstrates that such approaches are limited for several reasons.
 First, it has been widely observed that non-parametric richness esimates
 such as ACE and Chao1 are sensitive to sampling effort. Therefore, these
@@ -479,7 +484,7 @@ increasingly common practice for researchers to remove sequences that
 are rare in a sample (e.g., those that appear once). Although that
 approach was not taken in this study, removing rare sequences would skew
 the distribtion of sequences and OTUs leading to a distortion of the
-measurement of alpha diversity (3). The effects of removing rare
+measurement of alpha diversity (12). The effects of removing rare
 sequences would vary across samples depending on the number of sequences
 in each sample. One interesting result of this analysis was the
 demonstration that as metrics that depend less on rare taxa are used,
@@ -516,13 +521,13 @@ exactly what the variance stabilization transformation and most CLR
 techniques do. This analysis has demonstrated a clear correlation
 between distances calculated by these methods and sequencing effort.
 This result is at odds with the claims by others that the distances are
-scale invariant (4). Again, rarefaction is the most effective and
+scale invariant (21, 23). Again, rarefaction is the most effective and
 consistent approach to control for uneven sampling effort when
 calculating beta diversity metrics.
 
 Two common critique of rarefaction is that the approach ommits valid
 data and that the selection of the value to rarefy the sequence data to
-is arbitrary (5). I disagree with both critiques. All of the data are
+is arbitrary (10). I disagree with both critiques. All of the data are
 used to calculate the mean value of the rarefied metrics; none of it is
 excluded. When the dataset is subsampled, every sequence has a random
 chance of being included in the calculated metric. When that subsampling
@@ -533,7 +538,7 @@ that did not appear in at least three samples or had an abundance of one
 in any sample. A parallel analysis to this study has demonstrated that
 many of these sequences are likely valid and that removal of rare
 sequences can bias alpha and beta diversity metrics and reduce
-statistical power (3). As for the second critism, I would resist the
+statistical power (12). As for the second critism, I would resist the
 claim that the selection of the rarefaction threshold is arbitrary. In
 practice, there is a tradeoff between sampling breadth and depth.
 Greater breadth will increase the statistical power to compare treatment
@@ -567,7 +572,7 @@ DNA that is then eluted and pooled. Clearly, both approaches have
 limitations that reduce the ability to truly achieve equimolar mixture.
 In addition, for some samples it is common to co-amplify non-specific
 DNAs which may add to the challenges of achieving equimolar mixtures of
-the desired amplicons (1). Regardless, it is clear that better
+the desired amplicons (25). Regardless, it is clear that better
 strategies are needed to reduce the variation in the number of sequences
 generated for each sample.
 
@@ -588,11 +593,11 @@ region of the 16S rRNA gene using paired 250 nt reads, and my previous
 familiarity with the data. The use of paired 250 nt reads to sequence
 the V4 region resulted in a near complete two-fold overap of the V4
 region resulting in high quality contigs with a low sequencing error
-rate (6). These data were processed through a standardized sequence
+rate (1). These data were processed through a standardized sequence
 curation pipeline to generate operational taxonomic units (OTUs) using
-the mothur software package (6, 7). OTUs were identified using the
+the mothur software package (1, 8). OTUs were identified using the
 OptiClust algorithm to cluster sequences together that were not more
-than 3\% different from each other (8).
+than 3\% different from each other (26).
 
 \textbf{Null community model.} Null community models were generated such
 that within a dataset the number of sequences per sample and the number
@@ -603,7 +608,7 @@ been a statistical difference between the samples. This model
 implemented by randomly assigning each sequence in the dataset to an OTU
 and sample while keeping constant the number of sequences per sample and
 the total number of sequences in each OTU. This is a similar approach to
-that of the IS algorithm described by Ulrich and Gotelli (9). Because
+that of the IS algorithm described by Ulrich and Gotelli (27). Because
 the construction of the null models was a stochastic process, 100
 replicates were geneated for each dataset.
 
@@ -664,9 +669,9 @@ implemented in R. This test was selected because the alpha-diversity
 metrics tended to not be normally distributed and each dataset required
 a different transformation to normalize the data. Comparisons of beta
 diversity metrics were performed using the adonis2 function from the
-vegan (v.2.6.2) R package (10). The adonis2 function implements a
+vegan (v.2.6.2) R package (9). The adonis2 function implements a
 non-parametric multivariate analysis of variance using distances
-matrices as described by McArdle and Anderson (11). Throughout this
+matrices as described by McArdle and Anderson (13). Throughout this
 study I used 0.05 as the threshold for asssessing statistical
 significance.
 
@@ -684,7 +689,7 @@ difference.
 uneven sampling effort were evaluated to identify the best approach for
 calculating community richness and Shannon and inverse Simpson diversity
 indeices. Raw OTU counts were used as input to calculate sample richness
-and Shannon and inverse Simpson diversity using mothur (7, 12). Shannon
+and Shannon and inverse Simpson diversity using mothur (8, 28). Shannon
 diversity was calculated as
 
 \[H_{shannon} = - \sum_{i=1}^{S_{obs}} \frac{n_i}{N} ln \frac{n_i}{N}\]
@@ -701,16 +706,16 @@ in mothur. Briefly, mothur calculates each value on a random draw of the
 same number of sequences from each sample and obtains a mean value based
 on 1,000 random draws. Scaled ranked subsampling (SRS) was used to
 normalize OTU counts to the size of the smallest sample in each dataset
-using the SRS R package (v.0.2.3)(13). Normalized OTU counts were used
+using the SRS R package (v.0.2.3)(18). Normalized OTU counts were used
 to calculate sample richness and Shannon and inverse Simpson diversity
 values using mothur. Data normalized by cumulative sum scaling (CSS)
 were not reported for alpha-diversity values since the relative
 abundances of the features do not change with the normalization
-procedure (14). The non-parametric bias-corrected Chao1 and ACE richness
-estimators (15) and a non-parametric estimator of the Shannon diversity
-(16) were calculated using raw OTU counts with mothur. Parametric
+procedure (19). The non-parametric bias-corrected Chao1 and ACE richness
+estimators (16) and a non-parametric estimator of the Shannon diversity
+(15) were calculated using raw OTU counts with mothur. Parametric
 estimates of sample richness were calculated using the breakaway (BA) R
-package (v.4.7.9)(17). The current analysis reports both the results
+package (v.4.7.9)(29). The current analysis reports both the results
 from running default model selection procedure and the Poisson model.
 The default model selection returned either the Kemp, Negative Binomial,
 or Poisson models. Relative abundance data were not used to calculate
@@ -723,7 +728,7 @@ calculations, multiple approaches were used to control for uneven
 sampling effort and calculate beta diversity. Raw and OTU counts were
 used for input to calculate the Jaccard, Bray-Curtis, and Euclidean
 dissimilarity indices using the vegdist function from the vegan R
-package (v.2.6.2)(10). The Jaccard index was calculated as
+package (v.2.6.2)(9). The Jaccard index was calculated as
 
 \[D_{Jaccard}=1-\frac{S_{AB}}{S_A+S_B-S_{AB}}\]
 
@@ -755,12 +760,12 @@ it returns the mean value.
 Three approaches were taken to normalize the number of sequences across
 samples within a dataset. Scaled ranked subsampling (SRS) and cumulative
 sum scaling (CSS) were used to normalize raw OTU counts using the SRS
-(v.0.2.3) and metagenomeSeq (v.1.36.0) R packages, respectively (13,
-14). The normalized counts were then used to calculate Jaccard and
+(v.0.2.3) and metagenomeSeq (v.1.36.0) R packages, respectively (18,
+19). The normalized counts were then used to calculate Jaccard and
 Bray-Curtis dissimilarity indices. Finally, the variance-stabilization
 transformation (VST) as implemented in the DESeq2 (v.1.34.0) R package
-was used to normalize the data as described by McMurdie and Holmes (5,
-18). Because the VST approach generates negative values, which are
+was used to normalize the data as described by McMurdie and Holmes (10,
+30). Because the VST approach generates negative values, which are
 incompatible with calculating Jaccard and Bray-Curtis dissimilarity
 values, Euclidean distances were calcualted instead.
 
@@ -780,11 +785,11 @@ if any OTU is absent from a sample, the CLR is undefined when there are
 unobserved OTUs in a sample. To overcome this problem, I attempted a
 four approaches. The first, Zero CLR, imputed the value of the zeroes
 based on the observed data using the zCompositions (v.1.4.0.1) R package
-(19). The second, One CLR, added a pseudocount of 1 to the abundance of
-all OTUs (14, 20). The third, Nudge CLR, added a pseudocount of 1
+(31). The second, One CLR, added a pseudocount of 1 to the abundance of
+all OTUs (17, 19). The third, Nudge CLR, added a pseudocount of 1
 divided by the total number of sequences in a sample to each OTU in the
-sample (20, 21). The final approach, Robust CLR, removed unobserved OTUs
-prior to calcualting the CLR (4).
+sample (17, 22). The final approach, Robust CLR, removed unobserved OTUs
+prior to calcualting the CLR (21).
 
 \textbf{Analysis of sequencing coverage.} To assess the level of
 sequencing coverage I calcualted Good's coverage (\(C_{Good}\)) using
@@ -836,57 +841,64 @@ P30DK034933, R01CA215574).
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{0}{1}
-\leavevmode\vadjust pre{\hypertarget{ref-Morris2013}{}}%
-\CSLLeftMargin{1. }%
-\CSLRightInline{\textbf{Morris A}, \textbf{Beck JM}, \textbf{Schloss
-PD}, \textbf{Campbell TB}, \textbf{Crothers K}, \textbf{Curtis JL},
-\textbf{Flores SC}, \textbf{Fontenot AP}, \textbf{Ghedin E},
-\textbf{Huang L}, \textbf{Jablonski K}, \textbf{Kleerup E},
-\textbf{Lynch SV}, \textbf{Sodergren E}, \textbf{Twigg H}, \textbf{Young
-VB}, \textbf{Bassis CM}, \textbf{Venkataraman A}, \textbf{Schmidt TM},
-\textbf{Weinstock GM}. 2013. Comparison of the respiratory microbiome in
-healthy nonsmokers and smokers. American Journal of Respiratory and
-Critical Care Medicine \textbf{187}:1067--1075.
-doi:\href{https://doi.org/10.1164/rccm.201210-1913oc}{10.1164/rccm.201210-1913oc}.}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Willis2019}{}}%
-\CSLLeftMargin{2. }%
-\CSLRightInline{\textbf{Willis AD}. 2019. Rarefaction, alpha diversity,
-and statistics. Frontiers in Microbiology \textbf{10}.
-doi:\href{https://doi.org/10.3389/fmicb.2019.02407}{10.3389/fmicb.2019.02407}.}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Schloss2020}{}}%
-\CSLLeftMargin{3. }%
-\CSLRightInline{\textbf{Schloss PD}. 2020. Removal of rare amplicon
-sequence variants from 16S {rRNA} gene sequence surveys biases the
-interpretation of community structure data.
-doi:\href{https://doi.org/10.1101/2020.12.11.422279}{10.1101/2020.12.11.422279}.}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Martino2019}{}}%
-\CSLLeftMargin{4. }%
-\CSLRightInline{\textbf{Martino C}, \textbf{Morton JT}, \textbf{Marotz
-CA}, \textbf{Thompson LR}, \textbf{Tripathi A}, \textbf{Knight R},
-\textbf{Zengler K}. 2019. A novel sparse compositional technique reveals
-microbial perturbations. {mSystems} \textbf{4}.
-doi:\href{https://doi.org/10.1128/msystems.00016-19}{10.1128/msystems.00016-19}.}
-
-\leavevmode\vadjust pre{\hypertarget{ref-McMurdie2014}{}}%
-\CSLLeftMargin{5. }%
-\CSLRightInline{\textbf{McMurdie PJ}, \textbf{Holmes S}. 2014. Waste
-not, want not: Why rarefying microbiome data is inadmissible. {PLoS}
-Computational Biology \textbf{10}:e1003531.
-doi:\href{https://doi.org/10.1371/journal.pcbi.1003531}{10.1371/journal.pcbi.1003531}.}
-
 \leavevmode\vadjust pre{\hypertarget{ref-Kozich2013}{}}%
-\CSLLeftMargin{6. }%
+\CSLLeftMargin{1. }%
 \CSLRightInline{\textbf{Kozich JJ}, \textbf{Westcott SL}, \textbf{Baxter
 NT}, \textbf{Highlander SK}, \textbf{Schloss PD}. 2013. {Development of
 a dual-index sequencing strategy and curation pipeline for analyzing
 amplicon sequence data on the MiSeq Illumina sequencing platform}.
 Applied and environmental microbiology \textbf{79}:5112--5120.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Schloss2009}{}}%
+\leavevmode\vadjust pre{\hypertarget{ref-Caporaso2010}{}}%
+\CSLLeftMargin{2. }%
+\CSLRightInline{\textbf{Caporaso JG}, \textbf{Lauber CL},
+\textbf{Walters WA}, \textbf{Berg-Lyons D}, \textbf{Lozupone CA},
+\textbf{Turnbaugh PJ}, \textbf{Fierer N}, \textbf{Knight R}. 2010.
+Global patterns of 16S {rRNA} diversity at a depth of millions of
+sequences per sample. Proceedings of the National Academy of Sciences
+\textbf{108}:4516--4522.
+doi:\href{https://doi.org/10.1073/pnas.1000080107}{10.1073/pnas.1000080107}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Sanders1968}{}}%
+\CSLLeftMargin{3. }%
+\CSLRightInline{\textbf{Sanders HL}. 1968. Marine benthic diversity: A
+comparative study. The American Naturalist \textbf{102}:243--282.
+doi:\href{https://doi.org/10.1086/282541}{10.1086/282541}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Hurlbert1971}{}}%
+\CSLLeftMargin{4. }%
+\CSLRightInline{\textbf{Hurlbert SH}. 1971. The nonconcept of species
+diversity: A critique and alternative parameters. Ecology
+\textbf{52}:577--586.
+doi:\href{https://doi.org/10.2307/1934145}{10.2307/1934145}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Dunbar1999}{}}%
+\CSLLeftMargin{5. }%
+\CSLRightInline{\textbf{Dunbar J}, \textbf{Takala S}, \textbf{Barns SM},
+\textbf{Davis JA}, \textbf{Kuske CR}. 1999. Levels of bacterial
+community diversity in four arid soils compared by cultivation and 16S
+{rRNA} gene cloning. Applied and Environmental Microbiology
+\textbf{65}:1662--1669.
+doi:\href{https://doi.org/10.1128/aem.65.4.1662-1669.1999}{10.1128/aem.65.4.1662-1669.1999}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Hughes2001}{}}%
+\CSLLeftMargin{6. }%
+\CSLRightInline{\textbf{Hughes JB}, \textbf{Hellmann JJ},
+\textbf{Ricketts TH}, \textbf{Bohannan BJM}. 2001. Counting the
+uncountable: Statistical approaches to estimating microbial diversity.
+Applied and Environmental Microbiology \textbf{67}:4399--4406.
+doi:\href{https://doi.org/10.1128/aem.67.10.4399-4406.2001}{10.1128/aem.67.10.4399-4406.2001}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Moyer1998}{}}%
 \CSLLeftMargin{7. }%
+\CSLRightInline{\textbf{Moyer CL}, \textbf{Tiedje JM}, \textbf{Dobbs
+FC}, \textbf{Karl DM}. 1998. Diversity of deep-sea hydrothermal vent
+archaea from loihi seamount, hawaii. Deep Sea Research Part {II}:
+Topical Studies in Oceanography \textbf{45}:303--317.
+doi:\href{https://doi.org/10.1016/s0967-0645(97)00081-7}{10.1016/s0967-0645(97)00081-7}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Schloss2009}{}}%
+\CSLLeftMargin{8. }%
 \CSLRightInline{\textbf{Schloss PD}, \textbf{Westcott SL},
 \textbf{Ryabin T}, \textbf{Hall JR}, \textbf{Hartmann M},
 \textbf{Hollister EB}, \textbf{Lesniewski RA}, \textbf{Oakley BB},
@@ -898,22 +910,8 @@ communities. Applied and Environmental Microbiology
 \textbf{75}:7537--7541.
 doi:\href{https://doi.org/10.1128/aem.01541-09}{10.1128/aem.01541-09}.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Westcott2017}{}}%
-\CSLLeftMargin{8. }%
-\CSLRightInline{\textbf{Westcott SL}, \textbf{Schloss PD}. 2017.
-{OptiClust}, an improved method for assigning amplicon-based sequence
-data to operational taxonomic units. {mSphere} \textbf{2}.
-doi:\href{https://doi.org/10.1128/mspheredirect.00073-17}{10.1128/mspheredirect.00073-17}.}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Ulrich2010}{}}%
-\CSLLeftMargin{9. }%
-\CSLRightInline{\textbf{Ulrich W}, \textbf{Gotelli NJ}. 2010. Null model
-analysis of species associations using abundance data. Ecology
-\textbf{91}:3384--3397.
-doi:\href{https://doi.org/10.1890/09-2157.1}{10.1890/09-2157.1}.}
-
 \leavevmode\vadjust pre{\hypertarget{ref-Oksanen2022}{}}%
-\CSLLeftMargin{10. }%
+\CSLLeftMargin{9. }%
 \CSLRightInline{\textbf{Oksanen J}, \textbf{Simpson GL},
 \textbf{Blanchet FG}, \textbf{Kindt R}, \textbf{Legendre P},
 \textbf{Minchin PR}, \textbf{O'Hara RB}, \textbf{Solymos P},
@@ -928,90 +926,178 @@ D}, \textbf{Ouellette M-H}, \textbf{Ribeiro Cunha E}, \textbf{Smith T},
 \href{https://CRAN.R-project.org/package=vegan}{Vegan: Community ecology
 package}.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-McArdle2001}{}}%
+\leavevmode\vadjust pre{\hypertarget{ref-McMurdie2014}{}}%
+\CSLLeftMargin{10. }%
+\CSLRightInline{\textbf{McMurdie PJ}, \textbf{Holmes S}. 2014. Waste
+not, want not: Why rarefying microbiome data is inadmissible. {PLoS}
+Computational Biology \textbf{10}:e1003531.
+doi:\href{https://doi.org/10.1371/journal.pcbi.1003531}{10.1371/journal.pcbi.1003531}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Bokulich2013}{}}%
 \CSLLeftMargin{11. }%
+\CSLRightInline{\textbf{Bokulich NA}, \textbf{Subramanian S},
+\textbf{Faith JJ}, \textbf{Gevers D}, \textbf{Gordon JI}, \textbf{Knight
+R}, \textbf{Mills DA}, \textbf{Caporaso JG}. 2013. Quality-filtering
+vastly improves diversity estimates from illumina amplicon sequencing.
+Nature Methods \textbf{10}:57--59.
+doi:\href{https://doi.org/10.1038/nmeth.2276}{10.1038/nmeth.2276}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Schloss2020}{}}%
+\CSLLeftMargin{12. }%
+\CSLRightInline{\textbf{Schloss PD}. 2020. Removal of rare amplicon
+sequence variants from 16S {rRNA} gene sequence surveys biases the
+interpretation of community structure data.
+doi:\href{https://doi.org/10.1101/2020.12.11.422279}{10.1101/2020.12.11.422279}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-McArdle2001}{}}%
+\CSLLeftMargin{13. }%
 \CSLRightInline{\textbf{McArdle BH}, \textbf{Anderson MJ}. 2001.
 {FITTING} {MULTIVARIATE} {MODELS} {TO} {COMMUNITY} {DATA}: A {COMMENT}
 {ON} {DISTANCE}-{BASED} {REDUNDANCY} {ANALYSIS}. Ecology
 \textbf{82}:290--297.
 doi:\href{https://doi.org/10.1890/0012-9658(2001)082\%5B0290:fmmtcd\%5D2.0.co;2}{10.1890/0012-9658(2001)082{[}0290:fmmtcd{]}2.0.co;2}.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Magurran2004}{}}%
-\CSLLeftMargin{12. }%
-\CSLRightInline{\textbf{Magurran AE}. 2004.
-\href{https://books.google.com/books?id=tUqzLSUzXxcC}{Measuring
-biological diversity}. Wiley.}
+\leavevmode\vadjust pre{\hypertarget{ref-Willis2019}{}}%
+\CSLLeftMargin{14. }%
+\CSLRightInline{\textbf{Willis AD}. 2019. Rarefaction, alpha diversity,
+and statistics. Frontiers in Microbiology \textbf{10}.
+doi:\href{https://doi.org/10.3389/fmicb.2019.02407}{10.3389/fmicb.2019.02407}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Chao2003}{}}%
+\CSLLeftMargin{15. }%
+\CSLRightInline{\textbf{Chao A}, \textbf{Shen T-J}. 2003. Nonparametric
+estimation of shannon's index of diversity when there are unseen species
+in sample. Environmental and ecological statistics
+\textbf{10}:429--443.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Chao2016}{}}%
+\CSLLeftMargin{16. }%
+\CSLRightInline{\textbf{Chao A}, \textbf{Chiu C-H}. 2016. Species
+richness: Estimation and comparison. Wiley StatsRef: statistics
+reference online \textbf{1}:26.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Lin2020}{}}%
+\CSLLeftMargin{17. }%
+\CSLRightInline{\textbf{Lin H}, \textbf{Peddada SD}. 2020. Analysis of
+microbial compositions: A review of normalization and differential
+abundance analysis. npj Biofilms and Microbiomes \textbf{6}.
+doi:\href{https://doi.org/10.1038/s41522-020-00160-w}{10.1038/s41522-020-00160-w}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Beule2020}{}}%
-\CSLLeftMargin{13. }%
+\CSLLeftMargin{18. }%
 \CSLRightInline{\textbf{Beule L}, \textbf{Karlovsky P}. 2020.
 \href{https://doi.org/10.7717/peerj.9593}{Improved normalization of
 species count data in ecology by scaling with ranked subsampling (SRS):
 Application to microbial communities}. PeerJ \textbf{8}:e9593.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Paulson2013}{}}%
-\CSLLeftMargin{14. }%
+\CSLLeftMargin{19. }%
 \CSLRightInline{\textbf{Paulson JN}, \textbf{Stine OC}, \textbf{Bravo
 HC}, \textbf{Pop M}. 2013. Differential abundance analysis for microbial
 marker-gene surveys. Nature Methods \textbf{10}:1200--1202.
 doi:\href{https://doi.org/10.1038/nmeth.2658}{10.1038/nmeth.2658}.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Chao2016}{}}%
-\CSLLeftMargin{15. }%
-\CSLRightInline{\textbf{Chao A}, \textbf{Chiu C-H}. 2016. Species
-richness: Estimation and comparison. Wiley StatsRef: statistics
-reference online \textbf{1}:26.}
+\leavevmode\vadjust pre{\hypertarget{ref-Quinn2019}{}}%
+\CSLLeftMargin{20. }%
+\CSLRightInline{\textbf{Quinn TP}, \textbf{Erb I}, \textbf{Gloor G},
+\textbf{Notredame C}, \textbf{Richardson MF}, \textbf{Crowley TM}. 2019.
+A field guide for the compositional analysis of any-omics data.
+{GigaScience} \textbf{8}.
+doi:\href{https://doi.org/10.1093/gigascience/giz107}{10.1093/gigascience/giz107}.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Chao2003}{}}%
-\CSLLeftMargin{16. }%
-\CSLRightInline{\textbf{Chao A}, \textbf{Shen T-J}. 2003. Nonparametric
-estimation of shannon's index of diversity when there are unseen species
-in sample. Environmental and ecological statistics
-\textbf{10}:429--443.}
+\leavevmode\vadjust pre{\hypertarget{ref-Martino2019}{}}%
+\CSLLeftMargin{21. }%
+\CSLRightInline{\textbf{Martino C}, \textbf{Morton JT}, \textbf{Marotz
+CA}, \textbf{Thompson LR}, \textbf{Tripathi A}, \textbf{Knight R},
+\textbf{Zengler K}. 2019. A novel sparse compositional technique reveals
+microbial perturbations. {mSystems} \textbf{4}.
+doi:\href{https://doi.org/10.1128/msystems.00016-19}{10.1128/msystems.00016-19}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Costea2014}{}}%
+\CSLLeftMargin{22. }%
+\CSLRightInline{\textbf{Costea PI}, \textbf{Zeller G}, \textbf{Sunagawa
+S}, \textbf{Bork P}. 2014. A fair comparison. Nature Methods
+\textbf{11}:359--359.
+doi:\href{https://doi.org/10.1038/nmeth.2897}{10.1038/nmeth.2897}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Quinn2018}{}}%
+\CSLLeftMargin{23. }%
+\CSLRightInline{\textbf{Quinn TP}, \textbf{Erb I}, \textbf{Richardson
+MF}, \textbf{Crowley TM}. 2018. Understanding sequencing data as
+compositions: An outlook and review. Bioinformatics
+\textbf{34}:2870--2878.
+doi:\href{https://doi.org/10.1093/bioinformatics/bty175}{10.1093/bioinformatics/bty175}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-teBeest2021}{}}%
+\CSLLeftMargin{24. }%
+\CSLRightInline{\textbf{Beest DE te}, \textbf{Nijhuis EH},
+\textbf{Möhlmann TWR}, \textbf{Braak CJF}. 2021. Log-ratio analysis of
+microbiome data with many zeroes is library size dependent. Molecular
+Ecology Resources \textbf{21}:1866--1874.
+doi:\href{https://doi.org/10.1111/1755-0998.13391}{10.1111/1755-0998.13391}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Morris2013}{}}%
+\CSLLeftMargin{25. }%
+\CSLRightInline{\textbf{Morris A}, \textbf{Beck JM}, \textbf{Schloss
+PD}, \textbf{Campbell TB}, \textbf{Crothers K}, \textbf{Curtis JL},
+\textbf{Flores SC}, \textbf{Fontenot AP}, \textbf{Ghedin E},
+\textbf{Huang L}, \textbf{Jablonski K}, \textbf{Kleerup E},
+\textbf{Lynch SV}, \textbf{Sodergren E}, \textbf{Twigg H}, \textbf{Young
+VB}, \textbf{Bassis CM}, \textbf{Venkataraman A}, \textbf{Schmidt TM},
+\textbf{Weinstock GM}. 2013. Comparison of the respiratory microbiome in
+healthy nonsmokers and smokers. American Journal of Respiratory and
+Critical Care Medicine \textbf{187}:1067--1075.
+doi:\href{https://doi.org/10.1164/rccm.201210-1913oc}{10.1164/rccm.201210-1913oc}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Westcott2017}{}}%
+\CSLLeftMargin{26. }%
+\CSLRightInline{\textbf{Westcott SL}, \textbf{Schloss PD}. 2017.
+{OptiClust}, an improved method for assigning amplicon-based sequence
+data to operational taxonomic units. {mSphere} \textbf{2}.
+doi:\href{https://doi.org/10.1128/mspheredirect.00073-17}{10.1128/mspheredirect.00073-17}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Ulrich2010}{}}%
+\CSLLeftMargin{27. }%
+\CSLRightInline{\textbf{Ulrich W}, \textbf{Gotelli NJ}. 2010. Null model
+analysis of species associations using abundance data. Ecology
+\textbf{91}:3384--3397.
+doi:\href{https://doi.org/10.1890/09-2157.1}{10.1890/09-2157.1}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Magurran2004}{}}%
+\CSLLeftMargin{28. }%
+\CSLRightInline{\textbf{Magurran AE}. 2004.
+\href{https://books.google.com/books?id=tUqzLSUzXxcC}{Measuring
+biological diversity}. Wiley.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Willis2015}{}}%
-\CSLLeftMargin{17. }%
+\CSLLeftMargin{29. }%
 \CSLRightInline{\textbf{Willis A}, \textbf{Bunge J}. 2015. Estimating
 diversity via frequency ratios. Biometrics \textbf{71}:1042--1049.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Love2014}{}}%
-\CSLLeftMargin{18. }%
+\CSLLeftMargin{30. }%
 \CSLRightInline{\textbf{Love MI}, \textbf{Huber W}, \textbf{Anders S}.
 2014. Moderated estimation of fold change and dispersion for {RNA}-seq
 data with {DESeq}2. Genome Biology \textbf{15}.
 doi:\href{https://doi.org/10.1186/s13059-014-0550-8}{10.1186/s13059-014-0550-8}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Palarea2015}{}}%
-\CSLLeftMargin{19. }%
+\CSLLeftMargin{31. }%
 \CSLRightInline{\textbf{Palarea-Albaladejo J}, \textbf{Martin-Fernandez
 J}. 2015. zCompositions -- {R} package for multivariate imputation of
 left-censored data under a compositional approach. Chemometrics and
 Intelligent Laboratory Systems \textbf{143}:85--96.
 doi:\href{https://doi.org/10.1016/j.chemolab.2015.02.019}{10.1016/j.chemolab.2015.02.019}.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Lin2020}{}}%
-\CSLLeftMargin{20. }%
-\CSLRightInline{\textbf{Lin H}, \textbf{Peddada SD}. 2020. Analysis of
-microbial compositions: A review of normalization and differential
-abundance analysis. npj Biofilms and Microbiomes \textbf{6}.
-doi:\href{https://doi.org/10.1038/s41522-020-00160-w}{10.1038/s41522-020-00160-w}.}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Costea2014}{}}%
-\CSLLeftMargin{21. }%
-\CSLRightInline{\textbf{Costea PI}, \textbf{Zeller G}, \textbf{Sunagawa
-S}, \textbf{Bork P}. 2014. A fair comparison. Nature Methods
-\textbf{11}:359--359.
-doi:\href{https://doi.org/10.1038/nmeth.2897}{10.1038/nmeth.2897}.}
-
 \leavevmode\vadjust pre{\hypertarget{ref-Li2015}{}}%
-\CSLLeftMargin{22. }%
+\CSLLeftMargin{32. }%
 \CSLRightInline{\textbf{Li Q}, \textbf{Heist EP}, \textbf{Moe LA}. 2015.
 Bacterial community structure and dynamics during corn-based bioethanol
 fermentation. Microbial Ecology \textbf{71}:409--421.
 doi:\href{https://doi.org/10.1007/s00248-015-0673-9}{10.1007/s00248-015-0673-9}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Baxter2016}{}}%
-\CSLLeftMargin{23. }%
+\CSLLeftMargin{33. }%
 \CSLRightInline{\textbf{Baxter NT}, \textbf{Ruffin MT}, \textbf{Rogers
 MAM}, \textbf{Schloss PD}. 2016. Microbiota-based model improves the
 sensitivity of fecal immunochemical test for detecting colonic lesions.
@@ -1019,7 +1105,7 @@ Genome Medicine \textbf{8}.
 doi:\href{https://doi.org/10.1186/s13073-016-0290-3}{10.1186/s13073-016-0290-3}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Beall2015}{}}%
-\CSLLeftMargin{24. }%
+\CSLLeftMargin{34. }%
 \CSLRightInline{\textbf{Beall BFN}, \textbf{Twiss MR}, \textbf{Smith
 DE}, \textbf{Oyserman BO}, \textbf{Rozmarynowycz MJ}, \textbf{Binding
 CE}, \textbf{Bourbonniere RA}, \textbf{Bullerjahn GS}, \textbf{Palmer
@@ -1031,7 +1117,7 @@ Implications for a warming climate. Environmental Microbiology
 doi:\href{https://doi.org/10.1111/1462-2920.12819}{10.1111/1462-2920.12819}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Henson2016}{}}%
-\CSLLeftMargin{25. }%
+\CSLLeftMargin{35. }%
 \CSLRightInline{\textbf{Henson MW}, \textbf{Pitre DM}, \textbf{Weckhorst
 JL}, \textbf{Lanclos VC}, \textbf{Webber AT}, \textbf{Thrash JC}. 2016.
 Artificial seawater media facilitate cultivating members of the
@@ -1039,7 +1125,7 @@ microbial majority from the gulf of mexico. {mSphere} \textbf{1}.
 doi:\href{https://doi.org/10.1128/msphere.00028-16}{10.1128/msphere.00028-16}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Baxter2014}{}}%
-\CSLLeftMargin{26. }%
+\CSLLeftMargin{36. }%
 \CSLRightInline{\textbf{Baxter NT}, \textbf{Wan JJ}, \textbf{Schubert
 AM}, \textbf{Jenior ML}, \textbf{Myers P}, \textbf{Schloss PD}. 2014.
 Intra- and interindividual variations mask interspecies variation in the
@@ -1048,7 +1134,7 @@ Environmental Microbiology \textbf{81}:396--404.
 doi:\href{https://doi.org/10.1128/aem.02303-14}{10.1128/aem.02303-14}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-LevyBooth2018}{}}%
-\CSLLeftMargin{27. }%
+\CSLLeftMargin{37. }%
 \CSLRightInline{\textbf{Levy-Booth DJ}, \textbf{Giesbrecht IJW},
 \textbf{Kellogg CTE}, \textbf{Heger TJ}, \textbf{D'Amore DV},
 \textbf{Keeling PJ}, \textbf{Hallam SJ}, \textbf{Mohn WW}. 2018.
@@ -1058,7 +1144,7 @@ The {ISME} Journal \textbf{13}:950--963.
 doi:\href{https://doi.org/10.1038/s41396-018-0334-3}{10.1038/s41396-018-0334-3}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Edwards2015}{}}%
-\CSLLeftMargin{28. }%
+\CSLLeftMargin{38. }%
 \CSLRightInline{\textbf{Edwards J}, \textbf{Johnson C},
 \textbf{Santos-Medellín C}, \textbf{Lurie E}, \textbf{Podishetty NK},
 \textbf{Bhatnagar S}, \textbf{Eisen JA}, \textbf{Sundaresan V}. 2015.
@@ -1068,7 +1154,7 @@ rice. Proceedings of the National Academy of Sciences
 doi:\href{https://doi.org/10.1073/pnas.1414592112}{10.1073/pnas.1414592112}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Ettinger2017}{}}%
-\CSLLeftMargin{29. }%
+\CSLLeftMargin{39. }%
 \CSLRightInline{\textbf{Ettinger CL}, \textbf{Williams SL},
 \textbf{Abbott JM}, \textbf{Stachowicz JJ}, \textbf{Eisen JA}. 2017.
 Microbiome succession during ammonification in eelgrass bed sediments.
@@ -1076,7 +1162,7 @@ Microbiome succession during ammonification in eelgrass bed sediments.
 doi:\href{https://doi.org/10.7717/peerj.3674}{10.7717/peerj.3674}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Graw2018}{}}%
-\CSLLeftMargin{30. }%
+\CSLLeftMargin{40. }%
 \CSLRightInline{\textbf{Graw MF}, \textbf{DAngelo G}, \textbf{Borchers
 M}, \textbf{Thurber AR}, \textbf{Johnson JE}, \textbf{Zhang C},
 \textbf{Liu H}, \textbf{Colwell FS}. 2018. Energy gradients structure
@@ -1085,7 +1171,7 @@ of the south china sea. Frontiers in Microbiology \textbf{9}.
 doi:\href{https://doi.org/10.3389/fmicb.2018.00729}{10.3389/fmicb.2018.00729}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Johnston2016}{}}%
-\CSLLeftMargin{31. }%
+\CSLLeftMargin{41. }%
 \CSLRightInline{\textbf{Johnston ER}, \textbf{Rodriguez-R LM},
 \textbf{Luo C}, \textbf{Yuan MM}, \textbf{Wu L}, \textbf{He Z},
 \textbf{Schuur EAG}, \textbf{Luo Y}, \textbf{Tiedje JM}, \textbf{Zhou
@@ -1095,7 +1181,7 @@ tundra ecosystem. Frontiers in Microbiology \textbf{7}.
 doi:\href{https://doi.org/10.3389/fmicb.2016.00579}{10.3389/fmicb.2016.00579}.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Hassell2018}{}}%
-\CSLLeftMargin{32. }%
+\CSLLeftMargin{42. }%
 \CSLRightInline{\textbf{Hassell N}, \textbf{Tinker KA}, \textbf{Moore
 T}, \textbf{Ottesen EA}. 2018. Temporal and spatial dynamics in
 microbial community composition within a temperate stream network.
@@ -1119,15 +1205,16 @@ the smallest sample size. A graphical represenation of the distribution
 of sample sizes for each dataset and the samples that were removed from
 each dataset are provided in Figure S1.
 
-\small
+\footnotesize
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1434}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0659}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1899}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1938}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2016}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2054}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1182}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.0543}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1565}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1661}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1597}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1757}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1693}}@{}}
 \toprule()
 \begin{minipage}[b]{\linewidth}\raggedright
 \textbf{Dataset\nobreakspace{}(Ref)}
@@ -1136,38 +1223,40 @@ each dataset are provided in Figure S1.
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 \makecell[c]{\textbf{Total}\\\textbf{sequences}}
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-\makecell[c]{\textbf{Median}\\\textbf{sequences}}
+\makecell[c]{\textbf{Median}\\\textbf{sample size}}
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-\makecell[c]{\textbf{Range of}\\\textbf{sequences}}
+\makecell[c]{\textbf{Mean}\\\textbf{sample size}}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+\makecell[c]{\textbf{Range of}\\\textbf{sample sizes}}
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 \makecell[c]{\textbf{SRA study}\\\textbf{accession}}
 \end{minipage} \\
 \midrule()
 \endhead
-Bioethanol~(22) & 95 & 3,970,972 & 16,014 & 3,690\Hyphdash*356,027 &
-SRP055545 \\
-Human~(23) & 490 & 20,828,275 & 32,452 & 10,439\Hyphdash*422,904 &
-SRP062005 \\
-Lake~(24) & 52 & 3,145,486 & 69,205 & 15,135\Hyphdash*110,993 &
+Bioethanol~(32) & 95 & 3,970,972 & 16,014 & 41,799 &
+3,690\Hyphdash*356,027 & SRP055545 \\
+Human~(33) & 490 & 20,828,275 & 32,452 & 42,506 &
+10,439\Hyphdash*422,904 & SRP062005 \\
+Lake~(34) & 52 & 3,145,486 & 69,205 & 60,490 & 15,135\Hyphdash*110,993 &
 SRP050963 \\
-Marine~(25) & 7 & 1,484,068 & 213,091 & 132,895\Hyphdash*256,758 &
-SRP068101 \\
-Mice~(6) & 348 & 2,785,641 & 6,426 & 1,804\Hyphdash*30,311 &
+Marine~(35) & 7 & 1,484,068 & 213,091 & 212,009 &
+132,895\Hyphdash*256,758 & SRP068101 \\
+Mice~(1) & 348 & 2,785,641 & 6,426 & 8,004 & 1,804\Hyphdash*30,311 &
 SRP192323 \\
-Peromyscus~(26) & 111 & 1,545,288 & 12,393 & 4,454\Hyphdash*33,502 &
-SRP044050 \\
-Rainforest~(27) & 69 & 936,666 & 11,464 & 4,880\Hyphdash*37,403 &
-ERP023747 \\
-Rice~(28) & 490 & 22,623,937 & 43,399 & 2,777\Hyphdash*192,200 &
-SRP044745 \\
-Seagrass~(29) & 286 & 4,135,440 & 13,538 & 1,830\Hyphdash*45,076 &
-SRP092441 \\
-Sediment~(30) & 58 & 1,151,389 & 17,606 & 7,686\Hyphdash*67,763 &
-SRP097192 \\
-Soil~(31) & 18 & 932,563 & 50,487 & 46,622\Hyphdash*58,935 &
+Peromyscus~(36) & 111 & 1,545,288 & 12,393 & 13,921 &
+4,454\Hyphdash*33,502 & SRP044050 \\
+Rainforest~(37) & 69 & 936,666 & 11,464 & 13,574 & 4,880\Hyphdash*37,403
+& ERP023747 \\
+Rice~(38) & 490 & 22,623,937 & 43,399 & 46,171 & 2,777\Hyphdash*192,200
+& SRP044745 \\
+Seagrass~(39) & 286 & 4,135,440 & 13,538 & 14,459 &
+1,830\Hyphdash*45,076 & SRP092441 \\
+Sediment~(40) & 58 & 1,151,389 & 17,606 & 19,851 & 7,686\Hyphdash*67,763
+& SRP097192 \\
+Soil~(41) & 18 & 932,563 & 50,487 & 51,809 & 46,622\Hyphdash*58,935 &
 ERP012016 \\
-Stream~(32) & 201 & 21,017,610 & 90,621 & 8,931\Hyphdash*394,419 &
-SRP075852 \\
+Stream~(42) & 201 & 21,017,610 & 90,621 & 104,565 &
+8,931\Hyphdash*394,419 & SRP075852 \\
 \bottomrule()
 \end{longtable}
 
