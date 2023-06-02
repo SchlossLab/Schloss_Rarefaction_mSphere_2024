@@ -44,6 +44,7 @@ vignettes/*.pdf
 
 # Great Lakes
 .nfs*
+.vscode
 
 # slurm
 logs
