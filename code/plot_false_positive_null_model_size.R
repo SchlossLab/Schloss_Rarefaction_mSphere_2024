@@ -63,7 +63,7 @@ alpha_classes <- c(
 )
 
 alpha_labels <- c(
-  "Rarefied",
+  "Rarefaction",
   "Raw",
   "SRS Normalized",
   "ACE Estimate",
@@ -71,12 +71,12 @@ alpha_labels <- c(
   "BA Default",
   "BA Poisson",
 
-  "Rarefied",
+  "Rarefaction",
   "Raw",
   "SRS Normalized",
   "Estimate",
 
-  "Rarefied",
+  "Rarefaction",
   "Raw",
   "SRS Normalized"
 )
@@ -162,19 +162,19 @@ beta_metrics <- c(
 # )
 
 beta_labels <- c(
-  "Rarefied",
+  "Rarefaction",
   "Raw",
   "Rel. abundance",
   "SRS Normalized",
   "CSS Normalized",
 
-  "Rarefied",
+  "Rarefaction",
   "Raw",
   "Rel. abundance",
   "SRS Normalized",
   "CSS Normalized",
 
-  "Rarefied",
+  "Rarefaction",
   "Raw",
   "Rel. abundance",
   "Robust CLR",

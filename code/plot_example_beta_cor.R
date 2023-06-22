@@ -92,7 +92,7 @@ get_rho <- function(p, m, df = correlations) {
 
 
 j_beta_labels <- c(
-  rare = glue("Rarefied\n(\u03C1 = {get_rho('rare', 'jaccard')})"),
+  rare = glue("Rarefaction\n(\u03C1 = {get_rho('rare', 'jaccard')})"),
   raw = glue("Raw\n(\u03C1 = {get_rho('raw', 'jaccard')})"),
   relabund = glue("Rel. abundance\n(\u03C1 = {get_rho('relabund', 'jaccard')})"),
   srs = glue("SRS Normalized\n(\u03C1 = {get_rho('srs', 'jaccard')})"),
@@ -100,7 +100,7 @@ j_beta_labels <- c(
 )
 
 b_beta_labels <- c(
-  rare = glue("Rarefied\n(\u03C1 = {get_rho('rare', 'bray')})"),
+  rare = glue("Rarefaction\n(\u03C1 = {get_rho('rare', 'bray')})"),
   raw = glue("Raw\n(\u03C1 = {get_rho('raw', 'bray')})"),
   relabund = glue("Rel. abundance\n(\u03C1 = {get_rho('relabund', 'bray')})"),
   srs = glue("SRS Normalized\n(\u03C1 = {get_rho('srs', 'bray')})"),

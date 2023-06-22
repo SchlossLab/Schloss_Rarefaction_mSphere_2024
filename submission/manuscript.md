@@ -35,69 +35,7 @@ header-includes:
 
 \raggedright
 
-```{r, echo=FALSE}
-options(tidyverse.quiet = TRUE)
-suppressPackageStartupMessages(library(tidyverse))
-suppressPackageStartupMessages(library(knitr))
-suppressPackageStartupMessages(library(here))
-suppressPackageStartupMessages(library(kableExtra))
-suppressPackageStartupMessages(library(glue))
 
-opts_chunk$set("tidy" = TRUE)
-opts_chunk$set("echo" = FALSE)
-opts_chunk$set("eval" = TRUE)
-opts_chunk$set("warning" = FALSE)
-opts_chunk$set("message" = FALSE)
-opts_chunk$set("cache" = FALSE)
-
-inline_hook <- function(x, digits=2){
-
-  if(is.list(x)){
-    x <- unlist(x)
-  }
-  if(is.numeric(x)){
-      paste(format(x,big.mark=',', digits=digits, nsmall=digits, scientific=FALSE))
-  } else {
-      paste(x)
-  }
-}
-knitr::knit_hooks$set(inline=inline_hook)
-
-package_version <- function(package){
-
-  paste(unlist(packageVersion(package)), collapse='.')
-
-}
-
-
-oxford_comma <- function(x, digits=2) {
-
-  x <- map_chr(x, inline_hook, digits=digits)
-
-  if(length(x) < 2){
-    x
-  } else if(length(x) == 2){
-    paste(x, collapse = " and ")
-  } else {
-    paste(paste(x[-length(x)], collapse=", "), x[length(x)], sep=", and ")
-  }
-}
-
-capitalize <- function(string) {
-  substr(string, 1, 1) <- toupper(substr(string, 1, 1))
-  string
-}
-
-
-datasets <- c("bioethanol", "human", "lake", "marine", "mice", "peromyscus",
-              "rainforest", "rice", "seagrass", "sediment", "soil", "stream")
-
-pretty_datasets <- tibble(
-  plain = datasets,
-  pretty = capitalize(plain)
-)
-
-```
 
 # Rarefaction is currently the best approach to control for uneven sequencing effort in amplicon sequence analyses
 
@@ -128,27 +66,7 @@ Ann Arbor, MI 48109
 
 \newpage
 
-```{r datasets}
-table_1 <- read_tsv(here('data/process/study_summary_statistics.tsv'))
 
-n_sample_range <- table_1 %>%
-  pull(n_samples) %>%
-  range() %>% as.integer()
-
-#n_med_sequence_range <- table_1 %>%
-#  pull(median) %>%
-#  range() %>% as.integer()
-
-low_fold_samples <- table_1 %>%
-  filter(fold_difference < 2) %>%
-  pull(directory)
-
-high_fold_range <- table_1 %>%
-  filter(fold_difference >= 2) %>%
-  pull(fold_difference) %>%
-  range() %>%
-  round(digits=1)
-```
 
 ## Abstract
 
@@ -183,56 +101,11 @@ The ongoing controversy over the use of rarefaction and the recent development o
 
 ***Rarefaction preserves the statistical power to detect differences between treatment groups.*** To assess the impact of different approaches to control for uneven sequencing effort I performed two additional simulations. In the first simulation, I implemented a skewed abundance distribution model to create two treatment groups for each dataset that were each populated with half of the samples each with the same number of sequences as the samples had in the observed data. The two treatment groups varied in their structure such that one had the same abundances as the null distribution above and the other had 10% of its OTUs randomly selected to increase their counts by 5%. The power to detect differences in richness between the two simulated treatment groups by all approaches was low (Figure 4A). This was likely because the approach for generating the perturbed community did not necessarily change the number of OTUs in each treatment group. Regardless, the simulations testing differences in richness using the Rice and Stream datasets had the greatest power when the richness data were calculated with rarefaction. To explore this further, a richness-adjusted community model was created by removing 3% of the OTUs from a null model model. As suggested by the first simulation, the richness data  calculated with rarefaction had a higher statistical power than the other approaches when measuring richness (Figure 5). The simulations testing the power to detect differences in Shannon diversity also showed that rarefaction performed better than the other methods (Figure 4A). When testing for differences in the Inverse Simpson diversity index the the difference between rarefaction and the other methods was negligible (Figure 4A). For tests of beta diversity I found that rarefaction was the most reliable approach to maintain statistical power to detect differences between two communities. Among the tests using the Jaccard and Bray-Curtis metrics, raw count data and CSS normalized data had little power relative to using rarefaction, relative abundance, and SRS to normalize the uneven sequencing depths. The differences in power between counts normalized with rarefaction, relative abundance, and SRS data was small, but if there were differences, the power obtained using rarefaction was greater than the other methods. Among the tests using Euclidean distances, using raw counts and CLR and DESeq2 transformed data had little power relative to the distances calculated using rarefaction and relative abundances. This power-based analysis of the simulated communities using different methods of handling uneven sample sizes demonstrated the value of rarefaction for preserving the statistical power to detect differences between treatment groups for measures of alpha and beta diversity.
 
-```{r coverage}
-loss <- table_1 %>%
-  mutate(min_max = 100 * min / max) %>%
-  select(nice_name, min_max) %>%
-  slice_min(min_max)
 
-obs_coverage_files <- glue("../data/{datasets}/data.otu.obs_coverage")
-names(obs_coverage_files) <- datasets
 
-obs_cor <- map_dfr(obs_coverage_files, read_tsv, .id = "dataset",
-        col_types = cols(group = col_character(),
-                         .default = col_double()))
+***Increased rarefaction depth reduces intra-sample variation in alpha and beta diversity.*** Once concern with using rarefaction is the perceived loss of sequencing information when a large fraction of data appears to be removed when the community with the greatest sequencing depth is sampled to the size of the community with the least (e.g., the smallest sample in the Bioethanol dataset had 1.04% of sequences that were in the largest sample). To assess the sensitivity of alpha and beta diversity metrics to rarefaction depth, I again used the dataset generated using the null models, but used rarefaction with each community to varying sequencing depths (Figure 6). The richness values increased with sequencing effort as rare OTUs would continue be detected. In contrast, the Shannon diversity and Bray-Curtis values plateaued with increased sequencing effort. This result was expected since increased sequencing would lead to increased precision in the measured relative abundance of the OTUs. Next, I measured the coefficient of variation (i.e., the mean divided by the standard deviation) between samples for richness, Shannon diversity, and Bray-Curtis distances. Although the mean richness appeared to increased unbounded with sequencing effort, the coefficient of variation for each dataset was relatively stable. In general, the coefficient of variation increased slightly with sequencing depth only to decline once smaller samples were removed from the analysis at higher sequencing depths. Interestingly, the coefficient of variation between Shannon diversity values decreased towards zero with increased sequencing effort and the coefficient of variation between Bray-Curtis distances tended to increase. Regardless, the coefficients of variation were relatively small. This analysis indicates that there are benefits to increased sequencing depths.
 
-obs_median <- obs_cor %>%
-  group_by(dataset) %>%
-  summarize(med = round(100 * median(norare_coverage), 1)) %>%
-  arrange(med) %>%
-  slice(c(1, n())) %>%
-  mutate(med = format(med, 1))
-
-rare_median <- obs_cor %>%
-  group_by(dataset) %>%
-  summarize(med = round(100 * median(rare_coverage), 1)) %>%
-  arrange(med) %>%
-  filter(med < 90)
-
-rare_coverage_files <- glue("../data/{datasets}/data.otu.rarefy_coverage")
-names(rare_coverage_files) <- datasets
-
-cor_line <- map_dfr(rare_coverage_files, read_tsv, .id = "dataset",
-        col_types = cols(.default = col_double()))
-
-extrapolate <- cor_line %>%
-  mutate(ninety = abs(mean - 0.90),
-         ninetyfive = abs(mean - 0.95),
-         ninetynine = abs(mean - 0.99)) %>%
-  group_by(dataset) %>%
-  summarize(ninety = nseqs[which.min(ninety)],
-            ninetyfive = nseqs[which.min(ninetyfive)],
-            ninetynine = nseqs[which.min(ninetynine)]) %>%
-  mutate(ninetyfive = ninetyfive / ninety - 1,
-         ninetynine = ninetynine / ninety - 1) %>%
-  summarize(m = round(mean(ninetyfive), 1),
-            n = round(mean(ninetynine), 1)
-            )
-```
-
-***Increased rarefaction depth reduces intra-sample variation in alpha and beta diversity.*** Once concern with using rarefaction is the perceived loss of sequencing information when a large fraction of data appears to be removed when the community with the greatest sequencing depth is sampled to the size of the community with the least (e.g., the smallest sample in the `r loss$nice_name` dataset had `r loss$min_max`% of sequences that were in the largest sample). To assess the sensitivity of alpha and beta diversity metrics to rarefaction depth, I again used the dataset generated using the null models, but used rarefaction with each community to varying sequencing depths (Figure 6). The richness values increased with sequencing effort as rare OTUs would continue be detected. In contrast, the Shannon diversity and Bray-Curtis values plateaued with increased sequencing effort. This result was expected since increased sequencing would lead to increased precision in the measured relative abundance of the OTUs. Next, I measured the coefficient of variation (i.e., the mean divided by the standard deviation) between samples for richness, Shannon diversity, and Bray-Curtis distances. Although the mean richness appeared to increased unbounded with sequencing effort, the coefficient of variation for each dataset was relatively stable. In general, the coefficient of variation increased slightly with sequencing depth only to decline once smaller samples were removed from the analysis at higher sequencing depths. Interestingly, the coefficient of variation between Shannon diversity values decreased towards zero with increased sequencing effort and the coefficient of variation between Bray-Curtis distances tended to increase. Regardless, the coefficients of variation were relatively small. This analysis indicates that there are benefits to increased sequencing depths.
-
-***Most studies have a high level of sequencing coverage.*** To explore the concern over loss of sequencing depth further, I calculated the Good's coverage for the observed data. The median coverage for each dataset ranged between `r oxford_comma(obs_median$med)`% for the `r oxford_comma(capitalize(obs_median$dataset))` datasets, respectively (Figure 7). When I used a rarefaction threshold with each dataset at the size of the smallest community in the dataset, with the exception of the `r oxford_comma(capitalize(rare_median$dataset))` datasets, the median coverage with rarefaction was still greater than 90%. These results suggest that most studies had a level of sequencing coverage that aligned with the diversity of the communities. Next, I used the null model for each dataset to ask how much sequencing effort was required to obtain higher levels of coverage. To obtain 95 and 99% coverage, an average of `r extrapolate$m` and `r extrapolate$n`-fold more sequence data was estimated to be required than was required to obtain 90% coverage, respectively (Figure 7). As suggested by the simulated coverages curve in Figure 7, these estimates are conservative. Regardless, the sequencing effort required to achieve higher sequencing depth would likely limit the number of samples that could be sequenced when controlling for costs. Although it may be disconcerting to use rarefaction to normalize to a sequencing depth that is considerably lower than that obtained for the best sequenced community in a dataset, sequencing coverage for many environments is probably adequate even at the lower sequencing depth. Of course, regardless of the concerns surrounding the choice of the rarefaction depth, the results throughout this study demonstrate that rarefaction is necessary to avoid reaching incorrect inferences.
+***Most studies have a high level of sequencing coverage.*** To explore the concern over loss of sequencing depth further, I calculated the Good's coverage for the observed data. The median coverage for each dataset ranged between 89.4 and 99.8% for the Seagrass and Human datasets, respectively (Figure 7). When I used a rarefaction threshold with each dataset at the size of the smallest community in the dataset, with the exception of the Seagrass, Rice, and Stream datasets, the median coverage with rarefaction was still greater than 90%. These results suggest that most studies had a level of sequencing coverage that aligned with the diversity of the communities. Next, I used the null model for each dataset to ask how much sequencing effort was required to obtain higher levels of coverage. To obtain 95 and 99% coverage, an average of 2.70 and 101.20-fold more sequence data was estimated to be required than was required to obtain 90% coverage, respectively (Figure 7). As suggested by the simulated coverages curve in Figure 7, these estimates are conservative. Regardless, the sequencing effort required to achieve higher sequencing depth would likely limit the number of samples that could be sequenced when controlling for costs. Although it may be disconcerting to use rarefaction to normalize to a sequencing depth that is considerably lower than that obtained for the best sequenced community in a dataset, sequencing coverage for many environments is probably adequate even at the lower sequencing depth. Of course, regardless of the concerns surrounding the choice of the rarefaction depth, the results throughout this study demonstrate that rarefaction is necessary to avoid reaching incorrect inferences.
 
 ## Discussion
 
@@ -261,7 +134,7 @@ All simulations have weaknesses and should be interpreted with caution. However,
 
 **Richness-adjusted community model.** In the richness-adjusted community model, communities were randomly assigned to one of two simulated treatment groups. Communities in the first treatment group were generated by calculating the relative abundance of each OTU across all samples and using those values as the probability of sampling each OTU. This probability distribution was sampled until each sample had the same number of sequences that it did in the observed data. Samples in the second treatment group were generated by removing 3% of the OTUs from the dataset and recalculating the relative abundance of the remaining OTUs. Sequences were sampled from the richness-adjusted community distribtion, with replacement, until each sample had the same number of sequences that it did in the observed data. Under the richness-adjusted community model, each sample represented a statistical sampling of two communities such that there should not have been a statistically significant difference within a treatment group, but there was between the treatment groups. Because the construction of the richness-adjusted community model was a stochastic process, 100 replicates were generated for each dataset.
 
-**Test of statistical significance.** Statistical comparisons of alpha diversity metrics across the simulated treatment groups were performed using the non-parametric two-sample Wilcoxon test as implemented in `wilcoxon.test` in the `stats` base R package. This test was selected because the alpha-diversity metrics tended to not be normally distributed and each dataset required a different transformation to normalize the data. Comparisons of beta diversity metrics were performed using the `adonis2` function from the `vegan` (v.`r package_version("vegan")`) R package [@Dixon2003]. The `adonis2` function implements a non-parametric multivariate analysis of variance using distances matrices [@Anderson2001]. Throughout this study I used 0.05 as the threshold for assessing the statistical significance of any P-values.
+**Test of statistical significance.** Statistical comparisons of alpha diversity metrics across the simulated treatment groups were performed using the non-parametric two-sample Wilcoxon test as implemented in `wilcoxon.test` in the `stats` base R package. This test was selected because the alpha-diversity metrics tended to not be normally distributed and each dataset required a different transformation to normalize the data. Comparisons of beta diversity metrics were performed using the `adonis2` function from the `vegan` (v.2.6.2) R package [@Dixon2003]. The `adonis2` function implements a non-parametric multivariate analysis of variance using distances matrices [@Anderson2001]. Throughout this study I used 0.05 as the threshold for assessing the statistical significance of any P-values.
 
 **Power analysis.** The parameters used to design the skewed abundance and richness-adjusted community models were set to impose a known effect size when using community data normalized by rarefaction. The statistical power to detect these differences was determined by calculating the p-value for each of 100 replicate simulated set of samples from each dataset using the various alpha and beta diversity metrics. The percentage of tests that yielded a significant P-value was considered the statistical power (i.e., 1 minus the Type II error) to detect the difference.
 
@@ -273,9 +146,9 @@ The Simpson diversity was calculated as
 
 $$D_{simpson} = \frac {\sum_{i=1}^{S_{obs}} {n_i \left ( n_i - 1 \right )}}{N \left( N-1 \right )}$$
 
-The inverse Simpson diversity was calculated as $1/D_{simpson}$. In both formulae, $n_i$ was the number of sequences in OTU $i$ and $N$ iwass the number of sequences in the sample. Rarefaction of richness, Shannon diversity and Inverse Simpson diversity values were carried out in mothur. Briefly, mothur calculates each value on a random draw of the same number of sequences from each sample and obtains a mean value based on 1,000 random draws. Scaled ranked subsampling (SRS) was used to normalize OTU counts to the size of the smallest sample in each dataset using the SRS R package (v.`r package_version("SRS")`)[@Beule2020]. Normalized OTU counts were used to calculate sample richness and Shannon and inverse Simpson diversity values using mothur. Data normalized by cumulative sum scaling (CSS) were not reported for alpha-diversity values since the relative abundances of the features do not change with the normalization procedure [@Paulson2013]. The non-parametric bias-corrected Chao1 and ACE richness estimators [@Chao2016] and a non-parametric estimator of the Shannon diversity [@Chao2003] were calculated using raw OTU counts with mothur. Parametric estimates of sample richness were calculated using the `breakaway` (BA) R package (v.`r package_version("breakaway")`)[@Willis2015]. My analysis reports both the results from running default model selection procedure and the Poisson model. The default model selection returned either the Kemp, Negative Binomial, or Poisson models. Relative abundance data were not used to calculate alpha diversity metrics since the richness and evenness does not change from the raw data when dividing each sample by the total number of sequences in the sample. 
+The inverse Simpson diversity was calculated as $1/D_{simpson}$. In both formulae, $n_i$ was the number of sequences in OTU $i$ and $N$ iwass the number of sequences in the sample. Rarefaction of richness, Shannon diversity and Inverse Simpson diversity values were carried out in mothur. Briefly, mothur calculates each value on a random draw of the same number of sequences from each sample and obtains a mean value based on 1,000 random draws. Scaled ranked subsampling (SRS) was used to normalize OTU counts to the size of the smallest sample in each dataset using the SRS R package (v.0.2.3)[@Beule2020]. Normalized OTU counts were used to calculate sample richness and Shannon and inverse Simpson diversity values using mothur. Data normalized by cumulative sum scaling (CSS) were not reported for alpha-diversity values since the relative abundances of the features do not change with the normalization procedure [@Paulson2013]. The non-parametric bias-corrected Chao1 and ACE richness estimators [@Chao2016] and a non-parametric estimator of the Shannon diversity [@Chao2003] were calculated using raw OTU counts with mothur. Parametric estimates of sample richness were calculated using the `breakaway` (BA) R package (v.4.7.9)[@Willis2015]. My analysis reports both the results from running default model selection procedure and the Poisson model. The default model selection returned either the Kemp, Negative Binomial, or Poisson models. Relative abundance data were not used to calculate alpha diversity metrics since the richness and evenness does not change from the raw data when dividing each sample by the total number of sequences in the sample. 
 
-**Beta diversity calculations.** Similar to the alpha diversity calculations, multiple approaches were used to control for uneven sequencing effort and calculate beta diversity. Raw and OTU counts were used for input to calculate the Jaccard, Bray-Curtis, and Euclidean dissimilarity indices using the `vegdist` function from the `vegan` R package (v.`r package_version("vegan")`)[@Dixon2003]. The Jaccard index was calculated as
+**Beta diversity calculations.** Similar to the alpha diversity calculations, multiple approaches were used to control for uneven sequencing effort and calculate beta diversity. Raw and OTU counts were used for input to calculate the Jaccard, Bray-Curtis, and Euclidean dissimilarity indices using the `vegdist` function from the `vegan` R package (v.2.6.2)[@Dixon2003]. The Jaccard index was calculated as
 
 $$D_{Jaccard}=1-\frac{S_{AB}}{S_A+S_B-S_{AB}}$$
 
@@ -291,7 +164,7 @@ These metrics were calculated using the relative abundance of each OTU using the
 
 Beta-diversity values generated with rarefaction were calculated using the `avgdist` function in vegan. Briefly, `vegan`'s `avgdist` function calculates each pairwise dissimilarity index after obtaining a random draw of the same number of sequences from each sample. After obtaining 100 random draws it returns the mean value.
 
-Three approaches were taken to normalize the number of sequences across samples within a dataset. Scaled ranked subsampling (SRS) and cumulative sum scaling (CSS) were used to normalize raw OTU counts using the `SRS` (v.`r package_version("SRS")`) and `metagenomeSeq` (v.`r package_version("metagenomeSeq")`) R packages, respectively [@Beule2020; @Paulson2013]. The normalized counts were then used to calculate Jaccard and Bray-Curtis dissimilarity indices. Finally, the variance-stabilization transformation (VST) as implemented in the `DESeq2` (v.`r package_version("DESeq2")`) R package was used to normalize the data as described by McMurdie and Holmes [@Love2014; @McMurdie2014]. Because the VST approach generated negative values, which are incompatible with calculating Jaccard and Bray-Curtis dissimilarity values, Euclidean distances were calculated instead.
+Three approaches were taken to normalize the number of sequences across samples within a dataset. Scaled ranked subsampling (SRS) and cumulative sum scaling (CSS) were used to normalize raw OTU counts using the `SRS` (v.0.2.3) and `metagenomeSeq` (v.1.36.0) R packages, respectively [@Beule2020; @Paulson2013]. The normalized counts were then used to calculate Jaccard and Bray-Curtis dissimilarity indices. Finally, the variance-stabilization transformation (VST) as implemented in the `DESeq2` (v.1.34.0) R package was used to normalize the data as described by McMurdie and Holmes [@Love2014; @McMurdie2014]. Because the VST approach generated negative values, which are incompatible with calculating Jaccard and Bray-Curtis dissimilarity values, Euclidean distances were calculated instead.
 
 Raw OTU counts were used to calculate centered log ratio (CLR) values for each OTU, which were then used to calculate Euclidean distances; such distances are commonly referred to as Aitchison distances. CLR abundances are calculated as:
 
@@ -299,7 +172,7 @@ $$
 CLR\left(n_j\right) = \left[ \ln\frac{x_{ij}}{g(x_j)}, ..., \ln\frac{x_{S_Tj}}{g(x_j)}\right]
 $$
 
-where $x_{ij}$ was the number of sequences observed for OTU $i$ in sample $j$ and $g()$ was the geometric mean, $x_j$ was the count of the $S_T$ OTUs in sample $j$. Because the geometric mean is zero if any OTU is absent from a sample, the CLR is undefined when there are unobserved OTUs in a sample. To overcome this problem, I attempted a four approaches. The first, Zero CLR, imputed the value of the zeroes based on the observed data using the zCompositions (v.`r package_version("zCompositions")`) R package [@Palarea2015]. The second, One CLR, added a pseudo-count of 1 to the abundance of all OTUs [@Paulson2013; @Lin2020]. The third, Nudge CLR, added a pseudo-count of 1 divided by the total number of sequences in a sample to each OTU in the sample [@Costea2014; @Lin2020]. The final approach, Robust CLR, removed unobserved OTUs prior to calculating the CLR [@Martino2019].
+where $x_{ij}$ was the number of sequences observed for OTU $i$ in sample $j$ and $g()$ was the geometric mean, $x_j$ was the count of the $S_T$ OTUs in sample $j$. Because the geometric mean is zero if any OTU is absent from a sample, the CLR is undefined when there are unobserved OTUs in a sample. To overcome this problem, I attempted a four approaches. The first, Zero CLR, imputed the value of the zeroes based on the observed data using the zCompositions (v.1.4.0.1) R package [@Palarea2015]. The second, One CLR, added a pseudo-count of 1 to the abundance of all OTUs [@Paulson2013; @Lin2020]. The third, Nudge CLR, added a pseudo-count of 1 divided by the total number of sequences in a sample to each OTU in the sample [@Costea2014; @Lin2020]. The final approach, Robust CLR, removed unobserved OTUs prior to calculating the CLR [@Martino2019].
 
 **Analysis of sequencing coverage.** To assess the level of sequencing coverage I calculated Good's coverage ($C_{Good}$) using mothur:
 
@@ -307,7 +180,7 @@ $$C_{Good} = 100\% \times \left(1-\frac{n_1}{N_T} \right)$$
 
 where $n_1$ was the number of OTUs with only one sequence in the sample and $N_T$ was the total number of sequences in the sample. Good's coverage was calculated using (i) the observed OTU counts for each sample and dataset, (ii) following rarefaction (1,000 iterations) of the observed OTU counts to the size of the smallest sample in each dataset, and (iii) after rarefaction (1,000 iterations) of the null community distribution.
 
-**Reproducible data analysis.** A complete reproducible workflow written in Snakemake (v.7.15.2) and Conda (v.4.12.0) computational environment can be obtained from the GitHub hosted git repository for this project (https://github.com/SchlossLab/Schloss_Rarefaction_XXXXX_2023). This paper was written in R-flavored markdown (v.`r package_version("rmarkdown")`) with the `kableExtra` (v.`r package_version("kableExtra")`) package. The mothur (v.1.47.0) and R (`r glue("{version$major}.{version$minor}")`) software packages were used for all analyses with extensive use of functions in the tidyverse metapackage (v.`r package_version("tidyverse")`). A preliminary version of this analysis was presented as the Rarefaction video series on the Riffomonas Project YouTube channel (https://www.youtube.com/playlist?list=PLmNrK_nkqBpJuhS93PYC-Xr5oqur7IIWf).
+**Reproducible data analysis.** A complete reproducible workflow written in Snakemake (v.7.15.2) and Conda (v.4.12.0) computational environment can be obtained from the GitHub hosted git repository for this project (https://github.com/SchlossLab/Schloss_Rarefaction_XXXXX_2023). This paper was written in R-flavored markdown (v.2.16) with the `kableExtra` (v.1.3.4) package. The mothur (v.1.47.0) and R (4.1.3) software packages were used for all analyses with extensive use of functions in the tidyverse metapackage (v.1.3.1). A preliminary version of this analysis was presented as the Rarefaction video series on the Riffomonas Project YouTube channel (https://www.youtube.com/playlist?list=PLmNrK_nkqBpJuhS93PYC-Xr5oqur7IIWf).
 
 \vspace{10mm}
 
@@ -335,34 +208,21 @@ I am grateful to the researchers who generated the datasets used in this study. 
 
 \footnotesize
 
-```{r results_f}
-table_1 %>%
-  arrange(nice_name) %>%
-  mutate(
-    nice_name = glue("{nice_name}\\ {reference}"),
-    total_seqs=format(total_seqs, big.mark=",", trim=TRUE),
-    median=format(as.integer(median), big.mark=",", trim=TRUE),
-    mean=format(as.integer(mean), big.mark=",", trim=TRUE),
-    min=format(min, big.mark=",", trim=TRUE),
-    max=format(max, big.mark=",", trim=TRUE),
-    range = glue("{min}\\Hyphdash*{max}"),
-    n_samples = n_samples) %>%
-  select(nice_name, n_samples, total_seqs, median, mean, range, sra_study) %>%
-  kbl(format="markdown", booktabs=TRUE, escape=F, align="lrrrrrr",
-    linesep="",
-    col.names = linebreak(
-      c(
-        "\\textbf{Dataset\\nobreakspace{}(Ref)}",
-        "\\textbf{Samples}",
-        "\\textbf{Total}\n\\textbf{sequences}",
-        "\\textbf{Median}\n\\textbf{sample size}",
-        "\\textbf{Mean}\n\\textbf{sample size}",
-        "\\textbf{Range of}\n\\textbf{sample sizes}",
-        "\\textbf{SRA study}\n\\textbf{accession}"
-      ),
-      align="c")
-  )
-```
+
+|\textbf{Dataset\nobreakspace{}(Ref)} | \textbf{Samples}| \makecell[c]{\textbf{Total}\\\textbf{sequences}}| \makecell[c]{\textbf{Median}\\\textbf{sample size}}| \makecell[c]{\textbf{Mean}\\\textbf{sample size}}| \makecell[c]{\textbf{Range of}\\\textbf{sample sizes}}| \makecell[c]{\textbf{SRA study}\\\textbf{accession}}|
+|:------------------------------------|----------------:|------------------------------------------------:|---------------------------------------------------:|-------------------------------------------------:|------------------------------------------------------:|----------------------------------------------------:|
+|Bioethanol\ [@Li2015]                |               95|                                        3,970,972|                                              16,014|                                            41,799|                                 3,690\Hyphdash*356,027|                                            SRP055545|
+|Human\ [@Baxter2016]                 |              490|                                       20,828,275|                                              32,452|                                            42,506|                                10,439\Hyphdash*422,904|                                            SRP062005|
+|Lake\ [@Beall2015]                   |               52|                                        3,145,486|                                              69,205|                                            60,490|                                15,135\Hyphdash*110,993|                                            SRP050963|
+|Marine\ [@Henson2016]                |                7|                                        1,484,068|                                             213,091|                                           212,009|                               132,895\Hyphdash*256,758|                                            SRP068101|
+|Mice\ [@Kozich2013]                  |              348|                                        2,785,641|                                               6,426|                                             8,004|                                  1,804\Hyphdash*30,311|                                            SRP192323|
+|Peromyscus\ [@Baxter2014]            |              111|                                        1,545,288|                                              12,393|                                            13,921|                                  4,454\Hyphdash*33,502|                                            SRP044050|
+|Rainforest\ [@LevyBooth2018]         |               69|                                          936,666|                                              11,464|                                            13,574|                                  4,880\Hyphdash*37,403|                                            ERP023747|
+|Rice\ [@Edwards2015]                 |              490|                                       22,623,937|                                              43,399|                                            46,171|                                 2,777\Hyphdash*192,200|                                            SRP044745|
+|Seagrass\ [@Ettinger2017]            |              286|                                        4,135,440|                                              13,538|                                            14,459|                                  1,830\Hyphdash*45,076|                                            SRP092441|
+|Sediment\ [@Graw2018]                |               58|                                        1,151,389|                                              17,606|                                            19,851|                                  7,686\Hyphdash*67,763|                                            SRP097192|
+|Soil\ [@Johnston2016]                |               18|                                          932,563|                                              50,487|                                            51,809|                                 46,622\Hyphdash*58,935|                                            ERP012016|
+|Stream\ [@Hassell2018]               |              201|                                       21,017,610|                                              90,621|                                           104,565|                                 8,931\Hyphdash*394,419|                                            SRP075852|
 \normalsize
 
 \newpage

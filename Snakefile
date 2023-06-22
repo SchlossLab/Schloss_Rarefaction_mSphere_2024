@@ -879,5 +879,6 @@ rule write_paper:
   shell: 
     """
     code/render_manuscript.R
+    rm -f submission/manuscript.log
     """
     

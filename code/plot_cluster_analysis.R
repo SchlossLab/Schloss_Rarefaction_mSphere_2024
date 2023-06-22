@@ -43,19 +43,19 @@ beta_metrics <- c(
 )
 
 beta_labels <- c(
-  "Rarefied",
+  "Rarefaction",
   "Raw",
   "Rel. abundance",
   "SRS Normalized",
   "CSS Normalized",
 
-  "Rarefied",
+  "Rarefaction",
   "Raw",
   "Rel. abundance",
   "SRS Normalized",
   "CSS Normalized",
 
-  "Rarefied",
+  "Rarefaction",
   "Raw",
   "Rel. abundance",
   "Robust CLR",
