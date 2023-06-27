@@ -186,7 +186,7 @@ where $n_1$ was the number of OTUs with only one sequence in the sample and $N_T
 
 **Acknowledgements.** 
 
-I am grateful to the researchers who generated the datasets used in this study. I also thank the individuals who asked questions and commented on the preliminary version of this project, which was released as a YouTube playlist on the Riffomonas channel. This work was supported in part by funding from the National Institutes of Health (U01AI124255, P30DK034933, R01CA215574).
+I am grateful to the researchers who generated the datasets used in this study. I also thank the individuals who asked questions and commented on the preliminary version of this project, which was released as a YouTube playlist on the Riffomonas channel. This work was supported in part by funding from the National Institutes of Health (U01AI124255, P30DK034933, R01CA215574, and U01CA264071).
 
 \newpage
 
