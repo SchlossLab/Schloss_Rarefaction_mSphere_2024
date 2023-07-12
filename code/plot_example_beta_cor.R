@@ -74,7 +74,8 @@ j_distances <- distances %>% filter(calculator == "jaccard")
 
 b_distances <- distances %>% filter(calculator == "bray")
 
-e_distances <- distances %>% filter(calculator == "euclidean")
+e_distances <- distances %>% filter(calculator == "euclidean") %>%
+  mutate(dist = if_else(process == "rclr", 20 * dist, dist))
 
 get_rho <- function(p, m, df = correlations) {
 
@@ -108,7 +109,7 @@ b_beta_labels <- c(
 )
 
 e_beta_labels <- c(
-  rclr = glue("Robust CLR\n(\u03C1 = {get_rho('rclr', 'euclidean')})"),
+  rclr = glue("Robust CLR (x20)\n(\u03C1 = {get_rho('rclr', 'euclidean')})"),
   oclr = glue("One CLR\n(\u03C1 = {get_rho('oclr', 'euclidean')})"),
   nclr = glue("Nudge CLR\n(\u03C1 = {get_rho('nclr', 'euclidean')})"),
   zclr = glue("Zero CLR\n(\u03C1 = {get_rho('zclr', 'euclidean')})"),
@@ -168,7 +169,7 @@ beta_plot <- j_plot / b_plot / e_plot &
     panel.background = element_blank(),
     axis.title.x = element_markdown(),
     strip.text.y = element_blank(),
-    strip.text.x = element_text(hjust = 0, size = 8)
+    strip.text.x = element_text(hjust = 0, size = 7)
   )
   
 ggsave("figures/example_beta_cor.tiff", beta_plot,

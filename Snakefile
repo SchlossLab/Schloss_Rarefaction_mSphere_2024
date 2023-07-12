@@ -178,23 +178,6 @@ rule richness_shared_design:
     {input.script} {input.shared} {input.accnos} {wildcards.seed}
     """
 
-
-# rule observed_shared_design:
-#   input:
-#     script="code/get_observed_shared_design.R",
-#     shared="data/human/data.otu.shared",
-#     accnos="data/human/data.remove_accnos",
-#     sra="data/human/sra_info.tsv"
-#   resources:
-#   output:
-#     "data/human/data.otu.oshared",
-#     "data/human/data.odesign"
-#   shell:
-#     """
-#     {input.script}
-#     """
-
-
 ################################################################################
 #
 # Alpha diversity analysis
@@ -213,17 +196,6 @@ rule raw_alpha:
     {input.script} {input.shared}
     """
 
-# rule raw_oalpha:
-#   input:
-#     script="code/get_raw_alpha.sh",
-#     shared="data/{dataset}/data.otu.oshared"
-#   output:
-#     "data/{dataset}/data.otu.o_raw_alpha"
-#   shell:
-#     """
-#     {input.script} {input.shared}
-#     """
-
 # rarefied nseqs, shannon, sobs, invsimpson, chao, ace, npshannon, coverage
 rule rarefy_alpha:
   input:
@@ -235,17 +207,6 @@ rule rarefy_alpha:
     """
     {input.script} {input.shared}
     """
-
-# rule rarefy_oalpha:
-#   input:
-#     script="code/get_rarefy_alpha.sh",
-#     shared="data/{dataset}/data.otu.oshared"
-#   output:
-#     "data/{dataset}/data.otu.o_rarefy_alpha"
-#   shell:
-#     """
-#     {input.script} {input.shared}
-#     """
 
 # srs normalized nseqs, shannon, sobs, invsimpson, chao, ace, npshannon, coverage
 rule srs_alpha:
@@ -261,19 +222,6 @@ rule srs_alpha:
     {input.script} {input.shared}
     """
 
-# rule srs_oalpha:
-#   input:
-#     script="code/get_srs_alpha.R",
-#     shared="data/{dataset}/data.otu.oshared"
-#   output:
-#     "data/{dataset}/data.otu.o_srs_alpha"
-#   resources:
-#     mem_mb=10000
-#   shell:
-#     """
-#     {input.script} {input.shared}
-#     """
-
 # observed/estimated sobs with breakaway / poisson
 rule breakaway_alpha:
   input:
@@ -286,23 +234,13 @@ rule breakaway_alpha:
     {input.script} {input.shared}
     """
 
-# rule breakaway_oalpha:
-#   input:
-#     script="code/get_breakaway_alpha.R",
-#     shared="data/{dataset}/data.otu.oshared"
-#   output:
-#     "data/{dataset}/data.otu.o_breakaway_alpha"
-#   shell:
-#     """
-#     {input.script} {input.shared}
-#     """
-
-
 ################################################################################
 #
 # Beta diversity analysis
 #
 ################################################################################
+
+ruleorder: process_rclr > process_beta
 
 rule process_beta:
   input:
@@ -317,19 +255,22 @@ rule process_beta:
     {input.script} {input.shared} {output.dist}
     """
 
-# rule process_obeta:
-#   input:
-#     script="code/get_{beta_process}_beta.R",
-#     shared="data/{dataset}/data.otu.oshared"
-#   output:
-#     dist="data/{dataset}/data.otu.o_{beta_process}_{beta_calculator}.dist"
-#   resources:
-#     mem_mb=16000
-#   shell:
-#     """
-#     {input.script} {input.shared} {output.dist}
-#     """
-
+rule process_rclr:
+  input:
+    r_script = "code/get_rclr_beta.R",
+    py_script = "code/run_gemelli.py",
+    shared="data/{dataset}/data.otu.{seed}.{model}shared"
+  output:
+    dist="data/{dataset}/data.otu.{seed}.{model}_rclr_{beta_calculator}.dist"
+  resources:
+    mem_mb=16000
+  conda:
+    "config_files/rare_gemelli.yml"
+  shell:
+    """
+    {input.r_script} {input.shared} {output.dist}
+    """
+  
 ################################################################################
 #
 # Assign samples to treatment groups based on null model or by size
@@ -389,20 +330,6 @@ rule alpha_kw:
     {input.script} data/{wildcards.dataset} {output.alpha}
     """
 
-# rule oalpha_kw:
-#   input:
-#     script = "code/run_oalpha_kw.R",
-#     alpha_files = expand("data/{dataset}/data.otu.o_{process}_alpha",
-#                         process=alpha_process, allow_missing=True),
-#     design_file = "data/{dataset}/data.odesign"
-#   output:
-#     alpha = "data/{dataset}/data.o_oalpha_kw"
-#   shell:
-#     """
-#     {input.script}
-#     """
-
-
 # beta: calculate p-value
 rule beta_amova:
   input:
@@ -420,22 +347,6 @@ rule beta_amova:
     """
     {input.script} data/{wildcards.dataset} {output.amova}
     """
-
-# rule obeta_amova:
-#   input:
-#     script="code/run_obeta_analysis.R",
-#     dist_files = expand("data/{dataset}/data.otu.o_{process}_{calculator}.dist",
-#                         process=beta_process, calculator=beta_calculator,
-#                         allow_missing=True),
-#     design_file  = "data/{dataset}/data.odesign"
-#   output:
-#     amova="data/{dataset}/data.o_oamova"
-#   resources:
-#     mem_mb=12000
-#   shell:
-#     """
-#     {input.script}
-#     """
 
 #cluster analysis - cluster samples via pam and see how well they reflect design
 #                   files cluster assignment

@@ -2,36 +2,41 @@
 
 library(tidyverse)
 library(data.table)
-library(vegan)
+library(glue)
 
 input <- commandArgs(trailingOnly = TRUE)
-shared_file <- input[1] # shared_file <- "data/soil/data.otu.1.rshared"
-dist_file <- input[2] # dist_file <- "data/soil/data.otu.1.r_rclr_euclidean.dist"
+shared_file <- input[1]
+dist_file <- input[2]
+# shared_file <- "data/soil/data.otu.1.rshared"
+# dist_file <- "data/soil/data.otu.1.r_rclr_euclidean.dist"
+
+temp_otu_file <- str_replace(shared_file, "shared", "shared_gemelli")
+temp_dist_file <- str_replace(shared_file, "shared", "dist_gemelli")
 
 method <- str_replace(dist_file, ".*_(\\w*).dist", "\\1")
+dataset <- str_replace(dist_file, "data/(.*)/data.*", "\\1")
 
-geometric_mean <- function(x) {
+# couldn't get stream, rice, seagrass to reliably get through run_gemelli even
+# with 750 GB of RAM. Skipping...
 
-  exp(mean(log(x[x > 0])))
-
-}
-
-if (method == "euclidean") {
+if (method == "euclidean" && !(dataset %in% c("stream", "rice", "seagrass"))) {
 
   fread(shared_file, colClasses = c(Group = "character")) %>%
     select(Group, starts_with("Otu")) %>%
     pivot_longer(-Group) %>%
-    filter(value > 0) %>%
-    group_by(Group) %>%
-    mutate(rclr = log(value / geometric_mean(value))) %>%
-    ungroup() %>%
-    select(-value) %>%
-    pivot_wider(names_from = name, values_from = rclr, values_fill = 0) %>%
-    column_to_rownames("Group") %>%
-    vegdist(method = method) %>%
-    as.matrix() %>%
-    as_tibble(rownames = "Group") %>%
+    pivot_wider(names_from = Group, values_from = value, values_fill = 0) %>%
+    column_to_rownames("name") %>%
+    write.table(temp_otu_file, sep = "\t", quote = FALSE)
+
+  system(glue("./code/run_gemelli.py {temp_otu_file} {temp_dist_file}"))
+
+  fread(temp_dist_file, header = TRUE) %>%
+    as_tibble() %>%
+    rename(Group = V1) %>%
     write_tsv(dist_file)
+
+  unlink(temp_otu_file, force = TRUE)
+  unlink(temp_dist_file, force = TRUE)
 
 } else {
 

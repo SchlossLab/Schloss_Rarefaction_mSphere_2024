@@ -3,7 +3,7 @@
 #SBATCH --output=logs/cluster_logs/%x-%j.out
 #SBATCH --mail-user=pschloss@umich.edu
 #SBATCH --mail-type=BEGIN,END
-#SBATCH --account=pschloss1
+#SBATCH --account=pschloss0
 #SBATCH --partition=standard
 #SBATCH --time=110:00:00
 #SBATCH --nodes=1
@@ -24,6 +24,6 @@ echo "Changing directory to $SLURM_SUBMIT_DIR"
 cd $SLURM_SUBMIT_DIR
 
 ### Run script
-snakemake --profile config_files/
+snakemake --profile config_files/ # --dry-run
 
 echo "done."
