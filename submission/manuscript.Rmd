@@ -189,12 +189,12 @@ loss <- table_1 %>%
   select(nice_name, min_max) %>%
   slice_min(min_max)
 
-obs_coverage_files <- glue("../data/{datasets}/data.otu.obs_coverage")
+obs_coverage_files <- here(glue("data/{datasets}/data.otu.obs_coverage"))
 names(obs_coverage_files) <- datasets
 
 obs_cor <- map_dfr(obs_coverage_files, read_tsv, .id = "dataset",
-        col_types = cols(group = col_character(),
-                         .default = col_double()))
+                  col_types = cols(group = col_character(),
+                                   .default = col_double()))
 
 obs_median <- obs_cor %>%
   group_by(dataset) %>%
@@ -209,7 +209,7 @@ rare_median <- obs_cor %>%
   arrange(med) %>%
   filter(med < 90)
 
-rare_coverage_files <- glue("../data/{datasets}/data.otu.rarefy_coverage")
+rare_coverage_files <- here(glue("data/{datasets}/data.otu.rarefy_coverage"))
 names(rare_coverage_files) <- datasets
 
 cor_line <- map_dfr(rare_coverage_files, read_tsv, .id = "dataset",
