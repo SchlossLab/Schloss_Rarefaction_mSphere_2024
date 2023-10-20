@@ -117,7 +117,6 @@ e_beta_labels <- c(
 )
 
 j_plot <- j_distances %>%
-# slice_sample(n = 1000) %>% #remove this
   ggplot(aes(x = diff, y = dist)) +
   geom_hline(yintercept = 0) +
   geom_point(size = 0.25) +
@@ -132,7 +131,6 @@ j_plot <- j_distances %>%
   )
   
 b_plot <- b_distances %>%
-#  slice_sample(n = 1000) %>% #remove this
   ggplot(aes(x = diff, y = dist)) +
   geom_hline(yintercept = 0) +
   geom_point(size = 0.25) +
@@ -146,9 +144,7 @@ b_plot <- b_distances %>%
     axis.line.y = element_line()
   )
 
-
 e_plot <- e_distances %>%
- # slice_sample(n = 1000) %>% #remove this
   ggplot(aes(x = diff, y = dist)) +
   geom_hline(yintercept = 0) +
   geom_point(size = 0.25) +
@@ -157,21 +153,21 @@ e_plot <- e_distances %>%
   scale_x_continuous(breaks = c(0, 1e5, 2e5, 3e5, 4e5),
                      labels = c(0, 1, 2, 3, 4)) +
   coord_cartesian(clip = "off") +
-  labs(x = "Difference in the number of sequences between pairs of samples (x10^5)",
+  labs(x = "Difference in the number of sequences between pairs of samples (x10<sup>5</sup>)",
        y = "Euclidean distances") +
   theme(
-    axis.line.y = element_line()
+    axis.line.y = element_line(),
+    axis.title.x.bottom = element_markdown()
   )
 
 
 beta_plot <- j_plot / b_plot / e_plot &
   theme(
     panel.background = element_blank(),
-    axis.title.x = element_markdown(),
     strip.text.y = element_blank(),
     strip.text.x = element_text(hjust = 0, size = 7)
   )
-  
+
 ggsave("figures/example_beta_cor.tiff", beta_plot,
       width = 7, height = 7,
       compression = "lzw+p")
