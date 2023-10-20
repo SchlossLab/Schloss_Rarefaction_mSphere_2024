@@ -26,7 +26,8 @@ designs = ["r", "s"]
 
 rule targets:
   input:
-    "submission/manuscript.pdf"
+    "data/process/rank_fractions.tsv"
+    # "submission/manuscript.pdf"
 
 rule silva:
   input:
@@ -484,6 +485,30 @@ rule rarefy_coverage:
     {input.script} {input.shared} {input.remove_file}
     """
 
+rule shared_rank:
+  input:
+    script = "code/get_matrix_rank.R",
+    observed = "data/{dataset}/data.otu.shared",
+    simulated = expand("data/{dataset}/data.otu.{seed}.{model}shared",
+                      seed=seeds, model = ["c", "r", "e"],
+                      allow_missing = True)
+  output:
+    "data/{dataset}/data.rank"
+  shell:
+    """
+    {input.script} {wildcards.dataset}
+    """
+
+rule pool_ranks:
+  input:
+    script = "code/pool_ranks.R",
+    ranks = expand("data/{dataset}/data.rank", dataset = datasets)
+  output:
+    "data/process/rank_fractions.tsv"
+  shell:
+    """
+    {input.script}
+    """
 
 ################################################################################
 #
@@ -773,6 +798,8 @@ rule write_paper:
     "submission/asm.csl",
     #
     "data/process/study_summary_statistics.tsv",
+    expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
+    expand("data/{dataset}/data.otu.rarefy_coverage", dataset = datasets),
     "submission/figure_1.png",
     "submission/figure_2.png",
     "submission/figure_3.png",
