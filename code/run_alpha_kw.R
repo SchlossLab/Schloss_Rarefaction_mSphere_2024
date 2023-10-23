@@ -54,6 +54,23 @@ get_raw_results <- function(rawfile, dfile) {
 
 }
 
+get_inext_results <- function(inextfile, dfile) {
+
+  inner_join(read_tsv(inextfile, show_col_types = FALSE),
+             read_tsv(dfile, show_col_types = FALSE),
+             by = c("group" = "Group")) %>%
+    select(group, treatment, chao_sobs, chao_shannon, chao_invsimpson,
+          coverage_sobs, coverage_shannon, coverage_invsimpson, size_sobs,
+          size_shannon, size_invsimpson) %>%
+    pivot_longer(cols = -c(group, treatment), names_to = "metric") %>%
+    nest(data = -metric) %>%
+    mutate(kw = map(data, ~tidy(kruskal.test(.x$value, g = .x$treatment)))) %>%
+    unnest(kw) %>%
+    select(metric, p.value) %>%
+    mutate(method = "inext")
+
+}
+
 get_srs_results <- function(srsfile, dfile) {
 
   inner_join(read_tsv(srsfile, show_col_types = FALSE),
@@ -78,15 +95,15 @@ run_kw_tests <- function(dataset, method, model) {
       alpha_file = list.files(path = dataset,
                 pattern = glue(".*{model}_{method}_alpha"),
                 include.dirs = TRUE, full.names = TRUE)) %>%
-      mutate(seed = str_replace(alpha_file, ".*\\.(\\d+)\\..*", "\\1")) %>%
-      inner_join(., design_files, by = "seed") %>%
-      nest(data = -seed) %>%
-      mutate(results = map(data,
-                          ~do.call(f, list(.x$alpha_file, .x$design_file)))) %>%
-      select(results) %>%
-      unnest(results) %>%
-      group_by(metric, method) %>%
-      summarize(frac = sum(p.value < 0.05) / n(), .groups = "drop")
+    mutate(seed = str_replace(alpha_file, ".*\\.(\\d+)\\..*", "\\1")) %>%
+    inner_join(., design_files, by = "seed") %>%
+    nest(data = -seed) %>%
+    mutate(results = map(data,
+                        ~do.call(f, list(.x$alpha_file, .x$design_file)))) %>%
+    select(results) %>%
+    unnest(results) %>%
+    group_by(metric, method) %>%
+    summarize(frac = sum(p.value < 0.05) / n(), .groups = "drop")
 }
 
 #########
@@ -106,7 +123,7 @@ design_files <- tibble(
   mutate(seed = str_replace(design_file, ".*\\.(\\d+)\\..*", "\\1"))
 
 
-methods <- c("rarefy", "breakaway", "raw", "srs")
+methods <- c("rarefy", "breakaway", "inext", "raw", "srs")
 
 map_dfr(methods, ~run_kw_tests(dataset, .x, model)) %>%
   mutate(model = model) %>%

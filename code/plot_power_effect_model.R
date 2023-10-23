@@ -19,24 +19,30 @@ pretty_datasets <- tibble(
 )
 
 ## Alpha diversity panel...
-
 alpha_metrics <- c(
   "sobs_rarefy",
   "sobs_raw",
   "sobs_srs",
   "ace_raw",
-  "chao_raw",
+  "chao_sobs_inext",
+  "size_sobs_inext",
+  "coverage_sobs_inext",
   "default_breakaway",
   "poisson_breakaway",
 
   "shannon_rarefy",
   "shannon_raw",
   "shannon_srs",
-  "npshannon_raw",
+  "chao_shannon_inext",
+  "size_shannon_inext",
+  "coverage_shannon_inext",
 
-  "simpson_raw",
   "simpson_rarefy",
-  "simpson_srs"
+  "simpson_raw",
+  "simpson_srs",
+  "chao_invsimpson_inext",
+  "size_invsimpson_inext",
+  "coverage_invsimpson_inext"
 )
 
 alpha_classes <- c(
@@ -47,12 +53,19 @@ alpha_classes <- c(
   "richness",
   "richness",
   "richness",
+  "richness",
+  "richness",
 
   "shannon",
   "shannon",
   "shannon",
   "shannon",
+  "shannon",
+  "shannon",
 
+  "inv_simpson",
+  "inv_simpson",
+  "inv_simpson",
   "inv_simpson",
   "inv_simpson",
   "inv_simpson"
@@ -64,6 +77,8 @@ alpha_labels <- c(
   "SRS Normalized",
   "ACE Estimate",
   "Chao1 Estimate",
+  "iNEXT (Size)",
+  "iNEXT (Coverage)",
   "BA Default",
   "BA Poisson",
 
@@ -71,10 +86,15 @@ alpha_labels <- c(
   "Raw",
   "SRS Normalized",
   "Estimate",
+  "iNEXT (Size)",
+  "iNEXT (Coverage)",
 
   "Rarefaction",
   "Raw",
-  "SRS Normalized"
+  "SRS Normalized",
+  "Estimate",
+  "iNEXT (Size)",
+  "iNEXT (Coverage)"
 )
 
 pretty_alpha_classes <- c(
@@ -236,19 +256,16 @@ beta <- beta_composite %>%
       axis.line.x = element_line()
       )
 
-layout <- "
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-"
 
-combo <- alpha + guide_area() + beta +
-  plot_layout(design = layout) +
+combo <- alpha + beta +
+  plot_layout(guides = "collect", nrow = 2) +
   plot_annotation(tag_levels = "A") &
   theme(
     plot.tag = element_text(size = 18, face = "bold",
                             margin = margin(t = 0, r = -15, b = -15, l = 0)
                             )
     )
+ggsave("alpha.png")
 
 ggsave("figures/power_effect_model.tiff",
        combo,

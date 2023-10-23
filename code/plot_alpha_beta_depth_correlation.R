@@ -19,29 +19,30 @@ pretty_datasets <- tibble(
 )
 
 ## Alpha diversity panel...
-
 alpha_metrics <- c(
   "rare_sobs",
   "raw_sobs",
   "srs_sobs",
   "raw_ace",
-  "raw_chao",
+  "chao_sobs",
+  "size_sobs",
+  "coverage_sobs",
   "ba_default",
   "ba_poisson",
-  
+
   "rare_shannon",
   "raw_shannon",
   "srs_shannon",
-  "raw_npshannon",
-  
+  "chao_shannon",
+  "size_shannon",
+  "coverage_shannon",
+
   "rare_simpson",
   "raw_simpson",
-  "srs_simpson"
-  
-  # "ba_sobs", "rare_ace", "rare_chao", "rare_coverage", "rare_npshannon",
-  # "raw_coverage", 
-  # "srs_ace", "srs_chao", "srs_coverage",
-  # "srs_npshannon", 
+  "srs_simpson",
+  "chao_invsimpson",
+  "size_invsimpson",
+  "coverage_invsimpson"
 )
 
 alpha_classes <- c(
@@ -52,14 +53,21 @@ alpha_classes <- c(
   "richness",
   "richness",
   "richness",
-  
+  "richness",
+  "richness",
+
   "shannon",
   "shannon",
   "shannon",
   "shannon",
-  
+  "shannon",
+  "shannon",
+
   "inv_simpson",
-  "inv_simpson", 
+  "inv_simpson",
+  "inv_simpson",
+  "inv_simpson",
+  "inv_simpson",
   "inv_simpson"
 )
 
@@ -69,18 +77,26 @@ alpha_labels <- c(
   "SRS Normalized",
   "ACE Estimate",
   "Chao1 Estimate",
+  "iNEXT (Size)",
+  "iNEXT (Coverage)",
   "BA Default",
   "BA Poisson",
-  
+
   "Rarefaction",
   "Raw",
   "SRS Normalized",
   "Estimate",
-  
+  "iNEXT (Size)",
+  "iNEXT (Coverage)",
+
   "Rarefaction",
   "Raw",
-  "SRS Normalized"
+  "SRS Normalized",
+  "Estimate",
+  "iNEXT (Size)",
+  "iNEXT (Coverage)"
 )
+
 
 pretty_alpha_classes <- c(
   richness = "Richness",
@@ -130,7 +146,6 @@ alpha <- alpha_composite %>%
 
 
 ## Beta diversity panel...
-
 beta_metrics <- c(
   "rare_jaccard",
   "raw_jaccard",
@@ -228,13 +243,8 @@ beta <- beta_composite %>%
       )
 
 
-layout <- "
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-"
-
-combo <- alpha + guide_area() + beta +
-  plot_layout(design = layout) +
+combo <- alpha + beta +
+  plot_layout(guides = "collect", nrow = 2) +
   plot_annotation(tag_levels = "A") &
   theme(
     plot.tag = element_text(size = 18, face = "bold",

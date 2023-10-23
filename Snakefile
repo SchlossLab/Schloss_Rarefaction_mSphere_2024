@@ -13,9 +13,9 @@ seeds = list(range(1, 101))
 
 indexes = list(range(1, 101))
 
-models = ["r"]
+#models = ["r"]
 
-alpha_process = ["raw", "rarefy", "srs", "breakaway"]
+alpha_process = ["raw", "rarefy", "srs", "inext", "breakaway"]
 
 beta_process = ["raw", "rare", "relabund", "srs", "metagenomeseq", "rclr",
                 "zclr", "oclr", "nclr", "deseq2"]
@@ -26,8 +26,7 @@ designs = ["r", "s"]
 
 rule targets:
   input:
-    "data/process/rank_fractions.tsv"
-    # "submission/manuscript.pdf"
+    "submission/manuscript.pdf"
 
 rule silva:
   input:
@@ -230,6 +229,20 @@ rule breakaway_alpha:
     shared="data/{dataset}/data.otu.{seed}.{model}shared"
   output:
     "data/{dataset}/data.otu.{seed}.{model}_breakaway_alpha"
+  shell:
+    """
+    {input.script} {input.shared}
+    """
+
+# estimated sobs, shannon, invsimpson with iNEXT and estimates
+rule inext_alpha:
+  input:
+    script="code/get_inext_alpha.R",
+    shared="data/{dataset}/data.otu.{seed}.{model}shared"
+  output:
+    "data/{dataset}/data.otu.{seed}.{model}_inext_alpha"
+  conda:
+    "config_files/rare_inext.yml"
   shell:
     """
     {input.script} {input.shared}
@@ -546,7 +559,7 @@ rule plot_false_positive_null_model_size:
   input:
     alpha = expand("data/{dataset}/data.r_salpha_kw",
                    dataset = datasets),
-    beta = expand("data/{dataset}/data.s_ramova",
+    beta = expand("data/{dataset}/data.r_samova",
                   dataset = datasets),
     script = "code/plot_false_positive_null_model_size.R"
   output:
@@ -572,7 +585,7 @@ rule plot_power_effect_model:
 
 rule plot_power_cffect_model:
   input:
-    alpha = expand("data/{dataset}/data.e_ealpha_kw",
+    alpha = expand("data/{dataset}/data.c_calpha_kw",
                    dataset = datasets),
     script = "code/plot_power_cffect_model.R"
   output:
@@ -600,7 +613,8 @@ rule plot_example_alpha_cor:
     raw = "data/human/data.otu.1.r_raw_alpha",
     rare = "data/human/data.otu.1.r_rarefy_alpha",
     srs = "data/human/data.otu.1.r_srs_alpha",
-    ba = "data/human/data.otu.1.r_breakaway_alpha"
+    ba = "data/human/data.otu.1.r_breakaway_alpha",
+    inext = "data/human/data.otu.1.r_inext_alpha"
   output:
     "figures/example_alpha_cor.tiff"
   shell:

@@ -5,37 +5,62 @@ library(glue)
 library(broom)
 library(ggtext)
 
-raw_sobs <- "data/human/data.otu.1.r_raw_alpha" %>%
+raw <- "data/human/data.otu.1.r_raw_alpha" %>%
   read_tsv(col_types = cols(group = col_character())) %>%
-    select(group, nseqs,
-           raw = sobs)
+  select(group, nseqs,
+        raw = sobs,
+        ace)
 
-rare_sobs <- "data/human/data.otu.1.r_rarefy_alpha" %>%
+rare <- "data/human/data.otu.1.r_rarefy_alpha" %>%
   read_tsv(col_types = cols(group = col_character())) %>%
-    filter(method == "ave") %>%
-    select(group,
-           rare = sobs)
+  filter(method == "ave") %>%
+  select(group,
+          rare = sobs)
 
-srs_sobs <- "data/human/data.otu.1.r_srs_alpha" %>%
+srs <- "data/human/data.otu.1.r_srs_alpha" %>%
   read_tsv(col_types = cols(group = col_character())) %>%
     select(group,
            srs = sobs)
 
-ba_sobs <- "data/human/data.otu.1.r_breakaway_alpha" %>%
+ba <- "data/human/data.otu.1.r_breakaway_alpha" %>%
   read_tsv(col_types = cols(Group = col_character())) %>%
-    select(group = Group,
-           ba_default = ba_est,
-           ba_poisson = p_est)
+  select(group = Group,
+        ba_default = ba_est,
+        ba_poisson = p_est)
+
+inext <- "data/human/data.otu.1.r_inext_alpha" %>%
+  read_tsv(col_types = cols(group = col_character())) %>%
+  select(group,
+        chao = chao_sobs,
+        size = size_sobs,
+        coverage = coverage_sobs
+        )
+
+inext_methods <- "data/human/data.otu.1.r_inext_alpha" %>%
+  read_tsv(col_types = cols(group = col_character())) %>%
+  select(group,
+        coverage = coverage_method,
+        size = size_method) %>%
+  pivot_longer(-group, names_to = "metric", values_to = "method") %>%
+  mutate(method = tolower(method))
 
 
 
-tidy_composite <- inner_join(raw_sobs, rare_sobs, by = "group") %>%
-  inner_join(., srs_sobs, by = "group") %>%
-  inner_join(., ba_sobs, by = "group") %>%
-  select(-ba_poisson) %>%
+
+tidy_composite <- inner_join(raw, rare, by = "group") %>%
+  inner_join(., srs, by = "group") %>%
+  inner_join(., ba, by = "group") %>%
+  inner_join(., inext, by = "group") %>%
   pivot_longer(cols = -c(group, nseqs),
-               names_to = "metric", values_to = "value")
-  
+               names_to = "metric", values_to = "value") %>%
+  left_join(., inext_methods, by = c("group", "metric")) %>%
+  mutate(method = replace_na(method, "rarefaction"),
+        metric = factor(metric, levels = c("rare", "size", "coverage",
+                                            "raw", "ace", "chao",
+                                            "srs", "ba_default",
+                                            "ba_poisson")))
+
+
 correlations <- tidy_composite %>%
   nest(data = -c(metric)) %>%
   mutate(test = map(data, ~cor.test(.x$nseqs, .x$value, method = "spearman",
@@ -62,21 +87,27 @@ pretty_labels <- c(
   raw = glue("No rarefaction\n(\u03C1 = {get_rho('raw')})"),
   rare = glue("Rarefaction\n(\u03C1 = {get_rho('rare')})"),
   srs = glue("SRS normalization\n(\u03C1 = {get_rho('srs')})"),
-  ba_default = glue("Breakaway estimate\n(\u03C1 = {get_rho('ba_default')})") 
+  ace = glue("ACE estimate\n(\u03C1 = {get_rho('ace')})"),
+  chao = glue("Chao1 estimate\n(\u03C1 = {get_rho('chao')})"),
+  size = glue("iNEXT estimate (Size)\n(\u03C1 = {get_rho('size')})"),
+  coverage = glue("iNEXT estimate (Coverage)\n(\u03C1 = {get_rho('coverage')})"),
+  ba_default = glue("Breakaway est. (Default)\n(\u03C1 = {get_rho('ba_default')})"),
+  ba_poisson = glue("Breakaway est. (Poisson)\n(\u03C1 = {get_rho('ba_poisson')})") 
 )
 
 aplot <- tidy_composite %>%
-  mutate(metric = factor(metric,
-                         levels = c("rare", "raw", "srs", "ba_default"))) %>%
-  filter(!(metric == "ba_default" & value > 4000)) %>%
-  ggplot(aes(x = nseqs, y = value)) +
-  geom_point() +
-  # geom_smooth(se = FALSE, method = "lm")  +
+  filter(!((metric == "ba_default" | metric == "ba_poisson") &
+                value > 4000)) %>%
+  ggplot(aes(x = nseqs, y = value, color = method)) +
+  geom_point(show.legend = FALSE, size = 0.5) +
   facet_wrap(~metric, scales = "free_y",
              labeller = labeller(metric = pretty_labels)) +
   scale_x_log10(breaks = c(1e4, 3e4, 1e5, 3e5),
-                labels = c("1x10^4", "3x10^4", "1x10^5", "3x10^5"),
-                           limits = c(1e4, NA)) +
+                labels = c("1x10<sup>4</sup>", "3x10<sup>4</sup>",
+                           "1x10<sup>5</sup>", "3x10<sup>5</sup>"),
+                limits = c(1e4, NA)) +
+  scale_color_manual(breaks = c("extrapolation", "rarefaction"),
+                    values = c("gray", "black")) +
   labs(x = "Number of sequences per sample",
        y = "Richness") +
   theme(panel.background = element_blank(),
@@ -84,7 +115,7 @@ aplot <- tidy_composite %>%
         axis.line = element_line(),
         strip.text = element_text(hjust = 0),
         axis.text.x = element_markdown())
-    
+
 ggsave("figures/example_alpha_cor.tiff", aplot,
-       width = 6, height = 6,
+       width = 7, height = 6,
        compression = "lzw+p")

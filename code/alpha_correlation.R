@@ -32,6 +32,19 @@ read_rarefy <- function(x) {
 }
 
 
+read_inext <- function(x) {
+
+# x <- "data/mice/data.otu.1.r_inext_alpha" 
+
+  read_tsv(x, col_types = cols(group = col_character())) %>%
+    select(group, inext_nseqs = value,
+           chao_sobs, chao_shannon, chao_invsimpson,
+           coverage_sobs, coverage_shannon, coverage_invsimpson,
+           size_sobs, size_shannon, size_invsimpson
+          )
+
+}
+
 
 read_srs <- function(x) {
 
@@ -74,19 +87,24 @@ raw <- map_dfr(glue("data/{dataset}/data.otu.{seeds}.r_raw_alpha"),
 rarefy <- map_dfr(glue("data/{dataset}/data.otu.{seeds}.r_rarefy_alpha"),
                   read_rarefy, .id = "seed")
 
+inext <- map_dfr(glue("data/{dataset}/data.otu.{seeds}.r_inext_alpha"),
+               read_inext, .id = "seed")
+
 srs <- map_dfr(glue("data/{dataset}/data.otu.{seeds}.r_srs_alpha"),
                read_srs, .id = "seed")
 
 breakaway <- map_dfr(glue("data/{dataset}/data.otu.{seeds}.r_breakaway_alpha"),
                read_breakaway, .id = "seed")
 
+stopifnot(sum(raw$nseqs != inext$inext_nseqs) == 0)
 stopifnot(sum(raw$nseqs != breakaway$ba_nseqs) == 0)
 stopifnot(sum(rarefy$rare_nseqs != srs$srs_nseqs) == 0)
 
 inner_join(raw, rarefy, by = c("seed", "group")) %>%
+  inner_join(., inext, by = c("seed", "group")) %>%
   inner_join(., srs, by = c("seed", "group")) %>%
   inner_join(., breakaway, by = c("seed", "group")) %>%
-  select(-rare_nseqs, -srs_nseqs, -ba_nseqs) %>%
+  select(-rare_nseqs, -srs_nseqs, -ba_nseqs, -inext_nseqs) %>%
   pivot_longer(cols = -c(seed, group, nseqs),
                names_to = "metric", values_to = "value") %>%
   nest(data = -c(metric, seed)) %>%
