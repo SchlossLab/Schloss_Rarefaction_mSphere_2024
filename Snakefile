@@ -806,7 +806,7 @@ rule fig_s3:
 
 rule write_paper:
   input:
-    "code/render_manuscript.R",
+    "code/render_rmd.R",
     "submission/manuscript.Rmd",
     "submission/references.bib",
     "submission/asm.csl",
@@ -830,7 +830,19 @@ rule write_paper:
     "submission/manuscript.tex"
   shell: 
     """
-    code/render_manuscript.R
+    code/render_manuscript.R submission/manuscript.Rmd
     rm -f submission/manuscript.log
     """
     
+
+rule response_to_reviewers:
+  input:
+    rmd="submission/response_to_reviewers.Rmd",
+    rscript="code/render_rmd.R"
+  output:
+    "submission/response_to_reviewers.pdf"
+  shell:
+    """
+    {input.rscript} {input.rmd}
+    rm -f submission/response_to_reviewers.knit.md
+    """
