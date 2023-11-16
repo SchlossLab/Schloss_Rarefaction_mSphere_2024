@@ -3,7 +3,7 @@ cluster:
   mkdir -p logs/cluster_logs/`date +"%Y-%m-%d"`/{rule} &&
   sbatch --job-name={rule}_{wildcards}
           --output=logs/cluster_logs/`date +"%Y-%m-%d"`/{rule}/{rule}-{wildcards}_%j.out
-          --account=pschloss0 
+          --account=pschloss99 
           --partition=standard 
           --nodes=1 
           --time={resources.time_min} 
