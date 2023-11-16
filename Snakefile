@@ -22,8 +22,6 @@ beta_process = ["raw", "rare", "relabund", "srs", "metagenomeseq", "rclr",
 
 beta_calculator = ["bray", "jaccard", "euclidean"]
 
-designs = ["r", "s"]
-
 rule targets:
   input:
     "submission/manuscript.pdf"
@@ -361,25 +359,6 @@ rule beta_amova:
     {input.script} data/{wildcards.dataset} {output.amova}
     """
 
-#cluster analysis - cluster samples via pam and see how well they reflect design
-#                   files cluster assignment
-rule cluster_analysis:
-  input:
-    script = "code/run_cluster_analysis.R",
-    dist_files = expand("data/{dataset}/data.otu.{seed}.{model}_{process}_{calculator}.dist",
-                        seed=seeds, model=["r", "e"], process=beta_process,
-                        calculator=beta_calculator, allow_missing=True),
-    design_files  = expand("data/{dataset}/data.{seed}.{design}design",
-                           seed=seeds, design=["r", "s", "e"],
-                           allow_missing=True)
-  output:
-    output = "data/{dataset}/cluster_analysis.tsv"
-  shell:
-    """
-    {input.script} {wildcards.dataset}
-    """
-
-
 # alpha: calculate correlations with metric based on size of sample
 rule alpha_cor:
   input:
@@ -667,17 +646,6 @@ rule plot_seqs_per_sample:
     script = "code/plot_seqs_per_sample.R"
   output:
     "figures/seqs_per_sample.tiff"
-  shell:
-    """
-    {input.script}
-    """
-
-rule plot_cluster_analysis:
-  input:
-    script = "code/plot_cluster_analysis.R",
-    data = expand("data/{dataset}/cluster_analysis.tsv", dataset = datasets),
-  output:
-    "figures/cluster_analysis.tiff"
   shell:
     """
     {input.script}
