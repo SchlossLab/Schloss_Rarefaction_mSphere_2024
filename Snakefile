@@ -305,7 +305,6 @@ rule null_design:
     {input.script} {input.group_count} {input.remove_accnos} {wildcards.seed}
     """
 
-
 rule samplesize_design:
   input:
     script="code/get_samplesize_design.R",

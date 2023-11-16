@@ -20,10 +20,10 @@ pretty_datasets <- tibble(
 
 
 get_samples_to_remove <- function(file) {
-  
+
   scan(file, what = character(), quiet = TRUE) %>%
     as_tibble_col(column_name = "sample")
-  
+
 }
 
 remove_files <- glue("data/{datasets}/data.remove_accnos")
@@ -44,7 +44,7 @@ smallest_sample_size <-
   group_by(dataset) %>%
   summarize(
     n_seqs = 2000 * ceiling(min(n_seqs) / 2000))
-  
+
 
 
 alpha_summary_files <- glue("data/{datasets}/data.otu.alpha_depth.summary")
@@ -58,22 +58,17 @@ alpha_composite <- map_dfr(alpha_summary_files, read_tsv, .id = "dataset") %>%
             sd = mean(sd),
             n_samples = mean(n_samples),
             .groups = "drop") %>%
-  filter(n_samples > 5) %>%
-  pivot_longer(cols = c(mean, cov),
+  filter(n_samples >= 5) %>%
+  pivot_longer(cols = c(mean, cov, sd),
                names_to = "statistic",
                values_to = "value") %>%
   mutate(dataset = factor(dataset, level = datasets),
          method = factor(method, levels = c("sobs", "shannon")),
-         statistic = factor(statistic, levels = c("mean", "cov"))
+         statistic = factor(statistic, levels = c("mean", "sd", "cov"))
          )
 
 
 
-datasets <- c("bioethanol", "human", "lake", "marine", "mice", "peromyscus",
-              "rainforest", "rice",
-              "seagrass", "sediment", "soil",
-              "stream"
-              )
 
 beta_summary_files <- glue("data/{datasets}/data.otu.beta_depth.summary")
 names(beta_summary_files) <- datasets
@@ -85,18 +80,18 @@ beta_composite <- map_dfr(beta_summary_files, read_tsv, .id = "dataset") %>%
             cov = 100 * mean(sd / mean),
             sd = mean(sd),
             n_samples = mean(n_samples),
-            .groups = "drop") %>% 
-  filter(n_samples > 5) %>% 
-  pivot_longer(cols = c(mean, cov),
+            .groups = "drop") %>%
+  filter(n_samples >= 5) %>%
+  pivot_longer(cols = c(mean, sd, cov),
                names_to = "statistic",
                values_to = "value") %>%
   mutate(dataset = factor(dataset, level = datasets),
-         statistic = factor(statistic, levels = c("mean", "cov"))
+         statistic = factor(statistic, levels = c("mean", "sd", "cov"))
          )
 
 
 plot_method_statistic <- function(m, s, data = composite,
-                                  smallest=smallest_sample_size) {
+                                  smallest = smallest_sample_size) {
 
   filtered_line <- data %>%
     filter(method == m & statistic == s)
@@ -108,7 +103,7 @@ plot_method_statistic <- function(m, s, data = composite,
     slice_min(diff) %>%
     select(dataset, n_seqs = n_seqs.y, value) %>%
     ungroup()
-    
+
 
   filtered_line %>%
     ggplot(aes(x = n_seqs, y = value,
@@ -117,7 +112,8 @@ plot_method_statistic <- function(m, s, data = composite,
     geom_point(data = filtered_point, fill = "white") +
     scale_y_continuous(limits = c(0, NA)) +
     scale_x_log10(breaks = c(1e3, 1e4, 1e5),
-                  labels = c("10^3", "10^4", "10^5")) +
+                  labels = c("10<sup>3</sup>", "10<sup>4</sup>",
+                              "10<sup>5</sup>")) +
     scale_color_manual(name = NULL,
                     values = rep(c("#1b9e77", "#d95f02", "#7570b3"), 4),
                     breaks = pretty_datasets$plain,
@@ -139,29 +135,45 @@ plot_method_statistic <- function(m, s, data = composite,
     )
 }
 
-composite <- bind_rows(alpha_composite, beta_composite) 
+composite <- bind_rows(alpha_composite, beta_composite)
 
 sobs_mean <- plot_method_statistic("sobs", "mean") +
   labs(y = "Mean value\nacross samples",
        title = "Richness") +
   scale_y_continuous(breaks = c(0, 10000, 20000, 30000),
                      labels = c("0", "10,000", "20,000", "30,000"))
-  
+
+sobs_sd <- plot_method_statistic("sobs", "sd") +
+  labs(y = "Standard\ndeviation") +
+  scale_y_continuous(limits = c(0, NA))
+
 sobs_cov <- plot_method_statistic("sobs", "cov") +
   labs(y = "Coefficient of\nvariation (%)") +
   scale_y_continuous(limits = c(0, 4))
-  
+
+
 shannon_mean <- plot_method_statistic("shannon", "mean") +
   labs(title = "Shannon")
+
+shannon_sd <- plot_method_statistic("shannon", "sd") +
+  scale_y_continuous(limits = c(0, NA))
+
 shannon_cov <- plot_method_statistic("shannon", "cov") +
-  scale_y_continuous(limits = c(0, 4))
+  scale_y_continuous(limits = c(0, NA))
+
 
 bray_mean <- plot_method_statistic("bray", "mean") +
   labs(title = "Bray-Curtis")
-  
-bray_cov <- plot_method_statistic("bray", "cov")
+
+bray_sd <- plot_method_statistic("bray", "sd") +
+  scale_y_continuous(limits = c(0, NA))
+
+bray_cov <- plot_method_statistic("bray", "cov") +
+  scale_y_continuous(limits = c(0, NA))
+
 
 patch <- sobs_mean + shannon_mean + bray_mean +
+         sobs_sd + shannon_sd + bray_sd +
          sobs_cov + shannon_cov + bray_cov +
         plot_layout(ncol = 3, guides = "collect") +
         plot_annotation(caption = "Number of sequences sampled",
@@ -172,5 +184,5 @@ patch <- sobs_mean + shannon_mean + bray_mean +
 
 
 ggsave("figures/intrasample_variation.tiff", patch,
-       width = 7, height = 4,
+       width = 8, height = 6,
        compression = "lzw+p")

@@ -21,24 +21,51 @@ header-includes:
 
 **1. I found the result of increasing CoV in Bray-Curtis distances with increasing sequencing depth to be an interesting result given that increased sequencing depth should generally result in better confidence of what is within the underlying population. I'm wondering if the CoV results are difficult to understand due to the changing number of samples included at each sampling depth. Could this analysis be redone using only samples with sequencing depths that are above the highest rarefaction value chosen so that sample number does not vary across depth (this could be done in a subset of the samples/datasets presented). If changing sample number is not to blame are there any further speculations as to what is going on here?**
 
+> I have added a set of panels to Figure 6 indicating the standard deviation across the samples. This hopefully makes it clear that the standard deviation between samples is decreasing, but not as fast as the mean distance between samples. On the whole, the COV values are fairly small. I have added text to this effect at LXXX.
+
+
 **2. It is clear based on the results shown that treatment groups that are highly associated with variance in sequencing depth will result in high false positive rates during diversity analysis when rarefaction is not used. However, I would argue that the simulation used does not in general reflect many natural datasets. It would be uncommon for most natural datasets to vary by treatment group by splitting sequencing depth via the median. I am wondering if this analysis could be done with varying levels of association between treatment group and sequencing depth. This will give the readers a better idea of how large this issue is in actual practice as the true association for most datasets may lay somewhere between figures 2 and 3. This would also help address how much of a concern this may be for previously published papers that do not use rarefaction during diversity analysis.**
 
-**3. Based on the results of this paper it seems the key difference that is being demonstrated in these simulations as opposed to other works is the use of true rarefaction rather than subsampling. Further comments on this in the discussion would be useful to highlight why these results differ so significantly from other work such as the paper by Martino et al., in 2019 (PMID: 30801021) that introduced using robust CLR measures for microbiome data (and is quickly becoming one of the preferred choices of microbiome scientists). Furthermore, it would be nice to see whether the use of true rarefaction on the datasets presented in Martino et al., 2019 resolves the conflicting views between this report and Matino et al's findings on robust CLR measures. Overall, a clarification on how these two publications come to differing conclusions about best practices when comparing beta diversity would be helpful to a large audience within the microbiome field.**
+> XXXUse overlapping IQR instead of perfect confounding.
+> Currently have code/get_intraquantile_design.R set at 10%/90%; needs to be run
+> on great lakes
+
+
+**3. Based on the results of this paper it seems the key difference that is being demonstrated in these simulations as opposed to other works is the use of true rarefaction rather than subsampling. Further comments on this in the discussion would be useful to highlight why these results differ so significantly from other work such as the paper by Martino et al., in 2019 (PMID: 30801021) that introduced using robust CLR measures for microbiome data (and is quickly becoming one of the preferred choices of microbiome scientists). Furthermore, it would be nice to see whether the use of true rarefaction on the datasets presented in Martino et al., 2019 resolves the conflicting views between this report and Martino et al's findings on robust CLR measures. Overall, a clarification on how these two publications come to differing conclusions about best practices when comparing beta diversity would be helpful to a large audience within the microbiome field.**
+
+> XXXDo this.
+
 
 **4. I am wondering whether any of the differences in the results derived from studies such as Martino et al., 2019 (PMID: 30801021), can be attributed to sequence processing pipeline. While the author makes convincing arguments that removal of low abundance sequences may not always be appropriate, I am wondering how it would impact the results shown. Especially given the widespread use of this practice in the current literature as indicated by the author in the discussion. This would be especially important given the strong language around this practice in the discussion without primary data to back it up within this manuscript.**
 
+> XXXResponse to previous point will help to address this. But the data processing pipeline won't really factor in since all methods used the same data for a dataset. The methods don't know what type of processing was done upstream. Could have used purely synthetic distributions.
+
+
 **5. One line 164 the report indicates finding differences in richness between samples that should have the same OTU counts given the way the enrichment sampling was done (increasing sequencing counts not raw number of OTUS in the sample). It would make sense that metrics that consider abundances to change but not richness. Comments on this would be appreciated. Furthermore, this section jumps around between two different models of enrichment (abundance enrichment vs. raw count enrichment). A clearer separation of these two analyses would be appreciated to make parsing the text easier as in some cases it is unclear which enrichment strategy was used for the result that is being talked about.**
+
+> XXXRevise text
 
 **Minor comments:**
 
 **1. Well, the current consensus is that sequence depth is mostly attributed to noise (Gloor et al., 2017. PMID: 29187837). It would be nice to comment on some recent papers that indicate that through certain methods of library preparation sequencing depth may be correlated with sample biomass and how this reflects with the current thoughts in this manuscript (Cruz et al., 2021. PMID: 33717032, Munich et al., 2022. PMID: 36396943).**
 
+> Look at suggested papers; cite Gloor
+
+
+
 **2. It would be nice if confidence intervals could be included in the correlation plots in Figure 1. Furthermore, if understood correctly Figures 2-3 y-axis should be the mean false positive rate over 100 dataset simulations? If so a measure of data spread would be appropriate for these values.**
+
+> The caption for Figure 1 indicates that the size of the confidence interval was smaller than the plotting symbol. As stated in the captions for Figures 2 and 3, "The false positive rate was the number of times a dataset yielded a significant result."
+
 
 **3. While I agree that the rarefaction value chosen is not arbitrary and is usually a balance between keeping samples and having the highest sequencing depth possible (as indicated in the discussion of this manuscript). It would be nice to give stronger guidelines around choosing an appropriate value to highlight more robust ways of choosing rarefaction depths. One thought that came across my mind would be the use of CoV calculations from repeated subsampling (rarefaction) to determine appropriate sequencing depths. Or perhaps just a simple calculation of good's coverage at various sequence depths (similar to rarefaction plots used now)?**
 
+> I'm reluctant to add more than what I already have at L281-289. In that text, I mention using Good's coverage values as a check to make sure that the level of coverage is acceptable.
+
+
 **4. Based on these results and various studies on microbiome biases, alpha diversity metrics such as richness do not indicate the true richness of a sample due to a variety of issues included sequencing depth. A comment on this in the discussion would be helpful, for those that are less seasoned in the microbiome field.**
 
+> I have added a sentence to this effect in the Discussion at **LXXX**
 
 
 **Reviewer #2 (Comments for the Author):**
