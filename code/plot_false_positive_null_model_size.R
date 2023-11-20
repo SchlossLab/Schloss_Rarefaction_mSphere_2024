@@ -4,6 +4,9 @@ library(tidyverse)
 library(glue)
 library(patchwork)
 
+args <- commandArgs(trailingOnly = TRUE)
+design <- args[1]
+
 capitalize <- function(string) {
   substr(string, 1, 1) <- toupper(substr(string, 1, 1))
   string
@@ -104,7 +107,7 @@ pretty_alpha_classes <- c(
   inv_simpson = "Inverse\nSimpson"
 )
 
-alpha_summary_files <- glue("data/{datasets}/data.r_salpha_kw")
+alpha_summary_files <- glue("data/{datasets}/data.r_{design}alpha_kw")
 names(alpha_summary_files) <- datasets
 
 alpha_composite <- map_dfr(alpha_summary_files, read_tsv, .id = "dataset") %>%
@@ -206,7 +209,7 @@ pretty_beta_calcs <- c(
   euclidean = "Euclidean"
 )
 
-beta_summary_files <- glue("data/{datasets}/data.r_samova")
+beta_summary_files <- glue("data/{datasets}/data.r_{design}amova")
 names(beta_summary_files) <- datasets
 
 beta_composite <- map_dfr(beta_summary_files, read_tsv, .id = "dataset") %>%
@@ -259,7 +262,7 @@ combo <- alpha + beta +
                             )
     )
 
-ggsave("figures/false_positive_null_model_size.tiff",
+ggsave(glue("figures/false_positive_null_model_{design}size.tiff"),
        combo,
        width = 6, height = 7,
        compression = "lzw+p")

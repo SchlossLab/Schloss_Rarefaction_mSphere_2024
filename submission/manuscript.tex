@@ -393,12 +393,18 @@ Indeed, for each dataset and alpha and beta diversity metric and
 strategy for accounting for uneven sequencing, approximately 5\% of the
 tests yielded a significant result (Figure 2). Second, I employed a
 biased null treatment model where the treatment group was completely
-confounded with the number of sequences in each sample. Under this
-model, only the data normalized with rarefaction consistently resulted
-in a 5\% false positive rate for alpha and beta diversity metrics
-(Figure 2). These results aligned with the observed sensitivity of alpha
-and beta diversity metrics to sequencing effort and underscore the value
-of rarefaction.
+confounded with the number of sequences in each sample (Figure S4).
+Under this model, only the data normalized with rarefaction consistently
+resulted in a 5\% false positive rate for alpha and beta diversity
+metrics. I then used a less severe bias where the smallest 5\% of
+samples were assigned to one treatment group and the largest 5\% were
+assigned to another; the other samples were randomly assigned to both
+treatment groups. Although the sensitivity of the false positive rate to
+the level of confounding varied across methods of quantifying alpha and
+beta diversity, rarefaction was the only method to consistently control
+the false positive rate (Figure 3). These results aligned with the
+observed sensitivity of alpha and beta diversity metrics to sequencing
+effort and underscore the value of rarefaction.
 
 \textbf{\emph{Rarefaction preserves the statistical power to detect
 differences between treatment groups.}} To assess the impact of
@@ -467,9 +473,10 @@ samples were removed from the analysis at higher sequencing depths.
 Interestingly, the coefficient of variation between Shannon diversity
 values decreased towards zero with increased sequencing effort and the
 coefficient of variation between Bray-Curtis distances tended to
-increase. Regardless, the coefficients of variation were relatively
-small. This analysis indicates that there are benefits to increased
-sequencing depths.
+increase slightly for samples where the standard deviation did not
+decrease as quickly as the mean distance between samples. Regardless,
+the coefficients of variation were relatively small. This analysis
+indicates that there are benefits to increased sequencing depths.
 
 \textbf{\emph{Most studies have a high level of sequencing coverage.}}
 To explore the concern over loss of sequencing depth further, I
@@ -621,7 +628,11 @@ co-amplify non-specific DNAs which may add to the challenges of
 achieving equimolar mixtures of the desired amplicons since those
 sequences will be removed (28). Regardless, it is clear that better
 strategies are needed to reduce the variation in the number of sequences
-generated for each sample.
+generated for each sample. Furthermore, it is important to keep in mind
+that because of residual sequencing errors, PCR artifacts, and
+incomplete sequencing, it is not possible to obtain absolute
+quantification of alpha or beta diversity values. Instead, comparisons
+of these values need to be made on a relative basis.
 
 All simulations have weaknesses and should be interpreted with caution.
 However, the simulated communities generated and analyzed in this study
@@ -662,13 +673,17 @@ replicates were generated for each dataset.
 
 \textbf{Null treatment models.} I created an unbiased and biased
 treatment model. In the unbiased model, samples were randomly assigned
-to one of two treatment groups. In the biased treatment model, samples
-that had more than the median number of sequences for a dataset were
-assigned to one treatment group and the rest were assigned to a second
-treatment group. Comparison of any diversity metric across the two
-treatment groups should have only yielded a significant result in 5\% of
-the simulations when testing under a Type I error (i.e., \(\alpha\)) of
-0.05.
+to one of two treatment groups. I created two biased treatment models.
+In the first, samples that had more than the median number of sequences
+for a dataset were assigned to one treatment group and the rest were
+assigned to a second treatment group (see Figure S4). In the second,
+samples whose sequencing depth where in the 5th percentile or lower were
+assigned to one treatment group while those in the 95\% percentile or
+higher were assigned to another; the remaining samples were randomly
+assigned to either treatment group (see Figure 3). Comparison of any
+diversity metric across the two treatment groups should have only
+yielded a significant result in 5\% of the simulations when testing
+under a Type I error (i.e., \(\alpha\)) of 0.05.
 
 \textbf{Skewed abundance community model.} In the skewed abundance
 community model, communities were randomly assigned to one of two
@@ -1371,12 +1386,14 @@ yielded a significant result.
 treatment groups drawn from a null model does not meaningfully vary from
 5\% when data are normalized by rarefaction when sequencing depth is
 confounded with treatment group}. Samples were assigned to different
-treatment groups based on whether they were above the median number of
-sequences for each dataset. To calculate the false detection rate,
-datasets were regenerated 100 times and differences in alpha diversity
-were tested using a Wilcoxon test (A) and differences in beta diversity
-were tested using PERMANOVA (B) at a 5\% threshold. The false positive
-rate was the number of times a dataset yielded a significant result.
+treatment groups so that the smallest 5\% of samples were assigned to
+one treatment group and the largest 5\% to another; the other 90\% of
+samples were randomly assigned to both treatment groups. To calculate
+the false detection rate, datasets were regenerated 100 times and
+differences in alpha diversity were tested using a Wilcoxon test (A) and
+differences in beta diversity were tested using PERMANOVA (B) at a 5\%
+threshold. The false positive rate was the number of times a dataset
+yielded a significant result.
 
 \newpage
 
@@ -1467,5 +1484,20 @@ calculating the pairwise distance prior to each method's approach of
 controlling for uneven sequencing effort. The Spearman correlation
 coefficient (\(\rho\)) and test of whether the coefficient was
 significantly different from zero are indicated for each panel.
+
+\newpage
+
+\includegraphics[height=17cm]{figure_s4.png}
+
+\textbf{Figure S4.The risk of falsely detecting a difference between
+treatment groups drawn from a null model does not meaningfully vary from
+5\% when data are normalized by rarefaction when sequencing depth is
+confounded with treatment group}. Samples were assigned to different
+treatment groups based on whether they were above the median number of
+sequences for each dataset. To calculate the false detection rate,
+datasets were regenerated 100 times and differences in alpha diversity
+were tested using a Wilcoxon test (A) and differences in beta diversity
+were tested using PERMANOVA (B) at a 5\% threshold. The false positive
+rate was the number of times a dataset yielded a significant result.
 
 \end{document}

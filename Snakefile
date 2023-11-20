@@ -13,8 +13,6 @@ seeds = list(range(1, 101))
 
 indexes = list(range(1, 101))
 
-#models = ["r"]
-
 alpha_process = ["raw", "rarefy", "srs", "inext", "breakaway"]
 
 beta_process = ["raw", "rare", "relabund", "srs", "metagenomeseq", "rclr",
@@ -24,7 +22,7 @@ beta_calculator = ["bray", "jaccard", "euclidean"]
 
 rule targets:
   input:
-    "submission/manuscript.pdf"
+   "submission/manuscript.pdf"
 
 rule silva:
   input:
@@ -303,6 +301,20 @@ rule null_design:
     {input.script} {input.group_count} {input.remove_accnos} {wildcards.seed}
     """
 
+rule intraquantile_design:
+  input:
+    script="code/get_intraquantile_design.R",
+    group_count="data/{dataset}/data.group_count",
+    remove_accnos="data/{dataset}/data.remove_accnos"
+  output:
+    "data/{dataset}/data.{seed}.idesign"
+  resources:
+    mem_mb=2000
+  shell:
+    """
+    {input.script} {input.group_count} {input.remove_accnos} {wildcards.seed}
+    """
+
 rule samplesize_design:
   input:
     script="code/get_samplesize_design.R",
@@ -535,16 +547,16 @@ rule plot_false_positive_null_model:
 
 rule plot_false_positive_null_model_size:
   input:
-    alpha = expand("data/{dataset}/data.r_salpha_kw",
-                   dataset = datasets),
-    beta = expand("data/{dataset}/data.r_samova",
-                  dataset = datasets),
+    alpha = expand("data/{dataset}/data.r_{design}alpha_kw",
+                   dataset = datasets, allow_missing = True),
+    beta = expand("data/{dataset}/data.r_{design}amova",
+                  dataset = datasets, allow_missing = True),
     script = "code/plot_false_positive_null_model_size.R"
   output:
-    "figures/false_positive_null_model_size.tiff"
+    "figures/false_positive_null_model_{design}size.tiff"
   shell:
     """
-    {input.script}
+    {input.script} {wildcards.design}
     """
 
 rule plot_power_effect_model:
@@ -692,12 +704,22 @@ rule fig_2:
 
 rule fig_3:
   input:
-    "figures/false_positive_null_model_size.tiff",
+    "figures/false_positive_null_model_isize.tiff",
   output:
     "submission/figure_3.png",
   shell:
     """
-    convert figures/false_positive_null_model_size.tiff submission/figure_3.png
+    convert figures/false_positive_null_model_isize.tiff submission/figure_3.png
+    """
+
+rule fig_s4:
+  input:
+    "figures/false_positive_null_model_ssize.tiff",
+  output:
+    "submission/figure_s4.png",
+  shell:
+    """
+    convert figures/false_positive_null_model_ssize.tiff submission/figure_s4.png
     """
 
 rule fig_4:
@@ -790,15 +812,17 @@ rule write_paper:
     "submission/figure_7.png",
     "submission/figure_s1.png",
     "submission/figure_s2.png",
-    "submission/figure_s3.png"
+    "submission/figure_s3.png",
+    "submission/figure_s4.png"
   output:
     "submission/manuscript.pdf",
     "submission/manuscript.md",
     "submission/manuscript.tex"
   shell: 
     """
-    code/render_manuscript.R submission/manuscript.Rmd
+    code/render_rmd.R submission/manuscript.Rmd
     rm -f submission/manuscript.log
+    mv submission/manuscript.knit.md submission/manuscript.md
     """
     
 
