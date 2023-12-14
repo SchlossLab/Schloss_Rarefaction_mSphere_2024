@@ -4,9 +4,8 @@ import sys
 import numpy as np
 from biom import Table
 import pandas as pd
-from gemelli import __version__ as gversion
 from gemelli.preprocessing import rclr_transformation
-from gemelli.rpca import auto_rpca
+from gemelli.rpca import rpca
 
 np.seterr(divide = 'ignore') # for rclr
 
@@ -25,6 +24,6 @@ shared_transposed_biom = Table(shared_transposed_df.to_numpy(),
 rclr_gemelli = rclr_transformation(shared_transposed_biom) # compute RCLR
 
 # Run RPCA
-ordination, distance_matrix = auto_rpca(shared_transposed_biom) 
+ordination, distance_matrix = rpca(shared_transposed_biom, n_components = 3) 
 
 distance_matrix.to_data_frame().to_csv(dist_file, sep='\t') # save just the distances since that is what is output from the R version

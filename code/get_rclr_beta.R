@@ -17,7 +17,7 @@ method <- str_replace(dist_file, ".*_(\\w*).dist", "\\1")
 dataset <- str_replace(dist_file, "data/(.*)/data.*", "\\1")
 
 # couldn't get stream, rice, seagrass to reliably get through run_gemelli even
-# with 750 GB of RAM. Skipping...
+# with 100 GB of RAM
 
 if (method == "euclidean" && !(dataset %in% c("stream", "rice", "seagrass"))) {
 
