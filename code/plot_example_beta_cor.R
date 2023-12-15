@@ -58,8 +58,8 @@ get_dists <- function(x) {
 distances <- map_dfr(dist_files, get_dists) %>%
   mutate(process = factor(process,
                           levels = c("rare", "raw", "relabund", "srs",
-                                     "metagenomeseq", "rclr", "oclr", "nclr",
-                                     "zclr", "deseq2")))
+                                     "metagenomeseq", "oclr", "nclr",
+                                     "zclr", "rclr", "deseq2")))
 
 correlations <- distances %>%
   nest(data = -c(process, calculator)) %>%
@@ -109,10 +109,10 @@ b_beta_labels <- c(
 )
 
 e_beta_labels <- c(
-  rclr = glue("Robust CLR (x20)\n(\u03C1 = {get_rho('rclr', 'euclidean')})"),
   oclr = glue("One CLR\n(\u03C1 = {get_rho('oclr', 'euclidean')})"),
   nclr = glue("Nudge CLR\n(\u03C1 = {get_rho('nclr', 'euclidean')})"),
   zclr = glue("Zero CLR\n(\u03C1 = {get_rho('zclr', 'euclidean')})"),
+  rclr = glue("Robust PCA (x20)\n(\u03C1 = {get_rho('rclr', 'euclidean')})"),
   deseq2 = glue("DeSeq2\n(\u03C1 = {get_rho('deseq2', 'euclidean')})")
 )
 

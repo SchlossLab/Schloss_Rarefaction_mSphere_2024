@@ -109,7 +109,7 @@ plot_method_statistic <- function(m, s, data = composite,
     ggplot(aes(x = n_seqs, y = value,
                shape = dataset, group = dataset, color = dataset)) +
     geom_line() +
-    geom_point(data = filtered_point, fill = "white") +
+    geom_point(data = filtered_point, fill = "white", size = 2) +
     scale_y_continuous(limits = c(0, NA)) +
     scale_x_log10(breaks = c(1e3, 1e4, 1e5),
                   labels = c("10<sup>3</sup>", "10<sup>4</sup>",

@@ -116,10 +116,8 @@ alpha_composite <- map_dfr(alpha_summary_files, read_tsv, .id = "dataset") %>%
          )
 
 alpha <- alpha_composite %>%
-  ggplot(aes(x = metric_method, y = frac, color = dataset, shape = dataset)) +
-    # geom_hline(yintercept = 0.05, size = 0.25, color = "gray") +
-    # geom_line(aes(group = dataset), position = position_dodge(width = 0.3),
-    #           color = "gray", size = 0.1) +
+  mutate(percent = 100 * frac) %>%
+  ggplot(aes(x = metric_method, y = percent, color = dataset, shape = dataset)) +
     geom_point(position = position_dodge(width = 0.3), fill = "white") +
     facet_grid(. ~ class,
                scales = "free_x", space = "free_x",
@@ -136,8 +134,8 @@ alpha <- alpha_composite %>%
                        labels = pretty_datasets$pretty
                        ) +
     scale_x_discrete(breaks = alpha_metrics, labels = alpha_labels) +
-    # scale_y_continuous(limits = c(0, NA), breaks = seq(0, 0.15, 0.05)) +
-    labs(x = NULL, y = "Power") +
+    scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 25)) +
+    labs(x = NULL, y = "Power (%)") +
     theme(
       axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
       panel.background = element_rect(fill = "white"),

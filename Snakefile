@@ -22,7 +22,13 @@ beta_calculator = ["bray", "jaccard", "euclidean"]
 
 rule targets:
   input:
-   "submission/manuscript.pdf"
+    "submission/manuscript.pdf",
+    "submission/manuscript.docx",
+    "submission/response_to_reviewers.pdf",
+    "submission/supplementary_material.pdf",
+    "submission/marked_up.pdf"
+
+################################################################################
 
 rule silva:
   input:
@@ -273,7 +279,7 @@ rule process_rclr:
   output:
     dist="data/{dataset}/data.otu.{seed}.{model}_rclr_{beta_calculator}.dist"
   resources:
-    mem_mb=16000
+    mem_mb=24000
   conda:
     "config_files/rare_gemelli.yml"
   shell:
@@ -686,80 +692,70 @@ rule fig_1:
   input:
     "figures/alpha_beta_depth_correlation.tiff",
   output:
-    "submission/figure_1.png",
+    "submission/figure_1.tiff",
   shell:
     """
-    convert figures/alpha_beta_depth_correlation.tiff submission/figure_1.png
+    cp {input} {output}
     """
 
 rule fig_2:
   input:
     "figures/false_positive_null_model.tiff",
   output:
-    "submission/figure_2.png",
+    "submission/figure_2.tiff",
   shell:
     """
-    convert figures/false_positive_null_model.tiff submission/figure_2.png
+    cp {input} {output}
     """
 
 rule fig_3:
   input:
     "figures/false_positive_null_model_isize.tiff",
   output:
-    "submission/figure_3.png",
+    "submission/figure_3.tiff",
   shell:
     """
-    convert figures/false_positive_null_model_isize.tiff submission/figure_3.png
-    """
-
-rule fig_s4:
-  input:
-    "figures/false_positive_null_model_ssize.tiff",
-  output:
-    "submission/figure_s4.png",
-  shell:
-    """
-    convert figures/false_positive_null_model_ssize.tiff submission/figure_s4.png
+    cp {input} {output}
     """
 
 rule fig_4:
   input:
     "figures/power_effect_model.tiff",
   output:
-    "submission/figure_4.png",
+    "submission/figure_4.tiff",
   shell:
     """
-    convert figures/power_effect_model.tiff submission/figure_4.png
+    cp {input} {output}
     """
 
 rule fig_5:
   input:
     "figures/power_cffect_model.tiff",
   output:
-    "submission/figure_5.png",
+    "submission/figure_5.tiff",
   shell:
     """
-    convert figures/power_cffect_model.tiff submission/figure_5.png
+    cp {input} {output}
     """
 
 rule fig_6:
   input:
     "figures/intrasample_variation.tiff",
   output:
-    "submission/figure_6.png",
+    "submission/figure_6.tiff",
   shell:
     """
-    convert figures/intrasample_variation.tiff submission/figure_6.png
+    cp {input} {output}
     """
 
 rule fig_7:
   input:
     "figures/coverage_plot.tiff",
   output:
-    "submission/figure_7.png",
+    "submission/figure_7.tiff",
   shell:
     """
-    convert figures/coverage_plot.tiff submission/figure_7.png
+    cp {input} {output}
     """
 
 rule fig_s1:
@@ -769,7 +765,7 @@ rule fig_s1:
     "submission/figure_s1.png",
   shell:
     """
-    convert figures/seqs_per_sample.tiff submission/figure_s1.png
+    convert {input} {output}
     """
 
 rule fig_s2:
@@ -779,7 +775,7 @@ rule fig_s2:
     "submission/figure_s2.png",
   shell:
     """
-    convert figures/example_alpha_cor.tiff submission/figure_s2.png
+    convert {input} {output}
     """
 
 rule fig_s3:
@@ -789,7 +785,17 @@ rule fig_s3:
     "submission/figure_s3.png",
   shell:
     """
-    convert figures/example_beta_cor.tiff submission/figure_s3.png
+    convert {input} {output}
+    """
+
+rule fig_s4:
+  input:
+    "figures/false_positive_null_model_ssize.tiff",
+  output:
+    "submission/figure_s4.png",
+  shell:
+    """
+    convert {input} {output}
     """
 
 
@@ -803,18 +809,19 @@ rule write_paper:
     "data/process/study_summary_statistics.tsv",
     expand("data/{dataset}/data.otu.obs_coverage", dataset = datasets),
     expand("data/{dataset}/data.otu.rarefy_coverage", dataset = datasets),
-    "submission/figure_1.png",
-    "submission/figure_2.png",
-    "submission/figure_3.png",
-    "submission/figure_4.png",
-    "submission/figure_5.png",
-    "submission/figure_6.png",
-    "submission/figure_7.png",
+    "submission/figure_1.tiff",
+    "submission/figure_2.tiff",
+    "submission/figure_3.tiff",
+    "submission/figure_4.tiff",
+    "submission/figure_5.tiff",
+    "submission/figure_6.tiff",
+    "submission/figure_7.tiff",
     "submission/figure_s1.png",
     "submission/figure_s2.png",
     "submission/figure_s3.png",
     "submission/figure_s4.png"
   output:
+    "submission/manuscript.docx",
     "submission/manuscript.pdf",
     "submission/manuscript.md",
     "submission/manuscript.tex"
@@ -824,7 +831,20 @@ rule write_paper:
     rm -f submission/manuscript.log
     mv submission/manuscript.knit.md submission/manuscript.md
     """
-    
+
+rule supplemental_text:
+  input:
+    "submission/supplementary_material.Rmd",
+    expand("submission/figure_s{fig_number}.png", fig_number = list(range(1,5))),
+    "code/render_rmd.R"
+  output:
+    "submission/supplementary_material.pdf",
+  shell: 
+    """
+    code/render_rmd.R submission/supplementary_material.Rmd
+    mv submission/supplementary_material.knit.md submission/supplementary_material.md 
+    rm -f submission/supplementary_material.log submission/supplementary_material.tex
+    """
 
 rule response_to_reviewers:
   input:
@@ -836,4 +856,19 @@ rule response_to_reviewers:
     """
     {input.rscript} {input.rmd}
     rm -f submission/response_to_reviewers.knit.md
+    """
+
+rule track_changes:
+  input:
+    "submission/manuscript.tex"
+  output:
+    "submission/marked_up.pdf"
+  shell:
+    """
+    git cat-file -p 9b21157:submission/manuscript.tex > submission/manuscript_old.tex
+    latexdiff submission/manuscript_old.tex submission/manuscript.tex > submission/marked_up.tex
+    R -e "tinytex::pdflatex('submission/marked_up.tex')"
+    rm marked_up.log
+    rm submission/marked_up.tex
+    rm submission/manuscript_old.tex
     """

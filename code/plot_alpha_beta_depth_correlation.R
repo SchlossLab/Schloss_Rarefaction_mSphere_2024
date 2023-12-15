@@ -162,16 +162,13 @@ beta_metrics <- c(
   "rare_euclidean",
   "raw_euclidean",
   "relabund_euclidean",
-  "rclr_euclidean",
   "oclr_euclidean",
   "nclr_euclidean",
   "zclr_euclidean",
+  "rclr_euclidean",
   "deseq2_euclidean"
 )
 
-# beta_classes <- c(
-#
-# )
 
 beta_labels <- c(
   "Rarefaction",
@@ -189,10 +186,10 @@ beta_labels <- c(
   "Rarefaction",
   "Raw",
   "Rel. abundance",
-  "Robust CLR",
   "One CLR",
   "Nudge CLR",
   "Zero CLR",
+  "Robust PCA",
   "DeSeq2"
 )
 
@@ -248,7 +245,7 @@ combo <- alpha + beta +
   plot_annotation(tag_levels = "A") &
   theme(
     plot.tag = element_text(size = 18, face = "bold",
-                            margin = margin(t = 0, r = -15, b = -15, l = 0)
+                            margin = margin(t = 0, r = -40, b = -15, l = 0)
                             )
     )
 

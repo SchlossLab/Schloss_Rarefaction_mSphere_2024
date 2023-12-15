@@ -119,8 +119,9 @@ alpha_composite <- map_dfr(alpha_summary_files, read_tsv, .id = "dataset") %>%
          )
 
 alpha <- alpha_composite %>%
-  ggplot(aes(x = metric_method, y = frac, color = dataset, shape = dataset)) +
-    geom_hline(yintercept = 0.05, size = 0.25, color = "gray") +
+  mutate(percentage = 100 * frac) %>%
+  ggplot(aes(x = metric_method, y = percentage, color = dataset, shape = dataset)) +
+    geom_hline(yintercept = 5, size = 0.25, color = "gray") +
     geom_point(position = position_dodge(width = 0.3), fill = "white") +
     facet_grid(. ~ class,
                scales = "free_x", space = "free_x",
@@ -138,7 +139,7 @@ alpha <- alpha_composite %>%
                        ) +
     scale_x_discrete(breaks = alpha_metrics, labels = alpha_labels) +
     # scale_y_continuous(limits = c(0, NA), breaks = seq(0, 0.15, 0.05)) +
-    labs(x = NULL, y = "False positive rate") +
+    labs(x = NULL, y = "False positive rate (%)") +
     theme(
       axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
       panel.background = element_rect(fill = "white"),
@@ -168,16 +169,13 @@ beta_metrics <- c(
   "rare_euclidean",
   "raw_euclidean",
   "relabund_euclidean",
-  "rclr_euclidean",
   "oclr_euclidean",
   "nclr_euclidean",
   "zclr_euclidean",
+  "rclr_euclidean",
   "deseq2_euclidean"
 )
 
-# beta_classes <- c(
-#
-# )
 
 beta_labels <- c(
   "Rarefaction",
@@ -195,10 +193,10 @@ beta_labels <- c(
   "Rarefaction",
   "Raw",
   "Rel. abundance",
-  "Robust CLR",
   "One CLR",
   "Nudge CLR",
   "Zero CLR",
+  "Robust PCA",
   "DeSeq2"
 
 )
@@ -222,9 +220,10 @@ beta_composite <- map_dfr(beta_summary_files, read_tsv, .id = "dataset") %>%
 
 beta <- beta_composite %>%
   drop_na(significant) %>%
+  mutate(significant = 100 * significant) %>%
   ggplot(aes(x = process_calc, y = significant,
              color = dataset, shape = dataset)) +
-    geom_hline(yintercept = 0.05, size = 0.25, color = "gray") +
+    geom_hline(yintercept = 5, size = 0.25, color = "gray") +
     geom_point(position = position_dodge(width = 0.3), show.legend = FALSE) +
     facet_grid(. ~ beta_calculator,
                scales = "free_x", space = "free_x",
@@ -242,7 +241,7 @@ beta <- beta_composite %>%
                        ) +
     scale_x_discrete(breaks = beta_metrics, labels = beta_labels) +
     # scale_y_continuous(limits = c(0, 0.15), breaks = seq(0, 0.15, 0.05)) +
-    labs(x = NULL, y = "False positive rate") +
+    labs(x = NULL, y = "False positive rate (%)") +
     theme(
       axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
       panel.background = element_rect(fill = "white"),
