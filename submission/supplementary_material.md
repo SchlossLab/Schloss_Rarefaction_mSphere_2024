@@ -14,7 +14,7 @@ header-includes:
 
 \includegraphics{figure_s1.png}
 
-**Figure S1. The number of sequences observed in each sample for each dataset included in this analysis generally varied by 10 to 100-fold.** The threshold for specifying the number of sequences per sample varied by dataset and was determined based on identifying natural breaks in the data. This figure is similar to Figure S1 of [@Schloss2023sing]
+**Figure S1. The number of sequences observed in each sample for each dataset included in this analysis generally varied by 10 to 100-fold.** The threshold for specifying the number of sequences per sample varied by dataset and was determined based on identifying natural breaks in the data. This figure is similar to Figure S1 of (28)
 
 \newpage
 \includegraphics{figure_s2.png}
