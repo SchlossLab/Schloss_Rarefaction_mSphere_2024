@@ -16,9 +16,9 @@ if (method == "euclidean") {
   fread(shared_file, colClasses = c(Group = "character")) %>%
     select(Group, starts_with("Otu")) %>%
     pivot_longer(-Group) %>%
-    filter(value > 0) %>%
+#    filter(value > 0) %>%
     mutate(value = value + 1) %>%  # can't have zero counts
-    pivot_wider(names_from = "name", values_from = "value", values_fill = 0) %>%
+    pivot_wider(names_from = "name", values_from = "value", values_fill = 1) %>%
     column_to_rownames("Group") %>%
     t() %>%
     varianceStabilizingTransformation(fitType = "mean") %>%
